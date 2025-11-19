@@ -97,35 +97,36 @@ breadcrumb: true
                 options: ["Because mean people want to stop us from making friends", "Because we're mysterious and nonchalant, sharing PII would diminsh that", "To prevent hackers, scammers, and others with ill intent from harming us", "Because Kai Cenat told us to"],
                 correct: 2
             },
+<!-- screen here (continue to PII questions) -->
             {
-                question: "What is the most important piece of PII to protect?",
-                options: ["Your address", "The name of your pet", "How many w's you spammed today", "Your first name"],
+                question: "What is your favorite color?",
+                options: ["Red", "Orange", "Yellow", "Green", "Blue", "Purple"],
                 correct: 0 
             },
             {
-                question: "Which of the following usernames best protect Sloane's PII?",
-                options: ["SloaneSommers1234TulipStreet 1", "SloaneS.", "s.sommers1234", "colorfulZebra"],
+                question: "Which do you prefer?",
+                options: ["Dogs", "Cats"],
                 correct: 3
             },
             {
-                question: "You should click on links from unfamiliar websites that don't start with \"https://\"",
+                question: "What is your full name?",
                 options: ["True", "False"],
                 correct: 1
             },
             {
-                question: "You should keep your passwords easy to guess",
-                options: ["True", "False"],
-                correct: 1
-            },
-            {
-                question: "Where is the safest place to store your passwords?",
-                options: ["Microsoft Authenticator/Google Password Manager", "safepasswordstorage.com;p", "The notes app", "A Google document"],
-                correct: 0
-            },
-            {
-                question: "Which of these people should you share your passwords with?",
+                question: "What is your favorite genre of music?",
                 options: ["Your estranged cousin who visits every 3 years", "Your classmates", "Your favorite streamer", "Your parents"],
                 correct: 3
+            },
+            {
+                question: "What is your SSN?",
+                options: ["True", "False"],
+                correct: 1
+            },
+            {
+                question: "Where do you live?",
+                options: ["Microsoft Authenticator/Google Password Manager", "safepasswordstorage.com;p", "The notes app", "A Google document"],
+                correct: 0
             },
             {
                 question: "If the wrong people get ahold of your PII, there can be real life consequences, such as monetary loss or exposure of private information",
