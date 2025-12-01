@@ -30,10 +30,17 @@ breadcrumb: true
             padding: 20px;
         }
         .quiz-container {
-            background-color: #37096bff;
+            background: linear-gradient(135deg, #e8d9f0 0%, #dcc9e8 100%);
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(147, 112, 219, 0.2);
+        }
+        #question {
+            color: #4a3f5c;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
         }
         .options {
             display: grid;
@@ -45,43 +52,50 @@ breadcrumb: true
             cursor: pointer;
             border: none;
             border-radius: 4px;
-            background-color: #4b4b4bff;
-            color: white;
+            background-color: #c5b3d4;
+            color: #4a3f5c;
             font-size: 16px;
+            transition: all 0.3s ease;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #b39bc7;
+            box-shadow: 0 2px 8px rgba(147, 112, 219, 0.3);
         }
         .option-button {
-            background-color: #6a2e3d;
-            color: #131313ff;
-            border: 1px solid #ddd;
+            background-color: #d4c5e0;
+            color: #4a3f5c;
+            border: 2px solid #c5b3d4;
         }
         .option-button:hover {
-            background-color: #f0f0f0;
+            background-color: #c5b3d4;
+            border-color: #b39bc7;
         }
         .result {
             margin-top: 20px;
             font-weight: bold;
             font-size: 18px;
+            color: #4a3f5c;
         }
         .feedback {
-            color: #ffffffff;
+            color: #4a3f5c;
             margin-top: 10px;
         }
         .text-input {
             padding: 12px;
             font-size: 16px;
-            border: 2px solid #ddd;
+            border: 2px solid #c5b3d4;
             border-radius: 4px;
             width: 100%;
             box-sizing: border-box;
             margin: 10px 0;
+            background-color: #f3e5ff;
+            color: #4a3f5c;
         }
         .text-input:focus {
             outline: none;
-            border-color: #45a049;
-            box-shadow: 0 0 5px rgba(69, 160, 73, 0.5);
+            border-color: #9370db;
+            box-shadow: 0 0 8px rgba(147, 112, 219, 0.4);
+            background-color: #faf6ff;
         }
     </style>
 </head>
@@ -110,6 +124,10 @@ breadcrumb: true
                 question: "Why do we protect PII?",
                 options: ["Because mean people want to stop us from making friends", "Because we're mysterious and nonchalant, sharing PII would diminsh that", "To prevent hackers, scammers, and others with ill intent from harming us", "Because Kai Cenat told us to"],
                 correct: 2
+            },
+            {
+                isBreather: true,
+                message: "Now that you know what PII is, answer some questions to set up an account in our database!"
             },
 <!-- screen here (continue to PII questions) -->
             {
@@ -167,7 +185,24 @@ breadcrumb: true
             
             optionsEl.innerHTML = '';
             
-            if (question.allowTextEntry) {
+            if (question.isBreather) {
+                // Display breather slide
+                questionEl.textContent = question.message;
+                questionEl.style.textAlign = 'center';
+                questionEl.style.fontSize = '20px';
+                questionEl.style.marginBottom = '30px';
+                
+                const continueBtn = document.createElement('button');
+                continueBtn.className = 'option-button';
+                continueBtn.textContent = 'Continue';
+                continueBtn.onclick = () => {
+                    currentQuestion++;
+                    selectedOption = null;
+                    displayQuestion();
+                };
+                optionsEl.appendChild(continueBtn);
+                submitBtn.style.display = 'none';
+            } else if (question.allowTextEntry) {
                 // Create text input for open-ended answers
                 const textInput = document.createElement('input');
                 textInput.type = 'text';
@@ -187,7 +222,8 @@ breadcrumb: true
                     textInput.value = '';
                     question.userResponse = null; // Mark as declined
                     submitBtn.disabled = false;
-                    declineBtn.style.backgroundColor = '#e0e0e0';
+                    declineBtn.style.backgroundColor = '#b39bc7';
+                    declineBtn.style.borderColor = '#9370db';
                 };
                 optionsEl.appendChild(declineBtn);
                 
@@ -196,6 +232,7 @@ breadcrumb: true
                 currentQuestion.textInputElement = textInput;
             } else {
                 // Regular multiple choice
+                submitBtn.style.display = 'block';
                 question.options.forEach((option, index) => {
                     const button = document.createElement('button');
                     button.className = 'option-button';
@@ -210,9 +247,10 @@ breadcrumb: true
         function selectOption(index) {
             const buttons = optionsEl.getElementsByClassName('option-button');
             for (let button of buttons) {
-                button.style.backgroundColor = '#ffffff';
+                button.style.backgroundColor = '#d4c5e0';
             }
-            buttons[index].style.backgroundColor = '#e0e0e0';
+            buttons[index].style.backgroundColor = '#b39bc7';
+            buttons[index].style.borderColor = '#9370db';
             selectedOption = index;
             submitBtn.disabled = false;
         }
