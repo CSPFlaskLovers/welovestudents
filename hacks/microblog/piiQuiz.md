@@ -30,7 +30,7 @@ breadcrumb: true
             padding: 20px;
         }
         .quiz-container {
-            background: linear-gradient(135deg, #e8d9f0 0%, #dcc9e8 100%);
+            background: linear-gradient(135deg, #e5c7f5ff 0%, #ce94f3ff 100%);
             padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
@@ -97,6 +97,22 @@ breadcrumb: true
             box-shadow: 0 0 8px rgba(147, 112, 219, 0.4);
             background-color: #faf6ff;
         }
+        .profile-item {
+            background-color: #f3e5ff;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid #9370db;
+        }
+        .profile-item-label {
+            font-weight: 600;
+            color: #4a3f5c;
+            margin-bottom: 5px;
+        }
+        .profile-item-value {
+            color: #5a4f7c;
+            word-break: break-word;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +126,14 @@ breadcrumb: true
         <div id="results" style="display: none;">
             <div class="result">Your Score: <span id="score">0</span>/10</div>
             <button id="restart">Restart Quiz</button>
+        </div>
+        <div id="review" style="display: none;">
+            <div class="result">Profile Summary</div>
+            <div id="profileData"></div>
+            <div class="options">
+                <button id="saveProfile" class="option-button">Save Profile</button>
+                <button id="retakeQuiz" class="option-button">Retake Quiz</button>
+            </div>
         </div>
     </div>
 
@@ -132,12 +156,12 @@ breadcrumb: true
 <!-- screen here (continue to PII questions) -->
             {
                 question: "What is your favorite color?",
-                options: ["Red", "Orange", "Yellow", "Green", "Blue", "Purple"],
+                allowTextEntry: true,
                 correct: null 
             },
             {
-                question: "Which do you prefer?",
-                options: ["Dogs", "Cats"],
+                question: "What's your favorite animal?",
+                allowTextEntry: true,
                 correct: null
             },
             {
@@ -178,6 +202,10 @@ breadcrumb: true
         const resultsEl = document.getElementById('results');
         const scoreEl = document.getElementById('score');
         const restartBtn = document.getElementById('restart');
+        const reviewEl = document.getElementById('review');
+        const profileDataEl = document.getElementById('profileData');
+        const saveProfileBtn = document.getElementById('saveProfile');
+        const retakeQuizBtn = document.getElementById('retakeQuiz');
 
         function displayQuestion() {
             const question = questions[currentQuestion];
@@ -285,20 +313,42 @@ breadcrumb: true
 
         function showResults() {
             quizEl.style.display = 'none';
-            resultsEl.style.display = 'block';
-            scoreEl.textContent = score;
+            resultsEl.style.display = 'none';
+            reviewEl.style.display = 'block';
             
             // Collect the last 8 questions (after the breather slide) in JSON format
             const userDataResponses = [];
             const startIndex = 3; // After 2 education questions + breather slide
             
+            // Clear previous profile display
+            profileDataEl.innerHTML = '';
+            
             for (let i = startIndex; i < questions.length; i++) {
                 const q = questions[i];
+                const response = q.userResponse !== undefined ? q.userResponse : null;
+                
+                // Add to responses array for JSON
                 userDataResponses.push({
                     question: q.question,
-                    response: q.userResponse !== undefined ? q.userResponse : null,
+                    response: response,
                     type: q.allowTextEntry ? 'text' : 'multiple-choice'
                 });
+                
+                // Display in profile review
+                const profileItem = document.createElement('div');
+                profileItem.className = 'profile-item';
+                
+                const label = document.createElement('div');
+                label.className = 'profile-item-label';
+                label.textContent = q.question;
+                
+                const value = document.createElement('div');
+                value.className = 'profile-item-value';
+                value.textContent = response !== null ? response : '(Not provided)';
+                
+                profileItem.appendChild(label);
+                profileItem.appendChild(value);
+                profileDataEl.appendChild(profileItem);
             }
             
             // Convert to JSON and store for backend
@@ -318,8 +368,37 @@ breadcrumb: true
             selectedOption = null;
             quizEl.style.display = 'block';
             resultsEl.style.display = 'none';
+            reviewEl.style.display = 'none';
             displayQuestion();
         }
+
+        saveProfileBtn.onclick = () => {
+            // Send user data to backend
+            const userDataJSON = sessionStorage.getItem('userQuizResponses');
+            console.log('Saving profile with data:', userDataJSON);
+            
+            // Example backend call (adjust endpoint as needed)
+            fetch('/api/save-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: userDataJSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Profile saved:', data);
+                alert('Profile saved successfully!');
+            })
+            .catch(error => {
+                console.error('Error saving profile:', error);
+                alert('Profile saved locally. Backend integration may be needed.');
+            });
+        };
+
+        retakeQuizBtn.onclick = () => {
+            restartQuiz();
+        };
 
         submitBtn.onclick = submitAnswer;
         restartBtn.onclick = restartQuiz;
