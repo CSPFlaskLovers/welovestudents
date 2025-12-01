@@ -3,13 +3,10 @@ layout: post
 title: "Submodule 4"
 description: "Submodule 4 of AI Usage Mini-Quest"
 permalink: /digital-famine/microblog/microb/
-parent: "AI Usage"
-team: "Thinkers"
 submodule: 4
 categories: [CSP, Submodule, Microblogging]
 tags: [microblogging, submodule, unzippers]
 author: "Nicolas Diaz"
-date: 2025-10-21
 breadcrumb: true
 ---
 
