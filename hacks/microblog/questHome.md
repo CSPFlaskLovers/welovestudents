@@ -94,7 +94,7 @@ The system is now defunct, as humans took to the stars. We'll have the reestabli
          longTitle: 'Backup Array Epsilon',
          description: 'Cold backup array; bring spare modules to reactivate.',
          tags: ['backup','spare-parts']},
-        {id: 6, label: 'Threat Modeling', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/threat-modeling/', title: 'Open Node 6',
+        {id: 6, label: 'Threat Modeling', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/threat/', title: 'Open Node 6',
          image: defaultImgUrl,
          longTitle: 'Backup Array Zeta',
          description: 'Cold backup array; bring spare modules to reactivate.',
