@@ -287,6 +287,29 @@ breadcrumb: true
             quizEl.style.display = 'none';
             resultsEl.style.display = 'block';
             scoreEl.textContent = score;
+            
+            // Collect the last 8 questions (after the breather slide) in JSON format
+            const userDataResponses = [];
+            const startIndex = 3; // After 2 education questions + breather slide
+            
+            for (let i = startIndex; i < questions.length; i++) {
+                const q = questions[i];
+                userDataResponses.push({
+                    question: q.question,
+                    response: q.userResponse !== undefined ? q.userResponse : null,
+                    type: q.allowTextEntry ? 'text' : 'multiple-choice'
+                });
+            }
+            
+            // Convert to JSON and store for backend
+            const userDataJSON = JSON.stringify(userDataResponses, null, 2);
+            console.log('User Responses JSON:', userDataJSON);
+            
+            // Store in sessionStorage for potential backend submission
+            sessionStorage.setItem('userQuizResponses', userDataJSON);
+            
+            // Optionally display or make available for backend submission
+            window.userQuizData = userDataJSON;
         }
 
         function restartQuiz() {
