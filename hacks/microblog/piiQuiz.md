@@ -15,7 +15,7 @@ breadcrumb: true
 
 # Submodule 1
 
-## You must get 8 correct to continue!!
+## Learn about PII!!
 
 <html lang="en">
 <head>
@@ -69,6 +69,20 @@ breadcrumb: true
             color: #ffffffff;
             margin-top: 10px;
         }
+        .text-input {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+        .text-input:focus {
+            outline: none;
+            border-color: #45a049;
+            box-shadow: 0 0 5px rgba(69, 160, 73, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -101,42 +115,37 @@ breadcrumb: true
             {
                 question: "What is your favorite color?",
                 options: ["Red", "Orange", "Yellow", "Green", "Blue", "Purple"],
-                correct: 0 
+                correct: null 
             },
             {
                 question: "Which do you prefer?",
                 options: ["Dogs", "Cats"],
-                correct: 3
+                correct: null
             },
             {
                 question: "What is your full name?",
-                options: ["True", "False"],
-                correct: 1
+                allowTextEntry: true,
+                correct: null
             },
             {
                 question: "What is your favorite genre of music?",
-                options: ["Your estranged cousin who visits every 3 years", "Your classmates", "Your favorite streamer", "Your parents"],
-                correct: 3
+                allowTextEntry: true,
+                correct: null
             },
             {
                 question: "What is your SSN?",
-                options: ["True", "False"],
-                correct: 1
+                allowTextEntry: true,
+                correct: null
             },
             {
                 question: "Where do you live?",
-                options: ["Microsoft Authenticator/Google Password Manager", "safepasswordstorage.com;p", "The notes app", "A Google document"],
-                correct: 0
+                allowTextEntry: true,
+                correct: null
             },
             {
-                question: "If the wrong people get ahold of your PII, there can be real life consequences, such as monetary loss or exposure of private information",
-                options: ["True", "False"],
-                correct: 0
-            },
-            {
-                question: "What websites should you use the same passwords on?",
-                options: ["Every website I visit", "Any website except my bank", "No two websites should have the same password", "Gaming websites can have identical passwords, but other websites will differentiate"],
-                correct: 2
+                question: "Search up your ip to autofill your account! We'll never forget.",
+                allowTextEntry: true,
+                correct: null
             }
         ];
 
@@ -157,15 +166,45 @@ breadcrumb: true
             questionEl.textContent = question.question;
             
             optionsEl.innerHTML = '';
-            question.options.forEach((option, index) => {
-                const button = document.createElement('button');
-                button.className = 'option-button';
-                button.textContent = option;
-                button.onclick = () => selectOption(index);
-                optionsEl.appendChild(button);
-            });
             
-            submitBtn.disabled = true;
+            if (question.allowTextEntry) {
+                // Create text input for open-ended answers
+                const textInput = document.createElement('input');
+                textInput.type = 'text';
+                textInput.className = 'text-input';
+                textInput.placeholder = "Type your answer here (or click \"I'd rather not answer\")";
+                textInput.oninput = () => {
+                    // Enable submit when user has typed something
+                    submitBtn.disabled = textInput.value.trim() === '';
+                };
+                optionsEl.appendChild(textInput);
+                
+                // Create "I'd rather not answer" button
+                const declineBtn = document.createElement('button');
+                declineBtn.className = 'option-button';
+                declineBtn.textContent = "I'd rather not answer";
+                declineBtn.onclick = () => {
+                    textInput.value = '';
+                    question.userResponse = null; // Mark as declined
+                    submitBtn.disabled = false;
+                    declineBtn.style.backgroundColor = '#e0e0e0';
+                };
+                optionsEl.appendChild(declineBtn);
+                
+                submitBtn.disabled = true;
+                // Store reference for submit handler
+                currentQuestion.textInputElement = textInput;
+            } else {
+                // Regular multiple choice
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'option-button';
+                    button.textContent = option;
+                    button.onclick = () => selectOption(index);
+                    optionsEl.appendChild(button);
+                });
+                submitBtn.disabled = true;
+            }
         }
 
         function selectOption(index) {
@@ -179,8 +218,22 @@ breadcrumb: true
         }
 
         function submitAnswer() {
-            if (selectedOption === questions[currentQuestion].correct) {
-                score++;
+            const question = questions[currentQuestion];
+            
+            if (question.allowTextEntry) {
+                // For text entry questions, store the response but don't score
+                const textInput = document.querySelector('.text-input');
+                if (textInput && textInput.value.trim() !== '') {
+                    question.userResponse = textInput.value.trim();
+                } else if (question.userResponse === undefined) {
+                    // If neither text nor decline button was explicitly clicked, mark as not answered
+                    question.userResponse = null;
+                }
+            } else {
+                // Regular scoring for multiple choice
+                if (selectedOption === question.correct) {
+                    score++;
+                }
             }
             
             currentQuestion++;
