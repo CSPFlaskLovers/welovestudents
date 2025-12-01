@@ -5,7 +5,7 @@ description: A brief introduction to threat modeling PII.
 permalink: /digital-famine/microblog/threat/
 breadcrumb: true
 microblog: true
-author: Lucas M
+author: Lucas M and Ethan W
 ---
 
 <style>
