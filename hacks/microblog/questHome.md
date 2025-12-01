@@ -89,7 +89,7 @@ The system is now defunct, as humans took to the stars. We'll have the reestabli
          longTitle: 'Ground Station Delta',
          description: 'Ground station for southern hemisphere coverage.',
          tags: ['ground','coverage']},
-        {id: 5, label: 'Decentralization', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/decentralization/', title: 'Open Node 5',
+        {id: 5, label: 'Decentralization', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/dns/', title: 'Open Node 5',
          image: defaultImgUrl,
          longTitle: 'Backup Array Epsilon',
          description: 'Cold backup array; bring spare modules to reactivate.',
