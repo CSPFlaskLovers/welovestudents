@@ -210,6 +210,12 @@ breadcrumb: true
         function displayQuestion() {
             const question = questions[currentQuestion];
             questionEl.textContent = question.question;
+            // Reset any breather-specific styles
+            questionEl.style.textAlign = '';
+            questionEl.style.fontSize = '';
+            questionEl.style.marginBottom = '';
+            // Ensure submit button is visible by default (breather hides it)
+            submitBtn.style.display = 'block';
             
             optionsEl.innerHTML = '';
             
@@ -255,6 +261,8 @@ breadcrumb: true
                 };
                 optionsEl.appendChild(declineBtn);
                 
+                // Make sure submit is visible for text-entry questions
+                submitBtn.style.display = 'block';
                 submitBtn.disabled = true;
                 // Store reference for submit handler
                 currentQuestion.textInputElement = textInput;
