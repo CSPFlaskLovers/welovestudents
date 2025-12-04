@@ -213,6 +213,11 @@ breadcrumb: true
                 correct: null
             },
             {
+                question: "What is your favorite subject?",
+                allowTextEntry: true,
+                corect: null
+            },
+            {
                 question: "Search up your ip to autofill your account! We'll never forget.",
                 allowTextEntry: true,
                 correct: null
@@ -417,7 +422,7 @@ breadcrumb: true
             // No leaks: render profile review but only show non-sensitive profile fields
             // We'll display only: favorite color, favorite animal, favorite genre of music
             profileDataEl.innerHTML = '';
-            const allowedKeywords = ['favorite color', "favorite animal", 'genre of music', 'favorite genre'];
+            const allowedKeywords = ['favorite color', "favorite animal", 'genre of music', 'favorite genre', 'favorite subject', 'subject'];
             for (let resp of userDataResponses) {
                 const qLower = (resp.question || '').toLowerCase();
                 const matches = allowedKeywords.some(k => qLower.includes(k));
