@@ -5,193 +5,281 @@ description: "Submodule 4 of AI Usage Mini-Quest"
 permalink: /digital-famine/microblog/microb/
 submodule: 4
 categories: [CSP, Submodule, Microblogging]
-tags: [microblogging, submodule, unzippers]
+tags: [online safety, matchmaking, submodule]
 author: "Nicolas Diaz"
 breadcrumb: true
 ---
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Online Safety Interactive Lesson – Visual Mode</title>
+<style>
+    body {
+        font-family: 'Inter', Arial, sans-serif;
+        background: #0a0a0a;
+        color: #eaeaea;
+        margin: 0;
+        padding: 0;
+    }
 
-<div style="font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#e0e0e0; line-height:1.45; background:#0f111a; padding:20px;">
-  <!--test ignore-->
-  <!-- Microblog Overview -->
-  <section style="max-width:900px; margin:0 auto 28px; padding:18px; background:#27293d; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.5);">
-    <h1 style="margin:0 0 8px 0; font-size:1.6rem; color:#f3f4f6;">Submodule 4</h1>
-    <h2 style="margin:0 0 12px 0; font-size:1.15rem; color:#a5b4fc;">Microblogging System Overview</h2>
-    <h3 style="margin-top:6px; color:#cbd5e1;">What is the Microblog Feature?</h3>
-    <p>Microblogging allows **lightweight, short-form communication** on a specific page. Users can post thoughts, questions, announcements, or opinions quickly without leaving the page. Using a floating <strong>💬 Microblog</strong> button, a side panel slides in with **real-time updates**, post creation, replies, and reactions. Microblogs are like mini-discussion threads, ideal for fast collaboration or micro-updates.</p>
+    header {
+        background: linear-gradient(135deg, #0a2a43, #001119);
+        padding: 30px;
+        text-align: center;
+        font-size: 38px;
+        font-weight: 800;
+        color: #8fd4ff;
+        border-bottom: 2px solid #0e3a55;
+        letter-spacing: 1.2px;
+        text-shadow: 0 0 12px #0099ff;
+    }
 
-    <h3 style="margin-top:8px; color:#cbd5e1;">Why Use Microblogs?</h3>
-    <ul>
-      <li>Encourage rapid user interaction and feedback.</li>
-      <li>Keep discussions page-specific and contextual.</li>
-      <li>Provide real-time updates on announcements or questions.</li>
-      <li>Enable structured data collection for analytics.</li>
-    </ul>
+    .container {
+        width: 88%;
+        max-width: 1100px;
+        margin: auto;
+        padding: 30px 10px;
+    }
 
-    <h3 style="margin-top:8px; color:#cbd5e1;">Key Components</h3>
-    <h4 style="margin:8px 0 4px 0; color:#f3f4f6;">1. User Interface</h4>
-    <ul>
-      <li>Floating Microblog button 💬</li>
-      <li>Slide-in side panel for reading and writing posts</li>
-      <li>Responsive layout for desktop and mobile</li>
-      <li>Inline editor for post creation and editing</li>
-      <li>Reactions (like 👍, ❤️) and threaded replies</li>
-    </ul>
+    .info-card {
+        background: #111826;
+        padding: 25px;
+        margin: 20px 0;
+        border-radius: 14px;
+        box-shadow: 0 0 20px #000;
+        border: 1px solid #1d3247;
+        transition: 0.25s ease;
+        cursor: pointer;
+    }
 
-    <h4 style="margin:8px 0 4px 0; color:#f3f4f6;">2. Architecture</h4>
-    <p>The feature uses three coordinated layers:</p>
-    <strong style="color:#a5b4fc;">Layout Layer</strong> (<code>_layouts/opencs.html</code>)
-    <ul>
-      <li>Loads Tailwind / jQuery and renders the button & panel</li>
-    </ul>
-    <strong style="color:#a5b4fc;">JavaScript Layer</strong> (<code>assets/js/api/microblog.js</code>)
-    <ul>
-      <li>Handles UI state, real-time updates, drag/drop, and API calls</li>
-    </ul>
-    <strong style="color:#a5b4fc;">Backend Layer</strong>
-    <ul>
-      <li><code>GET /microblog</code> — fetch posts</li>
-      <li><code>POST /microblog</code> — create post</li>
-      <li><code>POST /microblog/reply</code> — add reply</li>
-      <li><code>POST /microblog/reaction</code> — react to a post</li>
-    </ul>
+    .info-card h3 {
+        margin: 0 0 10px;
+        font-size: 26px;
+        color: #7ad7ff;
+        font-weight: 700;
+    }
 
-    <h3 style="margin-top:8px; color:#cbd5e1;">Enabling Microblogs</h3>
-    <pre style="background:#111827; color:#f3f4f6; padding:10px; border-radius:6px; overflow:auto;">
----
-layout: post
-microblog: True
-title: Your Title
-description: Your Description
-permalink: /your-path
----
-    </pre>
+    .info-card p, .info-card ul {
+        font-size: 16px;
+        color: #d3d3d3;
+        line-height: 1.6;
+        margin-top: 5px;
+    }
 
-    <h3 style="margin-top:8px; color:#cbd5e1;">Features & APCSP Requirements</h3>
-    <ul>
-      <li>Create, edit, and reply to posts</li>
-      <li>React with emojis</li>
-      <li>Real-time page-scoped & site-wide updates</li>
-      <li>Persistent progress using local storage or API/database</li>
-      <li>Student-developed procedure with sequencing, selection, and iteration</li>
-      <li>Use of a JSON list collection to store posts and manage program complexity</li>
-      <li>Input: user actions (drag/drop, keyboard, button), device input, or online data</li>
-      <li>Output: visual feedback (score, highlight, alerts)</li>
-    </ul>
-  </section>
+    .info-card:hover {
+        transform: scale(1.02);
+        border-color: #4db8ff;
+        box-shadow: 0 0 25px #003b5c;
+    }
 
-  <!-- Game Section -->
-  <section id="post-sorter-section" style="max-width:950px; margin:0 auto; padding:20px; background:#1e1f2a; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-    <h2 style="margin-top:0; color:#fff;">🎯 Post Sorter Challenge</h2>
+    .visual-mode {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(6px);
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
 
-    <!-- Score and Restart -->
-    <div style="display:flex; gap:20px; align-items:center; margin-bottom:16px;">
-      <div style="font-weight:600; color:#cbd5e1;">Score: <span id="ps-score">0</span></div>
-      <div style="font-weight:600; color:#cbd5e1;">Mistakes: <span id="ps-mistakes">0</span></div>
-      <button id="ps-restart" style="margin-left:auto; padding:10px 16px; border-radius:8px; border:0; background:#3b82f6; color:#fff; cursor:pointer; font-weight:600;">Restart Round</button>
+    .visual-box {
+        background: #0e1622;
+        padding: 30px;
+        border-radius: 20px;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        box-shadow: 0 0 25px #000;
+        border: 1px solid #2b4d6b;
+        animation: pop 0.35s ease;
+    }
+
+    @keyframes pop {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .visual-box h2 {
+        color: #9cdcff;
+        margin-bottom: 15px;
+    }
+
+    .visual-box p {
+        font-size: 18px;
+        color: #d9d9d9;
+        line-height: 1.7;
+    }
+
+    .close-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #0f6fa4;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        transition: 0.2s;
+    }
+
+    .close-btn:hover {
+        background: #45b5ff;
+        transform: scale(1.08);
+    }
+</style>
+</head>
+<body>
+
+<header>Online Safety Interactive Lesson – Visual Mode</header>
+<div class="container">
+
+    <div class="info-card" onclick="openVisual('safety')">
+        <h3>What Is Online Safety?</h3>
+        <p>Online safety is about protecting your personal information, maintaining privacy, and avoiding risky interactions on the internet, including social platforms and matchmaking apps.</p>
     </div>
 
-    <!-- Game Layout -->
-    <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
-      <!-- Post Display -->
-      <div id="ps-play-area" aria-live="polite" style="flex:1 1 350px; min-height:180px; border-radius:12px; border:2px dashed #374151; padding:16px; background:#11121a;">
-        <div style="color:#9ca3af; font-size:0.95rem; margin-bottom:10px;">Incoming Post</div>
-        <div id="ps-post" draggable="true" role="button" tabindex="0"
-             style="display:flex; flex-direction:column; gap:10px; padding:14px; border-radius:12px; background:#1e1f2a; box-shadow:0 4px 12px rgba(0,0,0,0.5); cursor:grab; min-height:60px; max-width:450px;">
-          <div id="ps-post-text" style="font-weight:600; font-size:1rem; color:#fff;">(Loading...)</div>
-          <div id="ps-post-meta" style="font-size:0.85rem; color:#9ca3af;">&nbsp;</div>
-        </div>
-        <div style="margin-top:10px; font-size:0.9rem; color:#9ca3af;">Drag or use keyboard to sort this post into the correct category box.</div>
-      </div>
-
-      <!-- Category Boxes -->
-      <div style="display:flex; flex-direction:column; gap:16px; flex:0 0 260px;">
-        <div class="ps-drop" data-cat="Question" aria-label="Drop here for Question"
-             style="min-height:80px; padding:14px; border-radius:12px; border:2px dashed #22c55e; background:#14532d; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-          <div style="font-weight:700; font-size:1rem; color:#d1fae5;">Question</div>
-          <div style="font-size:0.85rem; color:#d1fae5;">Post asking for info or clarification</div>
-        </div>
-
-        <div class="ps-drop" data-cat="Opinion" aria-label="Drop here for Opinion"
-             style="min-height:80px; padding:14px; border-radius:12px; border:2px dashed #f59e0b; background:#78350f; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-          <div style="font-weight:700; font-size:1rem; color:#fed7aa;">Opinion</div>
-          <div style="font-size:0.85rem; color:#fed7aa;">Personal viewpoint or reaction</div>
-        </div>
-
-        <div class="ps-drop" data-cat="Announcement" aria-label="Drop here for Announcement"
-             style="min-height:80px; padding:14px; border-radius:12px; border:2px dashed #6366f1; background:#1e1b4b; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-          <div style="font-weight:700; font-size:1rem; color:#c7d2fe;">Announcement</div>
-          <div style="font-size:0.85rem; color:#c7d2fe;">News or site update post</div>
-        </div>
-      </div>
+    <div class="info-card" onclick="openVisual('matchmaking')">
+        <h3>Why Matchmaking Safety Matters</h3>
+        <p>When connecting with others online for friendships, dating, or communities, safety is key. Being aware of potential risks ensures healthier interactions and reduces scams or harassment.</p>
+        <ul>
+            <li>Protect personal info</li>
+            <li>Verify identities before trust</li>
+            <li>Avoid suspicious links or behavior</li>
+            <li>Report and block harmful interactions</li>
+        </ul>
     </div>
-  </section>
+
+    <div class="info-card" onclick="openVisual('tips')">
+        <h3>Key Safety Tips</h3>
+        <p>Simple strategies keep you safe online, whether in chatrooms, social media, or matchmaking platforms.</p>
+        <ul>
+            <li>Strong passwords & two-factor authentication</li>
+            <li>Privacy settings for profiles</li>
+            <li>Think before sharing personal info</li>
+            <li>Verify people before meeting</li>
+            <li>Report suspicious activity</li>
+        </ul>
+    </div>
+</div>
+
+<div id="visual-mode" class="visual-mode" onclick="closeVisual(event)">
+    <div class="visual-box" id="visual-box">
+        <h2 id="visual-title"></h2>
+        <p id="visual-text"></p>
+        <button class="close-btn" onclick="closeVisual(event)">Close</button>
+    </div>
 </div>
 
 <script>
-(function () {
-  const POSTS = [
-    { id:1,text:"Does anyone know when the site updates?",category:"Question"},
-    { id:2,text:"I love the new features!",category:"Opinion"},
-    { id:3,text:"Site will be down at 5 PM.",category:"Announcement"},
-    { id:4,text:"Can someone explain microblogging?",category:"Question"},
-    { id:5,text:"This layout is terrible.",category:"Opinion"},
-    { id:6,text:"New moderation rules applied today.",category:"Announcement"},
-    { id:7,text:"Who else uses microblogs for quick updates?",category:"Question"},
-    { id:8,text:"I prefer concise posts to long threads.",category:"Opinion"},
-    { id:9,text:"Maintenance scheduled for Sunday.",category:"Announcement"}
-  ];
+const visuals = {
+    safety: {
+        title: "Understanding Online Safety",
+        text: "Online safety is about staying cautious, verifying information, and keeping control over what you share online."
+    },
+    matchmaking: {
+        title: "Matchmaking Safety",
+        text: "Online matchmaking can be fun, but always check profiles, avoid sharing sensitive information, and report suspicious behavior."
+    },
+    tips: {
+        title: "Practical Safety Tips",
+        text: "Use strong passwords, enable two-factor authentication, limit personal info sharing, and always stay aware of your digital footprint."
+    }
+};
 
-  const POSTS_PER_ROUND = 6;
-  const SAVE_KEY = "postSorter_progress_dark";
+function openVisual(id) {
+    document.getElementById("visual-title").textContent = visuals[id].title;
+    document.getElementById("visual-text").textContent = visuals[id].text;
+    document.getElementById("visual-mode").style.display = "flex";
+}
 
-  let queue=[], current=null, score=0, mistakes=0, index=0;
-
-  const postTextEl = document.getElementById("ps-post-text");
-  const postMetaEl = document.getElementById("ps-post-meta");
-  const psPost = document.getElementById("ps-post");
-  const scoreEl = document.getElementById("ps-score");
-  const mistakesEl = document.getElementById("ps-mistakes");
-  const restartBtn = document.getElementById("ps-restart");
-  const dropZones = document.querySelectorAll(".ps-drop");
-
-  function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
-
-  function evaluateChoice(chosenCategory,currentPost){
-    if(!currentPost||typeof chosenCategory!=="string"){return {correct:false,message:"Invalid input."};}
-    const allowed=["Question","Opinion","Announcement"];
-    let found=false;
-    for(let i=0;i<allowed.length;i++){if(allowed[i]===chosenCategory){found=true;break;}}
-    if(!found)return {correct:false,message:"Unknown category."};
-    if(currentPost.category===chosenCategory)return {correct:true,message:"Correct!"};
-    return {correct:false,message:"Incorrect."};
-  }
-
-  function updateUI(){scoreEl.textContent=score;mistakesEl.textContent=mistakes;}
-  function renderCurrent(){if(!current){postTextEl.textContent="(No post)";postMetaEl.textContent="";psPost.setAttribute("aria-hidden","true");return;}postTextEl.textContent=current.text;postMetaEl.textContent="Drag me to the correct category";psPost.setAttribute("data-cat",current.category);psPost.setAttribute("aria-hidden","false");}
-
-  function startRound(){queue=shuffle([...POSTS]).slice(0,POSTS_PER_ROUND);index=0;score=0;mistakes=0;current=null;updateUI();loadNext();saveProgress();}
-  function loadNext(){if(index>=queue.length){finishRound();return;}current=queue[index];index++;renderCurrent();saveProgress();}
-  function finishRound(){current=null;renderCurrent();saveProgress();setTimeout(()=>{alert("Round complete! Score: "+score+" | Mistakes: "+mistakes);},50);}
-  function saveProgress(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({queue,current,score,mistakes,index,timestamp:Date.now()}));}catch(e){}}
-  function loadProgress(){try{const raw=localStorage.getItem(SAVE_KEY);if(!raw)return false;const p=JSON.parse(raw);if(!Array.isArray(p.queue)||typeof p.index!=="number")return false;queue=p.queue;current=p.current;score=p.score||0;mistakes=p.mistakes||0;index=p.index||0;updateUI();renderCurrent();return true;}catch(e){return false;}}
-
-  function processUserChoice(chosenCategory){if(!current)return;const result=evaluateChoice(chosenCategory,current);if(result.correct){score+=1;flash("#22c55e");}else{mistakes+=1;flash("#ef4444");}updateUI();psPost.style.transform="translateY(-6px) scale(0.98)";psPost.style.opacity="0.6";setTimeout(()=>{psPost.style.transform="";psPost.style.opacity="1";loadNext();},240);}
-  function flash(color){const el=document.getElementById("post-sorter-section");if(!el)return;const prev=el.style.boxShadow;el.style.boxShadow="0 0 0 4px "+color+"22";setTimeout(()=>{el.style.boxShadow=prev;},260);}
-
-  psPost.addEventListener("dragstart",(e)=>{if(!current){e.preventDefault();return;}e.dataTransfer.setData("text/plain",JSON.stringify({id:current.id}));setTimeout(()=>{psPost.style.opacity="0.6";},0);});
-  psPost.addEventListener("dragend",()=>{psPost.style.opacity="1";});
-
-  let keyboardPicked=false;
-  psPost.addEventListener("keydown",(e)=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();keyboardPicked=!keyboardPicked;psPost.style.boxShadow=keyboardPicked?"0 8px 20px rgba(255,255,255,0.2)":"0 4px 10px rgba(0,0,0,0.5)";if(keyboardPicked)psPost.focus();}});
-
-  dropZones.forEach(zone=>{zone.addEventListener("dragover",e=>{e.preventDefault();zone.style.opacity="0.9";});zone.addEventListener("dragleave",()=>{zone.style.opacity="1";});zone.addEventListener("drop",e=>{e.preventDefault();zone.style.opacity="1";if(!current)return;processUserChoice(zone.getAttribute("data-cat"));});zone.setAttribute("tabindex","0");zone.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&keyboardPicked){e.preventDefault();keyboardPicked=false;psPost.style.boxShadow="0 4px 10px rgba(0,0,0,0.5)";processUserChoice(zone.getAttribute("data-cat"));}});});
-
-  restartBtn.addEventListener("click",()=>{if(confirm("Restart the round? This will clear saved progress.")){localStorage.removeItem(SAVE_KEY);startRound();}});
-
-  if(!loadProgress())startRound();
-  updateUI();
-  setInterval(saveProgress,2000);
-
-  window.postSorter={startRound,loadProgress,saveProgress,evaluateChoice};
-})();
+function closeVisual(event) {
+    if (event.target.id === "visual-mode" || event.target.classList.contains("close-btn")) {
+        document.getElementById("visual-mode").style.display = "none";
+    }
+}
 </script>
+
+<!-- INTERACTIVE GAME: ONLINE SAFETY -->
+<div class="container" style="margin-top:40px;">
+    <div class="info-card" style="cursor:default;">
+        <h3>Interactive Game: Build Your Online Safety Persona</h3>
+        <p>Answer the prompts below to create a custom online safety identity. Your responses will be safely saved.</p>
+
+        <!-- Question 1 -->
+        <div style="margin-top:20px;">
+            <label>1. Choose your approach to online safety:</label>
+            <select id="style" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
+                <option value="Cautious Explorer">Cautious Explorer</option>
+                <option value="Tech-Savvy Protector">Tech-Savvy Protector</option>
+                <option value="Friendly Connector">Friendly Connector</option>
+                <option value="Minimal Sharer">Minimal Sharer</option>
+            </select>
+        </div>
+
+        <!-- Question 2 -->
+        <div style="margin-top:20px;">
+            <label>2. Your safety motto:</label>
+            <input id="phrase" type="text" placeholder="ex: Stay aware, stay safe" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
+        </div>
+
+        <!-- Question 3 -->
+        <div style="margin-top:20px;">
+            <label>3. Pick your safety vibe color:</label>
+            <input id="color" type="color" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;border:1px solid #2b4d6b;">
+        </div>
+
+        <!-- Question 4 -->
+        <div style="margin-top:20px;">
+            <label>4. How would you handle a suspicious online match?</label>
+            <select id="question4" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
+                <option value="Report immediately">Report immediately</option>
+                <option value="Ignore and block">Ignore and block</option>
+                <option value="Share personal info">Share personal info</option>
+                <option value="Continue chatting">Continue chatting</option>
+            </select>
+        </div>
+
+        <!-- Question 5 -->
+        <div style="margin-top:20px;">
+            <label>5. What’s your approach to sharing personal information?</label>
+            <select id="question5" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
+                <option value="Share minimally">Share minimally</option>
+                <option value="Share freely">Share freely</option>
+                <option value="Only to verified profiles">Only to verified profiles</option>
+                <option value="Never share">Never share</option>
+            </select>
+        </div>
+
+        <!-- Question 6 -->
+        <div style="margin-top:20px;">
+            <label>6. Which of these is most important for online safety?</label>
+            <select id="question6" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
+                <option value="Strong passwords">Strong passwords</option>
+                <option value="Two-factor authentication">Two-factor authentication</option>
+                <option value="Privacy settings">Privacy settings</option>
+                <option value="All of the above">All of the above</option>
+            </select>
+        </div>
+
+        <button class="close-btn" style="margin-top:25px;" onclick="submitPersona()">Save to Backend</button>
+        <p id="save-status" style="margin-top:15px;font-size:16px;color:#7ad7ff;display:none;">Saving...</p>
+    </div>
+</div>
+
+<script>
+function submitPersona() {
+    const data = {
+        style: document.getElementById("style").value,
+        phrase: document.getElementById("phrase").value,
+        color: document.getElementById("color").value,
+        question4: document.getElementById("question4").value,
+        question5: document.getElementById("question5").value,
+        question6: document.getElementById("question6").value
+    };
+
+    document.getElementById("save-status").style.display = "block";
+    document.getElementById("save-status").textConten
