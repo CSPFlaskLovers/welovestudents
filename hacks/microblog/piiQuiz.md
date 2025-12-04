@@ -427,7 +427,7 @@ breadcrumb: true
     
     <button onclick="checkPassword()" style="padding:0.8em 2em; background:#667eea; color:white; border:none; border-radius:6px; cursor:pointer; font-size:1em;">Check Strength</button>
     
-    <div id="result" style="border:1px solid #888; padding:1em; background:#f9f9f9; margin-top:1em;">
+    <div id="result" style="border:1px solid #888; padding:1em; background: #3b3b3bff; margin-top:1em;">
         <em>Enter a password and click "Check Strength" to see results.</em>
     </div>
 </div>
@@ -522,7 +522,7 @@ breadcrumb: true
 ### Password Sorting Game
 
 <html>
-<div id="password-game" style="background: rgba(255, 255, 255, 0.95); padding: 2em; border-radius: 12px; max-width: 800px; margin: 2em auto;">
+<div id="password-game" style="background: #3b3b3bff; padding: 2em; border-radius: 12px; max-width: 800px; margin: 2em auto;">
     <h3 style="margin-top:0;">Drag & Drop Password Strength</h3>
     <p style="font-size:0.9em; margin:0.5em 0;">Drag each password to the correct strength category!</p>
     
