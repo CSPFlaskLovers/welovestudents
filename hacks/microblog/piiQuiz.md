@@ -113,6 +113,25 @@ breadcrumb: true
             color: #5a4f7c;
             word-break: break-word;
         }
+        .breather-container {
+            text-align: center;
+            padding: 20px;
+            margin: 10px 0 20px 0;
+            background: linear-gradient(90deg, #f6ecff, #f1e7ff);
+            border-radius: 6px;
+            border: 1px solid #e6d6ff;
+        }
+        .breather-message {
+            color: #4a3f5c;
+            font-size: 18px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .breather-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +145,15 @@ breadcrumb: true
         <div id="results" style="display: none;">
             <div class="result">Your Score: <span id="score">0</span>/10</div>
             <button id="restart">Restart Quiz</button>
+        </div>
+        <div id="leakBreather" style="display: none;">
+            <div class="breather-container">
+                <div class="breather-message" id="leakMessage"></div>
+                <div class="breather-buttons">
+                    <button id="leakRetake" class="option-button">Retake Quiz</button>
+                    <button id="leakContinue" class="option-button">Continue to Profile</button>
+                </div>
+            </div>
         </div>
         <div id="review" style="display: none;">
             <div class="result">Profile Summary</div>
@@ -202,10 +230,14 @@ breadcrumb: true
         const resultsEl = document.getElementById('results');
         const scoreEl = document.getElementById('score');
         const restartBtn = document.getElementById('restart');
-        const reviewEl = document.getElementById('review');
-        const profileDataEl = document.getElementById('profileData');
-        const saveProfileBtn = document.getElementById('saveProfile');
-        const retakeQuizBtn = document.getElementById('retakeQuiz');
+    const reviewEl = document.getElementById('review');
+    const profileDataEl = document.getElementById('profileData');
+    const saveProfileBtn = document.getElementById('saveProfile');
+    const retakeQuizBtn = document.getElementById('retakeQuiz');
+    const leakBreatherEl = document.getElementById('leakBreather');
+    const leakMessageEl = document.getElementById('leakMessage');
+    const leakRetakeBtn = document.getElementById('leakRetake');
+    const leakContinueBtn = document.getElementById('leakContinue');
 
         function displayQuestion() {
             const question = questions[currentQuestion];
@@ -264,8 +296,8 @@ breadcrumb: true
                 // Make sure submit is visible for text-entry questions
                 submitBtn.style.display = 'block';
                 submitBtn.disabled = true;
-                // Store reference for submit handler
-                currentQuestion.textInputElement = textInput;
+                // Store reference for submit handler on the question object
+                questions[currentQuestion].textInputElement = textInput;
             } else {
                 // Regular multiple choice
                 submitBtn.style.display = 'block';
@@ -322,52 +354,89 @@ breadcrumb: true
         function showResults() {
             quizEl.style.display = 'none';
             resultsEl.style.display = 'none';
-            reviewEl.style.display = 'block';
+            // Hide review by default until leak check completes
+            reviewEl.style.display = 'none';
             
             // Collect the last 8 questions (after the breather slide) in JSON format
             const userDataResponses = [];
             const startIndex = 3; // After 2 education questions + breather slide
             
-            // Clear previous profile display
-            profileDataEl.innerHTML = '';
-            
+            // Build responses array first
             for (let i = startIndex; i < questions.length; i++) {
                 const q = questions[i];
                 const response = q.userResponse !== undefined ? q.userResponse : null;
-                
-                // Add to responses array for JSON
                 userDataResponses.push({
                     question: q.question,
                     response: response,
                     type: q.allowTextEntry ? 'text' : 'multiple-choice'
                 });
-                
-                // Display in profile review
+            }
+
+            // Compute if any sensitive fields were provided (robust keyword matching)
+            let leakCount = 0;
+            for (let resp of userDataResponses) {
+                const qLower = (resp.question || '').toLowerCase();
+                const val = resp.response;
+                if (val !== null && val !== undefined && String(val).trim() !== '') {
+                    if (qLower.includes('full name') || qLower.includes('ssn') || qLower.includes('where do you live') || qLower.includes('ip')) {
+                        leakCount++;
+                    }
+                }
+            }
+
+            // Convert to JSON and store for backend
+            const userDataJSON = JSON.stringify(userDataResponses, null, 2);
+            console.log('User Responses JSON:', userDataJSON);
+            sessionStorage.setItem('userQuizResponses', userDataJSON);
+            window.userQuizData = userDataJSON;
+
+            // If user leaked any sensitive info, show a breather slide and disable continue
+            if (leakCount > 0) {
+                leakMessageEl.textContent = `You leaked ${leakCount} piece${leakCount>1? 's' : ''} of personal information! Retake the quiz and try to be more safe online.`;
+                leakBreatherEl.style.display = 'block';
+                reviewEl.style.display = 'none';
+                // disable continue to profile
+                leakContinueBtn.disabled = true;
+                leakContinueBtn.style.opacity = '0.6';
+                leakContinueBtn.style.cursor = 'not-allowed';
+
+                leakRetakeBtn.onclick = () => {
+                    leakBreatherEl.style.display = 'none';
+                    restartQuiz();
+                };
+                // do not allow continue; user must retake
+                return;
+            }
+
+            // Ensure leak breather is hidden and continue is enabled
+            leakBreatherEl.style.display = 'none';
+            leakContinueBtn.disabled = false;
+            leakContinueBtn.style.opacity = '1';
+            leakContinueBtn.style.cursor = 'pointer';
+
+            // No leaks: render profile review but only show non-sensitive profile fields
+            // We'll display only: favorite color, favorite animal, favorite genre of music
+            profileDataEl.innerHTML = '';
+            const allowedKeywords = ['favorite color', "favorite animal", 'genre of music', 'favorite genre'];
+            for (let resp of userDataResponses) {
+                const qLower = (resp.question || '').toLowerCase();
+                const matches = allowedKeywords.some(k => qLower.includes(k));
+                if (!matches) continue; // skip any other questions (including leaked ones)
+
                 const profileItem = document.createElement('div');
                 profileItem.className = 'profile-item';
-                
                 const label = document.createElement('div');
                 label.className = 'profile-item-label';
-                label.textContent = q.question;
-                
+                label.textContent = resp.question;
                 const value = document.createElement('div');
                 value.className = 'profile-item-value';
-                value.textContent = response !== null ? response : '(Not provided)';
-                
+                value.textContent = resp.response !== null ? resp.response : '(Not provided)';
                 profileItem.appendChild(label);
                 profileItem.appendChild(value);
                 profileDataEl.appendChild(profileItem);
             }
-            
-            // Convert to JSON and store for backend
-            const userDataJSON = JSON.stringify(userDataResponses, null, 2);
-            console.log('User Responses JSON:', userDataJSON);
-            
-            // Store in sessionStorage for potential backend submission
-            sessionStorage.setItem('userQuizResponses', userDataJSON);
-            
-            // Optionally display or make available for backend submission
-            window.userQuizData = userDataJSON;
+            // Now show the review section
+            reviewEl.style.display = 'block';
         }
 
         function restartQuiz() {
