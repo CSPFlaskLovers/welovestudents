@@ -2,7 +2,7 @@
 layout: post
 title: Sequencing
 description: Understanding sequencing + an interactive AP CSP-style game.
-permalink: /digital-famine/microblog/sequencing/
+permalink: /digital-famine/microblog/matchmaking_sequence/
 breadcrumb: true
 microblog: true
 author: Ethan W

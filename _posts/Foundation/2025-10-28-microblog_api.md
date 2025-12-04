@@ -715,3 +715,28 @@ Then visit `http://localhost:4000/docs` instead.
 })();
 </script>
 
+
+<div id="jokeoutput"> Joke Loading...</div>
+
+<script>
+
+let output = document.getElementById("jokeoutput")
+
+fetch("http://127.0.0.1:8587/api/jokes/random")
+ .then(response => {
+    // Check if the request was successful
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    // Parse the response body as JSON
+    return response.json();
+  })
+  .then(data => {
+    // Work with the fetched data
+    output.innerHTML = data.joke;
+  })
+  .catch(error => {
+    // Handle any errors that occurred during the fetch operation
+    console.error('Error fetching data:', error);
+  });
+</script>
