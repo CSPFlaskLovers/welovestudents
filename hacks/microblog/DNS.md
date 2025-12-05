@@ -9,10 +9,9 @@ submodule: 2
 categories: [CSP, Submodule, Microblogging]
 tags: [microblogging, submodule, unzippers]
 author: "Adhav Selvan"
-date: 2025-10-28
+date: 2025-12-01
 breadcrumb: true
 ---
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -25,6 +24,35 @@ breadcrumb: true
         body { font-family: 'Inter', sans-serif; }
         .server-box { transition: all 0.5s ease; }
         .packet { transition: all 1s ease-in-out; }
+        
+        /* Game Animations */
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 3s linear infinite;
+        }
+        .server-light {
+            box-shadow: 0 0 10px #22c55e;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Tooltip Arrow */
+        .tooltip-arrow::after {
+            content: " ";
+            position: absolute;
+            bottom: 100%;  /* At the top of the tooltip */
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #1e293b transparent;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
@@ -115,7 +143,7 @@ breadcrumb: true
             </div>
         </section>
 
-        <!-- LECTURE BRIDGE -->
+        <!-- LECTURE BRIDGE 1 -->
         <article class="prose prose-invert max-w-none">
             <h2 class="text-3xl font-light text-white border-b border-slate-700 pb-2">How DNS Works: The Hierarchy of Trust</h2>
             <div class="bg-blue-900/20 border-l-4 border-blue-500 p-4 my-4">
@@ -229,7 +257,168 @@ breadcrumb: true
                 </p>
             </div>
         </section>
-        
+
+        <!-- GAME SECTION -->
+        <section id="deployment-game" class="bg-slate-800 rounded-xl p-6 shadow-xl border border-slate-700">
+            <h2 class="text-xl font-semibold mb-2 text-pink-400 flex items-center gap-2">
+                <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+                Part 3: The Deployment Game
+            </h2>
+            <p class="mb-6 text-slate-300">
+                You are a Network Engineer. Type the correct parts of the URL to configure your server.
+            </p>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Left: Configuration -->
+                <div class="space-y-6">
+                    <div class="bg-slate-900 p-5 rounded-lg border border-slate-600">
+                        <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2">
+                            <i data-lucide="settings" class="w-4 h-4"></i> 1. Configure URL
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Protocol -->
+                            <div class="relative">
+                                <label class="block text-xs text-slate-400 mb-1">Protocol</label>
+                                <div class="relative">
+                                    <input type="text" id="game-protocol" 
+                                           class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 pr-10 focus:outline-none focus:border-blue-500 transition-colors"
+                                           oninput="validateInput('protocol', this.value)">
+                                    <div id="icon-protocol" class="absolute right-3 top-2.5"></div>
+                                </div>
+                                <p id="err-protocol" class="text-xs text-red-400 mt-1 hidden">Error: Invalid Protocol</p>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <!-- Subdomain -->
+                                <div class="w-1/3 relative">
+                                    <label class="block text-xs text-slate-400 mb-1">Subdomain</label>
+                                    <div class="relative">
+                                        <input type="text" id="game-sub" 
+                                               class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 pr-8 focus:outline-none focus:border-blue-500 transition-colors"
+                                               oninput="validateInput('sub', this.value)">
+                                        <div id="icon-sub" class="absolute right-2 top-2.5"></div>
+                                    </div>
+                                    <p id="err-sub" class="text-[10px] text-red-400 mt-1 hidden">Invalid Sub</p>
+                                </div>
+
+                                <!-- Domain Name (Free text, no validation against list) -->
+                                <div class="flex-1">
+                                    <label class="block text-xs text-slate-400 mb-1">Domain Name</label>
+                                    <input type="text" id="game-domain" class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white" maxlength="15">
+                                </div>
+
+                                <!-- TLD -->
+                                <div class="w-1/3 relative">
+                                    <label class="block text-xs text-slate-400 mb-1">TLD</label>
+                                    <div class="relative">
+                                        <input type="text" id="game-tld" 
+                                               class="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 pr-8 focus:outline-none focus:border-blue-500 transition-colors"
+                                               oninput="validateInput('tld', this.value)">
+                                        <div id="icon-tld" class="absolute right-2 top-2.5"></div>
+                                    </div>
+                                    <p id="err-tld" class="text-[10px] text-red-400 mt-1 hidden">Invalid TLD</p>
+                                </div>
+                            </div>
+
+                            <button onclick="deployServer()" id="deploy-btn" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded transition-colors flex items-center justify-center gap-2">
+                                <i data-lucide="rocket" class="w-4 h-4"></i> Deploy Server
+                            </button>
+                            
+                            <div id="deploy-error" class="bg-red-900/50 border border-red-500 text-red-200 p-2 rounded text-xs text-center hidden">
+                                Configuration Error: Please correct the highlighted fields.
+                            </div>
+
+                            <!-- HINTS SECTION -->
+                            <div class="mt-4 flex justify-center">
+                                <div class="group relative inline-block">
+                                    <span class="cursor-help text-xs font-bold text-slate-500 uppercase tracking-widest hover:text-blue-400 transition-colors border-b border-dashed border-slate-600 hover:border-blue-400 pb-1 flex items-center gap-1">
+                                        <i data-lucide="help-circle" class="w-3 h-3"></i> Need Hints?
+                                    </span>
+                                    
+                                    <!-- Tooltip -->
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 hidden group-hover:block w-64 bg-slate-800 border border-slate-600 shadow-2xl rounded p-4 z-50 tooltip-arrow">
+                                        <h4 class="text-xs font-bold text-blue-300 uppercase mb-2 border-b border-slate-700 pb-1">Valid Options</h4>
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <span class="text-slate-500 block text-[10px]">Protocols</span>
+                                                <code class="text-green-400">https://</code><br>
+                                                <code class="text-yellow-400">http://</code>
+                                            </div>
+                                            <div>
+                                                <span class="text-slate-500 block text-[10px]">TLDs</span>
+                                                <code class="text-purple-300">.com</code>, <code class="text-purple-300">.org</code><br>
+                                                <code class="text-purple-300">.net</code>, <code class="text-purple-300">.io</code>
+                                            </div>
+                                            <div class="col-span-2 mt-1">
+                                                <span class="text-slate-500 block text-[10px]">Subdomains</span>
+                                                <span class="text-slate-300">www, shop, blog, app</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Hints -->
+
+                        </div>
+                    </div>
+
+                    <!-- Test Connection -->
+                    <div id="test-zone" class="bg-slate-900 p-5 rounded-lg border border-slate-600 opacity-50 pointer-events-none transition-opacity">
+                        <h3 class="font-bold text-slate-200 mb-4 flex items-center gap-2">
+                            <i data-lucide="monitor-play" class="w-4 h-4"></i> 2. Test Connection
+                        </h3>
+                        <div class="flex gap-2">
+                            <div class="flex-1 bg-slate-800 border border-slate-600 rounded px-3 py-2 text-slate-400 font-mono text-sm flex items-center" id="browser-bar">
+                                <i data-lucide="lock" class="w-3 h-3 mr-2"></i> <span id="browser-url">about:blank</span>
+                            </div>
+                            <button onclick="testConnection()" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold text-sm">
+                                Go
+                            </button>
+                        </div>
+                        <div id="test-log" class="mt-4 h-32 overflow-y-auto bg-black rounded p-2 font-mono text-xs text-green-400 border border-slate-700">
+                            > System ready. Waiting for deployment...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Visualizer -->
+                <div class="bg-slate-900 rounded-lg border border-slate-600 p-6 flex flex-col items-center justify-center relative min-h-[400px]">
+                    
+                    <!-- Background Grid -->
+                    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#64748b 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+                    <!-- DNS Cloud -->
+                    <div class="mb-12 relative">
+                        <div class="w-24 h-16 bg-blue-900/40 border border-blue-500 rounded-full flex items-center justify-center">
+                            <span class="text-xs font-bold text-blue-300">DNS Cloud</span>
+                        </div>
+                        <!-- Arrows -->
+                        <div id="dns-arrow-down" class="absolute top-full left-1/2 -translate-x-1/2 h-0 w-0.5 bg-yellow-400 transition-all duration-500"></div>
+                    </div>
+
+                    <!-- User Server -->
+                    <div id="server-rack" class="w-32 h-40 bg-slate-800 border-2 border-slate-600 rounded flex flex-col items-center justify-end p-2 relative transition-all duration-500 opacity-30 scale-90">
+                        <!-- Server Lights -->
+                        <div class="flex gap-1 mb-auto mt-2 w-full px-2">
+                            <div class="w-2 h-2 rounded-full bg-slate-600 server-led"></div>
+                            <div class="w-2 h-2 rounded-full bg-slate-600 server-led"></div>
+                            <div class="w-2 h-2 rounded-full bg-slate-600 server-led"></div>
+                        </div>
+                        <i data-lucide="server" class="w-16 h-16 text-slate-500 mb-2" id="server-icon"></i>
+                        <div class="text-[10px] bg-black px-2 py-1 rounded text-slate-400 font-mono w-full text-center" id="server-ip">
+                            Offline
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="success-msg" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg font-bold hidden scale-0 transition-transform">
+                        Site Live!
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <!-- LECTURE CONCLUSION -->
         <article class="prose prose-invert max-w-none">
             <h2 class="text-3xl font-light text-white border-b border-slate-700 pb-2">Why this matters for AP CSP</h2>
@@ -252,11 +441,11 @@ breadcrumb: true
             </div>
         </article>
 
-        <!-- SECTION 3: QUIZ -->
+        <!-- SECTION 4: QUIZ -->
         <section class="bg-slate-800 rounded-xl p-6 shadow-xl border border-slate-700">
              <h2 class="text-xl font-semibold mb-4 text-purple-400 flex items-center gap-2">
                 <i data-lucide="clipboard-check" class="w-5 h-5"></i>
-                Part 3: Quick Check
+                Part 4: Quick Check
             </h2>
             <div class="grid md:grid-cols-2 gap-4">
                 <div class="bg-slate-900 p-4 rounded border border-slate-600">
@@ -283,14 +472,13 @@ breadcrumb: true
     <script>
         lucide.createIcons();
 
+        // --- QUIZ LOGIC ---
         function checkAnswer(btn, isCorrect) {
-            // Reset siblings
             const parent = btn.parentElement;
             const siblings = parent.querySelectorAll('button');
             siblings.forEach(s => {
                 s.className = "w-full text-left p-2 text-sm rounded transition-colors border border-transparent mb-1 opacity-50";
             });
-
             if(isCorrect) {
                 btn.className = "w-full text-left p-2 text-sm bg-green-900/50 text-green-200 border border-green-500 rounded font-bold mb-1";
                 btn.innerText += " ✅ Correct";
@@ -300,11 +488,11 @@ breadcrumb: true
             }
         }
 
-        // Animation Logic
+        // --- PART 2: SIMULATION ANIMATION ---
         const packet = document.getElementById('packet');
         const statusBar = document.getElementById('status-bar');
-        const btn = document.getElementById('sim-btn');
-        let isRunning = false;
+        const simBtn = document.getElementById('sim-btn');
+        let isSimRunning = false;
 
         function getPos(id) {
             const el = document.getElementById(id);
@@ -339,7 +527,7 @@ breadcrumb: true
         }
 
         function resetSimulation() {
-            isRunning = false;
+            isSimRunning = false;
             packet.classList.add('hidden');
             highlight('node-user', false);
             highlight('node-resolver', false);
@@ -347,39 +535,30 @@ breadcrumb: true
             highlight('node-tld', false);
             highlight('node-auth', false);
             updateStatus("Ready to resolve hostname...");
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            simBtn.disabled = false;
+            simBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
 
         async function startSimulation() {
-            if(isRunning) return;
-            isRunning = true;
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-
-            // Initialize
+            if(isSimRunning) return;
+            isSimRunning = true;
+            simBtn.disabled = true;
+            simBtn.classList.add('opacity-50', 'cursor-not-allowed');
             const startPos = getPos('node-user');
             packet.style.transform = `translate(${startPos.x}px, ${startPos.y}px)`;
             packet.classList.remove('hidden');
-            
-            // Step 1: User to Resolver
             updateStatus("Step 1: Computer asks ISP Resolver: 'Where is store.nike.com?'");
             highlight('node-user', true);
             await new Promise(r => setTimeout(r, 1000));
-            
             await moveTo('node-resolver');
             highlight('node-resolver', true);
             updateStatus("Resolver checks cache... Not found. Asking Root Server.");
             await new Promise(r => setTimeout(r, 1500));
-
-            // Step 2: Resolver to Root
             await moveTo('node-root');
             highlight('node-root', true);
             updateStatus("Step 2: Root Server says: 'I don't know nike, but here is the .com server.'");
             await new Promise(r => setTimeout(r, 2000));
             highlight('node-root', false);
-
-            // Step 3: Back to Resolver then to TLD
             await moveTo('node-resolver', 500);
             updateStatus("Resolver contacts the .com TLD Server...");
             await moveTo('node-tld');
@@ -387,8 +566,6 @@ breadcrumb: true
             updateStatus("Step 3: TLD Server says: 'Here is the IP for Nike's Authoritative Server.'");
             await new Promise(r => setTimeout(r, 2000));
             highlight('node-tld', false);
-
-            // Step 4: Back to Resolver then to Auth
             await moveTo('node-resolver', 500);
             updateStatus("Resolver contacts Nike's Server...");
             await moveTo('node-auth');
@@ -396,20 +573,170 @@ breadcrumb: true
             updateStatus("Step 4: Authoritative Server says: 'store.nike.com is at 15.197.148.33'");
             await new Promise(r => setTimeout(r, 2000));
             highlight('node-auth', false);
-
-            // Step 5: Return to User
             await moveTo('node-resolver', 500);
             updateStatus("Resolver caches the IP and sends it to your computer.");
             await moveTo('node-user');
             updateStatus("Success! Browser connects to 15.197.148.33");
             highlight('node-user', true);
             highlight('node-resolver', false);
-
             await new Promise(r => setTimeout(r, 2000));
-            isRunning = false;
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            isSimRunning = false;
+            simBtn.disabled = false;
+            simBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
+
+        // --- PART 3: GAME LOGIC ---
+        let deployedIP = null;
+        let deployedURL = null;
+
+        const validOptions = {
+            protocol: ['https://', 'http://'],
+            sub: ['www', 'shop', 'blog', 'app'],
+            tld: ['.com', '.org', '.net', '.io']
+        };
+
+        const validationState = {
+            protocol: false,
+            sub: false,
+            tld: false
+        };
+
+        function validateInput(type, value) {
+            const iconId = `icon-${type}`;
+            const errId = `err-${type}`;
+            const iconEl = document.getElementById(iconId);
+            const errEl = document.getElementById(errId);
+            const inputEl = document.getElementById(`game-${type}`);
+
+            // Basic normalization (lowercase)
+            const cleanValue = value.toLowerCase().trim();
+
+            if (validOptions[type].includes(cleanValue)) {
+                // VALID
+                iconEl.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-green-500"></i>';
+                lucide.createIcons(); // refresh new icon
+                errEl.classList.add('hidden');
+                inputEl.classList.remove('border-red-500');
+                inputEl.classList.add('border-green-500');
+                validationState[type] = true;
+            } else {
+                // INVALID
+                if(cleanValue.length === 0) {
+                     iconEl.innerHTML = '';
+                     errEl.classList.add('hidden');
+                     inputEl.classList.remove('border-red-500', 'border-green-500');
+                } else {
+                    iconEl.innerHTML = ''; // Don't show X inside input, border handles it
+                    errEl.classList.remove('hidden');
+                    inputEl.classList.add('border-red-500');
+                    inputEl.classList.remove('border-green-500');
+                }
+                validationState[type] = false;
+            }
+            
+            // Hide main error box if it was open
+            document.getElementById('deploy-error').classList.add('hidden');
+        }
+
+        function logGame(msg) {
+            const log = document.getElementById('test-log');
+            log.innerHTML += `<div>> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function getRandomIP() {
+            return `${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+        }
+
+        async function deployServer() {
+            // Check validations
+            if (!validationState.protocol || !validationState.sub || !validationState.tld) {
+                document.getElementById('deploy-error').classList.remove('hidden');
+                return;
+            }
+
+            const domain = document.getElementById('game-domain').value;
+            if(!domain) { alert("Please enter a domain name."); return; }
+
+            const protocol = document.getElementById('game-protocol').value;
+            const sub = document.getElementById('game-sub').value;
+            const tld = document.getElementById('game-tld').value;
+            
+            deployedURL = `${protocol}${sub}.${domain}${tld}`;
+            
+            // Disable deploy button
+            const btn = document.getElementById('deploy-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader" class="animate-spin w-4 h-4"></i> Deploying...`;
+
+            // Animate Server Rack
+            const rack = document.getElementById('server-rack');
+            const icon = document.getElementById('server-icon');
+            const ipDisplay = document.getElementById('server-ip');
+            
+            rack.classList.remove('opacity-30', 'scale-90');
+            rack.classList.add('opacity-100', 'scale-100', 'border-green-500', 'shadow-[0_0_20px_rgba(34,197,94,0.3)]');
+            icon.classList.remove('text-slate-500');
+            icon.classList.add('text-green-400');
+            
+            // Turn on lights
+            document.querySelectorAll('.server-led').forEach(led => {
+                led.classList.remove('bg-slate-600');
+                led.classList.add('bg-green-500', 'server-light');
+            });
+
+            logGame("Initializing server instance...");
+            await new Promise(r => setTimeout(r, 800));
+            
+            deployedIP = getRandomIP();
+            ipDisplay.innerText = deployedIP;
+            ipDisplay.classList.remove('text-slate-400');
+            ipDisplay.classList.add('text-green-400', 'font-bold');
+            
+            logGame(`Server Online at ${deployedIP}`);
+            await new Promise(r => setTimeout(r, 800));
+
+            logGame(`Registering A-Record for ${deployedURL}...`);
+            const arrow = document.getElementById('dns-arrow-down');
+            arrow.style.height = '40px'; // connect dns to server
+            
+            await new Promise(r => setTimeout(r, 1000));
+            logGame("DNS Propagation Complete.");
+
+            // Enable Test Zone
+            document.getElementById('test-zone').classList.remove('opacity-50', 'pointer-events-none');
+            document.getElementById('browser-bar').classList.add('bg-white', 'text-black');
+            document.getElementById('browser-bar').classList.remove('bg-slate-800', 'text-slate-400');
+            document.getElementById('browser-url').innerText = deployedURL;
+
+            btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Deployed`;
+        }
+
+        async function testConnection() {
+            if(!deployedURL) return;
+            
+            logGame(`Browser requesting ${deployedURL}...`);
+            
+            // Visual feedback
+            const browserBar = document.getElementById('browser-bar');
+            browserBar.classList.add('ring-2', 'ring-blue-500');
+            
+            await new Promise(r => setTimeout(r, 500));
+            logGame(`DNS Lookup: Resolved to ${deployedIP}`);
+            
+            await new Promise(r => setTimeout(r, 500));
+            logGame(`Handshake with ${deployedIP}... Success.`);
+            
+            // Show Success Msg
+            const msg = document.getElementById('success-msg');
+            msg.classList.remove('hidden', 'scale-0');
+            msg.classList.add('scale-100');
+            
+            await new Promise(r => setTimeout(r, 2000));
+            browserBar.classList.remove('ring-2', 'ring-blue-500');
+            msg.classList.add('hidden');
+        }
+
     </script>
 </body>
 </html>
