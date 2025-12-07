@@ -184,12 +184,17 @@ breadcrumb: true
 <!-- screen here (continue to PII questions) -->
             {
                 question: "What is your favorite color?",
+                options: ["Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Black", "White"],
+                correct: null 
+            },
+            {
+                question: "What do you want your username to be?",
                 allowTextEntry: true,
                 correct: null 
             },
             {
                 question: "What's your favorite animal?",
-                allowTextEntry: true,
+                options: ["Dogs", "Cats", "Birds", "Fish", "Reptiles"],
                 correct: null
             },
             {
@@ -199,8 +204,13 @@ breadcrumb: true
             },
             {
                 question: "What is your favorite genre of music?",
-                allowTextEntry: true,
+                options: ["Rock", "Pop", "Rap"],
                 correct: null
+            },
+            {
+                question: "What is your favorite band/musical artist?",
+                allowTextEntry: true,
+                correct: null 
             },
             {
                 question: "What is your SSN?",
@@ -214,14 +224,9 @@ breadcrumb: true
             },
             {
                 question: "What is your favorite subject?",
-                allowTextEntry: true,
-                corect: null
-            },
-            {
-                question: "Search up your ip to autofill your account! We'll never forget.",
-                allowTextEntry: true,
+                options: ["Math", "Science", "English", "History"],
                 correct: null
-            }
+            },
         ];
 
         let currentQuestion = 0;
@@ -332,8 +337,8 @@ breadcrumb: true
             const question = questions[currentQuestion];
             
             if (question.allowTextEntry) {
-                // For text entry questions, store the response but don't score
-                const textInput = document.querySelector('.text-input');
+                // For text entry questions, read from the stored input element (safer than querySelector)
+                const textInput = question.textInputElement || document.querySelector('.text-input');
                 if (textInput && textInput.value.trim() !== '') {
                     question.userResponse = textInput.value.trim();
                 } else if (question.userResponse === undefined) {
@@ -341,8 +346,14 @@ breadcrumb: true
                     question.userResponse = null;
                 }
             } else {
-                // Regular scoring for multiple choice
-                if (selectedOption === question.correct) {
+                // Regular multiple-choice: store the chosen option text and score if correct
+                if (selectedOption !== null && question.options && question.options[selectedOption] !== undefined) {
+                    question.userResponse = question.options[selectedOption];
+                } else if (question.userResponse === undefined) {
+                    question.userResponse = null;
+                }
+
+                if (typeof question.correct === 'number' && selectedOption === question.correct) {
                     score++;
                 }
             }
@@ -420,14 +431,27 @@ breadcrumb: true
             leakContinueBtn.style.cursor = 'pointer';
 
             // No leaks: render profile review but only show non-sensitive profile fields
-            // We'll display only: favorite color, favorite animal, favorite genre of music
+            // We'll display username first (if provided), then other allowed fields like favorite color/band/genre
             profileDataEl.innerHTML = '';
-            const allowedKeywords = ['favorite color', "favorite animal", 'genre of music', 'favorite genre', 'favorite subject', 'subject'];
+            const allowedKeywords = ['favorite color', 'favorite animal', 'genre of music', 'favorite genre', 'favorite subject', 'subject', 'username', 'favorite band', 'band', 'musical artist', 'favorite artist'];
+
+            // Separate username responses to ensure they appear at the top
+            const usernameResponses = [];
+            const otherResponses = [];
             for (let resp of userDataResponses) {
                 const qLower = (resp.question || '').toLowerCase();
                 const matches = allowedKeywords.some(k => qLower.includes(k));
                 if (!matches) continue; // skip any other questions (including leaked ones)
 
+                if (qLower.includes('username')) {
+                    usernameResponses.push(resp);
+                } else {
+                    otherResponses.push(resp);
+                }
+            }
+
+            const orderedResponses = [...usernameResponses, ...otherResponses];
+            for (let resp of orderedResponses) {
                 const profileItem = document.createElement('div');
                 profileItem.className = 'profile-item';
                 const label = document.createElement('div');
