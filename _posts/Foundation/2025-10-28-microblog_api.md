@@ -718,11 +718,12 @@ Then visit `http://localhost:4000/docs` instead.
 
 <div id="jokeoutput"> Joke Loading...</div>
 
-<script>
-
+<script type="module">
+import { pythonURI } from '{{site.baseurl}}/assets/js/api/config.js';
+console.log(pythonURI)
 let output = document.getElementById("jokeoutput")
 
-fetch("http://127.0.0.1:8587/api/jokes/random")
+fetch(`${pythonURI}/api/jokes/random`)
  .then(response => {
     // Check if the request was successful
     if (!response.ok) {
@@ -733,6 +734,7 @@ fetch("http://127.0.0.1:8587/api/jokes/random")
   })
   .then(data => {
     // Work with the fetched data
+    console.log(data)
     output.innerHTML = data.joke;
   })
   .catch(error => {
