@@ -719,26 +719,22 @@ Then visit `http://localhost:4000/docs` instead.
 <div id="jokeoutput"> Joke Loading...</div>
 
 <script type="module">
-import { pythonURI } from '{{site.baseurl}}/assets/js/api/config.js';
-console.log(pythonURI)
-let output = document.getElementById("jokeoutput")
+import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+console.log(pythonURI);
+const output = document.getElementById('jokeoutput');
 
-fetch(`${pythonURI}/api/jokes/random`)
- .then(response => {
-    // Check if the request was successful
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+// Async fetch using try/catch and the shared `fetchOptions` (mirrors exercisegraphs pattern)
+async function tryFetchJoke() {
+    try {
+        const response = await fetch(`${pythonURI}/api/jokes/random`, fetchOptions);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        console.log(data);
+        output.innerHTML = data.joke;
+    } catch (error) {
+        console.error('Error fetching data:', error);
     }
-    // Parse the response body as JSON
-    return response.json();
-  })
-  .then(data => {
-    // Work with the fetched data
-    console.log(data)
-    output.innerHTML = data.joke;
-  })
-  .catch(error => {
-    // Handle any errors that occurred during the fetch operation
-    console.error('Error fetching data:', error);
-  });
+}
+
+tryFetchJoke();
 </script>
