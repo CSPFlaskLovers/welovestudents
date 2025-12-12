@@ -165,9 +165,7 @@ breadcrumb: true
         </div>
     </div>
 
-    <script type="module">
-        // Prefer importing site-level API config when available (matches microblog_api.md pattern)
-        import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+    <script>
         const questions = [
             {
                 question: "What does PII stand for?",
@@ -480,6 +478,30 @@ breadcrumb: true
             displayQuestion();
         }
 
+        saveProfileBtn.onclick = () => {
+            // Send user data to backend
+            const userDataJSON = sessionStorage.getItem('userQuizResponses');
+            console.log('Saving profile with data:', userDataJSON);
+            
+            // Example backend call (adjust endpoint as needed)
+            fetch('/api/save-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: userDataJSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Profile saved:', data);
+                alert('Profile saved successfully!');
+            })
+            .catch(error => {
+                console.error('Error saving profile:', error);
+                alert('Profile saved locally. Backend integration may be needed.');
+            });
+        };
+
         retakeQuizBtn.onclick = () => {
             restartQuiz();
         };
@@ -489,55 +511,43 @@ breadcrumb: true
 
         // Start the quiz
         displayQuestion();
+<!-- added this -->
+saveProfileBtn.onclick = async () => {
+    const userDataJSON = sessionStorage.getItem('userQuizResponses');
+    if (!userDataJSON) {
+        alert("No profile data found to save.");
+        return;
+    }
 
-    // --- save profile (uses pythonURI/fetchOptions when available like microblog_api.md) ---
-    // Prefer imported values from the site's API config, fall back to window globals if necessary
-    const pythonURI = (typeof importedPythonURI !== 'undefined' && importedPythonURI) ? importedPythonURI : (window.pythonURI || '');
-    const globalFetchOptions = (typeof importedFetchOptions !== 'undefined' && importedFetchOptions) ? importedFetchOptions : (window.fetchOptions || {});
+    const profileData = JSON.parse(userDataJSON);
 
-        saveProfileBtn.onclick = async () => {
-            const userDataJSON = sessionStorage.getItem('userQuizResponses');
-            if (!userDataJSON) {
-                alert("No profile data found to save.");
-                return;
-            }
+    try {
+        const response = await fetch('/api/match/save-profile-json', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin', // ensures JWT cookie is sent
+            body: JSON.stringify({ profile_data: profileData })
+        });
 
-            const profileData = JSON.parse(userDataJSON);
+        const data = await response.json();
 
-            // build endpoint (prefer pythonURI if available)
-            const endpoint = pythonURI ? `${pythonURI}/api/match/save-profile-json` : '/api/match/save-profile-json';
+        if (!response.ok) {
+            alert("Failed to save profile: " + (data.message || "Unknown error"));
+            console.error("Backend response:", data);
+            return;
+        }
 
-            // Merge fetch options: prefer globalFetchOptions, but ensure method/headers/body are set correctly
-            const mergedHeaders = Object.assign({}, (globalFetchOptions.headers || {}), {
-                'Content-Type': 'application/json'
-            });
+        console.log("Profile saved:", data);
+        alert("Profile saved successfully!");
 
-            const options = Object.assign({}, globalFetchOptions, {
-                method: 'POST',
-                headers: mergedHeaders,
-                body: JSON.stringify({ profile_data: profileData })
-            });
-
-            // Ensure credentials exists: prefer the site's configured default (often 'include')
-            if (!options.credentials) options.credentials = (globalFetchOptions && globalFetchOptions.credentials) ? globalFetchOptions.credentials : 'include';
-
-            try {
-                const response = await fetch(endpoint, options);
-                const data = await response.json().catch(() => null);
-
-                if (!response.ok) {
-                    alert("Failed to save profile: " + (data && data.message ? data.message : "Unknown error"));
-                    console.error("Backend response:", data);
-                    return;
-                }
-
-                console.log("Profile saved:", data);
-                alert("Profile saved successfully!");
-            } catch (err) {
-                console.error("Error saving profile:", err);
-                alert("Failed to save profile. Backend may be down.");
-            }
-        };
+    } catch (err) {
+        console.error("Error saving profile:", err);
+        alert("Failed to save profile. Backend may be down.");
+    }
+};
+<!-- yah -->
     </script>
 </body>
 </html>
