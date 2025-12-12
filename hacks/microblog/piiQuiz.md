@@ -511,6 +511,43 @@ breadcrumb: true
 
         // Start the quiz
         displayQuestion();
+<!-- added this -->
+saveProfileBtn.onclick = async () => {
+    const userDataJSON = sessionStorage.getItem('userQuizResponses');
+    if (!userDataJSON) {
+        alert("No profile data found to save.");
+        return;
+    }
+
+    const profileData = JSON.parse(userDataJSON);
+
+    try {
+        const response = await fetch('/api/match/save-profile-json', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin', // ensures JWT cookie is sent
+            body: JSON.stringify({ profile_data: profileData })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert("Failed to save profile: " + (data.message || "Unknown error"));
+            console.error("Backend response:", data);
+            return;
+        }
+
+        console.log("Profile saved:", data);
+        alert("Profile saved successfully!");
+
+    } catch (err) {
+        console.error("Error saving profile:", err);
+        alert("Failed to save profile. Backend may be down.");
+    }
+};
+<!-- yah -->
     </script>
 </body>
 </html>
