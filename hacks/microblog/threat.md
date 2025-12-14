@@ -152,6 +152,138 @@ author: Ethan W
         margin-top: 0.5em;
         line-height: 1.8;
     }
+
+    /* NEW STYLES FOR REAL MATCHMAKING GAME */
+    #matchmaking-app {
+        background: rgba(30, 30, 46, 0.95);
+        padding: 2em;
+        border-radius: 12px;
+        max-width: 700px;
+        margin: 2em auto;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .real-profile-card {
+        background: linear-gradient(135deg, #2a2a40 0%, #1f1f35 100%);
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        padding: 1.5em;
+        margin: 1em 0;
+        transition: all 0.3s ease;
+    }
+
+    .real-profile-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .compatibility-bar {
+        width: 100%;
+        height: 8px;
+        background: #2a2a40;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0.5em 0;
+    }
+
+    .compatibility-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #27ae60, #229954);
+        transition: width 0.5s ease;
+        border-radius: 4px;
+    }
+
+    .match-stats {
+        display: flex;
+        justify-content: space-around;
+        background: linear-gradient(135deg, #3a3a52 0%, #2d2d42 100%);
+        padding: 1em;
+        border-radius: 8px;
+        margin-bottom: 1.5em;
+        border: 2px solid #667eea;
+    }
+
+    .stat-item {
+        text-align: center;
+        color: #e0e0e0;
+    }
+
+    .stat-value {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #8b9dff;
+    }
+
+    .stat-label {
+        font-size: 0.8em;
+        color: #c0c0c0;
+    }
+
+    .loading-spinner {
+        border: 4px solid rgba(102, 126, 234, 0.3);
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 2em auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        background: rgba(231, 76, 60, 0.2);
+        border: 2px solid #e74c3c;
+        color: #ff6b6b;
+        padding: 1em;
+        border-radius: 8px;
+        margin: 1em 0;
+        text-align: center;
+    }
+
+    .success-message {
+        background: rgba(39, 174, 96, 0.2);
+        border: 2px solid #27ae60;
+        color: #51cf66;
+        padding: 1em;
+        border-radius: 8px;
+        margin: 1em 0;
+        text-align: center;
+    }
+
+    .tab-buttons {
+        display: flex;
+        gap: 1em;
+        margin-bottom: 2em;
+    }
+
+    .tab-btn {
+        flex: 1;
+        padding: 1em;
+        background: #2a2a40;
+        color: #8b9dff;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+    .tab-btn:hover {
+        background: #3a3a52;
+        transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+        background: #667eea;
+        color: white;
+    }
 </style>
 
 ## What Is Sequencing?
@@ -237,107 +369,138 @@ All three concepts work together in most programs, but sequencing is the foundat
 
 ---
 
-# 🧠 Sequencing Match Game
+# 🎮 Two Sequencing Games
 
-Below is a game where you see **randomly generated profiles** in sequence and decide whether to match with them or skip.
-
-Each decision happens **in order** — demonstrating how programs process data sequentially!
+<div class="tab-buttons">
+    <button class="tab-btn active" onclick="switchTab('demo')">Demo Game (Random Profiles)</button>
+    <button class="tab-btn" onclick="switchTab('real')">Real Matchmaking (Backend)</button>
+</div>
 
 ---
 
-<div id="sequence-box">
-    <h3 style="margin-top:0;">💫 Profile Matcher</h3>
-    <p style="font-size:0.9em;">Review each profile and decide: Match or Skip?</p>
+## 🧠 Demo: Sequencing Match Game
 
-    <!-- Stats Display (OUTPUT) -->
-    <div class="stats">
-        <strong>Matches:</strong> <span id="matchCount">0</span> | 
-        <strong>Skipped:</strong> <span id="skipCount">0</span> | 
-        <strong>Total Reviewed:</strong> <span id="totalCount">0</span>
-    </div>
+<div id="demo-game" style="display: block;">
+    <p style="text-align: center; color: #c0c0c0; margin-bottom: 1em;">
+        This demo shows sequencing with randomly generated profiles
+    </p>
 
-    <!-- Profile Display (OUTPUT) -->
-    <div id="profileDisplay">
-        <div class="profile-card">
-            <div class="profile-header">Click "New Profile" to start!</div>
+    <div id="sequence-box">
+        <h3 style="margin-top:0;">💫 Profile Matcher</h3>
+        <p style="font-size:0.9em;">Review each profile and decide: Match or Skip?</p>
+
+        <div class="stats">
+            <strong>Matches:</strong> <span id="matchCount">0</span> | 
+            <strong>Skipped:</strong> <span id="skipCount">0</span> | 
+            <strong>Total Reviewed:</strong> <span id="totalCount">0</span>
+        </div>
+
+        <div id="profileDisplay">
+            <div class="profile-card">
+                <div class="profile-header">Click "New Profile" to start!</div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-match" onclick="handleMatchClick()" id="matchBtn" disabled>
+                ✓ Match
+            </button>
+            <button class="btn btn-skip" onclick="handleSkipClick()" id="skipBtn" disabled>
+                ✗ Skip
+            </button>
+        </div>
+
+        <button onclick="handleNewProfileClick()" class="btn-new">
+            🔄 New Profile
+        </button>
+
+        <div id="history">
+            <strong>Decision History:</strong>
+            <div id="historyList">
+                <em>No decisions yet...</em>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- User Input Buttons -->
-    <div class="button-group">
-        <button class="btn btn-match" onclick="handleMatchClick()" id="matchBtn" disabled>
-            ✓ Match
-        </button>
-        <button class="btn btn-skip" onclick="handleSkipClick()" id="skipBtn" disabled>
-            ✗ Skip
-        </button>
-    </div>
+---
 
-    <button onclick="handleNewProfileClick()" class="btn-new">
-        🔄 New Profile
-    </button>
+## 💕 Real Matchmaking with Backend
 
-    <!-- Decision History (OUTPUT) -->
-    <div id="history">
-        <strong>Decision History:</strong>
-        <div id="historyList">
-            <em>No decisions yet...</em>
+<div id="real-game" style="display: none;">
+    <p style="text-align: center; color: #c0c0c0; margin-bottom: 1em;">
+        This connects to your backend and matches with real user profiles!
+    </p>
+
+    <div id="matchmaking-app">
+        <h3 style="margin-top:0; color: #8b9dff; text-align: center; font-size: 1.8em;">💕 Real Profile Matcher</h3>
+        <p style="font-size:0.9em; text-align: center; color: #c0c0c0;">Connect with real users based on shared interests!</p>
+
+        <div id="realGameContent">
+            <div style="text-align: center; padding: 2em;">
+                <p style="color: #c0c0c0;">Loading...</p>
+                <div class="loading-spinner"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // LIST (collection type) to store all profile decisions
+    // ==========================================
+    // TAB SWITCHING
+    // ==========================================
+    function switchTab(tab) {
+        const demoGame = document.getElementById('demo-game');
+        const realGame = document.getElementById('real-game');
+        const tabs = document.querySelectorAll('.tab-btn');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        
+        if (tab === 'demo') {
+            demoGame.style.display = 'block';
+            realGame.style.display = 'none';
+            tabs[0].classList.add('active');
+        } else {
+            demoGame.style.display = 'none';
+            realGame.style.display = 'block';
+            tabs[1].classList.add('active');
+            initRealMatchmaking();
+        }
+    }
+
+    // ==========================================
+    // DEMO GAME CODE (Original)
+    // ==========================================
     let profileHistory = [];
-    
-    // Variables for game state
     let matchCount = 0;
     let skipCount = 0;
     let totalCount = 0;
     let currentProfile = null;
 
-    // LISTS for random data generation
     const names = ["Alex", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Avery", "Quinn", "Sage", "River", "Dakota", "Skylar", "Rowan", "Cameron", "Parker"];
     const ages = [18, 19, 20, 21, 22, 23, 24, 25];
     const hobbies = ["Reading", "Gaming", "Hiking", "Cooking", "Art", "Music", "Sports", "Photography", "Dancing", "Coding", "Traveling", "Yoga"];
     const locations = ["Los Angeles", "New York", "Chicago", "Austin", "Seattle", "Miami", "Boston", "Denver"];
     const occupations = ["Student", "Engineer", "Designer", "Teacher", "Artist", "Developer", "Musician", "Writer", "Researcher", "Entrepreneur"];
 
-    // PROCEDURE: getRandomItem
-    // Parameters: array (list to select from)
-    // Return type: single item from array
-    // Purpose: Randomly select an item from an array
     function getRandomItem(array) {
-        // SEQUENCING: Calculate random index first
         let randomIndex = Math.floor(Math.random() * array.length);
-        
-        // SEQUENCING: Then return the item at that index
         return array[randomIndex];
     }
 
-    // PROCEDURE: generateProfile
-    // Parameters: none
-    // Return type: object (profile data)
-    // Purpose: Create a random profile using sequencing, selection, and iteration
     function generateProfile() {
-        // SEQUENCING: Steps must happen in order
-        
-        // Step 1: Generate basic info
         const name = getRandomItem(names);
         const age = getRandomItem(ages);
         const location = getRandomItem(locations);
         const occupation = getRandomItem(occupations);
         
-        // Step 2: Generate unique hobbies using SELECTION and ITERATION
         const hobby1 = getRandomItem(hobbies);
         let hobby2 = getRandomItem(hobbies);
         
-        // ITERATION: Keep selecting until we get a different hobby
         while (hobby2 === hobby1) {
             hobby2 = getRandomItem(hobbies);
         }
         
-        // Step 3: Create profile object
         const profile = {
             name: name,
             age: age,
@@ -347,21 +510,13 @@ Each decision happens **in order** — demonstrating how programs process data s
             timestamp: new Date().toLocaleTimeString()
         };
         
-        // Step 4: Return the profile
         return profile;
     }
 
-    // PROCEDURE: displayProfile
-    // Parameters: profile (object with user data)
-    // Return type: none (void)
-    // Purpose: Display profile information to the screen (OUTPUT)
     function displayProfile(profile) {
-        // SEQUENCING: Get element first, then modify it
         const display = document.getElementById('profileDisplay');
         
-        // SELECTION: Check if profile exists
         if (profile) {
-            // Build HTML string using profile data
             display.innerHTML = `
                 <div class="profile-card">
                     <div class="profile-header">${profile.name}, ${profile.age}</div>
@@ -373,14 +528,7 @@ Each decision happens **in order** — demonstrating how programs process data s
         }
     }
 
-    // PROCEDURE: processDecision
-    // Parameters: decision (string - "match" or "skip"), profile (object)
-    // Return type: none (void)
-    // Purpose: Process user decision with sequencing, selection, and iteration
     function processDecision(decision, profile) {
-        // SEQUENCING: Steps must happen in specific order
-        
-        // Step 1: Update counters based on SELECTION
         if (decision === 'match') {
             matchCount++;
         } else if (decision === 'skip') {
@@ -388,7 +536,6 @@ Each decision happens **in order** — demonstrating how programs process data s
         }
         totalCount++;
         
-        // Step 2: Add to history LIST (collection type)
         const historyEntry = {
             decision: decision,
             profile: profile,
@@ -396,14 +543,10 @@ Each decision happens **in order** — demonstrating how programs process data s
         };
         profileHistory.unshift(historyEntry);
         
-        // Step 3: Update all displays (OUTPUT)
         updateStatsDisplay();
         updateHistoryDisplay();
-        
-        // Step 4: Disable buttons until new profile
         setButtonsEnabled(false);
         
-        // Step 5: Clear current profile
         currentProfile = null;
         document.getElementById('profileDisplay').innerHTML = `
             <div class="profile-card">
@@ -412,29 +555,18 @@ Each decision happens **in order** — demonstrating how programs process data s
         `;
     }
 
-    // PROCEDURE: updateStatsDisplay
-    // Parameters: none
-    // Return type: none (void)
-    // Purpose: Update the statistics display (OUTPUT)
     function updateStatsDisplay() {
-        // SEQUENCING: Update each stat in order
         document.getElementById('matchCount').textContent = matchCount;
         document.getElementById('skipCount').textContent = skipCount;
         document.getElementById('totalCount').textContent = totalCount;
     }
 
-    // PROCEDURE: updateHistoryDisplay
-    // Parameters: none
-    // Return type: none (void)
-    // Purpose: Display decision history using ITERATION over LIST
     function updateHistoryDisplay() {
         const historyList = document.getElementById('historyList');
         
-        // SELECTION: Check if history is empty
         if (profileHistory.length === 0) {
             historyList.innerHTML = '<em>No decisions yet...</em>';
         } else {
-            // ITERATION: Loop through history items
             let htmlContent = '';
             let itemsToShow = Math.min(10, profileHistory.length);
             
@@ -451,39 +583,240 @@ Each decision happens **in order** — demonstrating how programs process data s
         }
     }
 
-    // PROCEDURE: setButtonsEnabled
-    // Parameters: enabled (boolean)
-    // Return type: none (void)
-    // Purpose: Enable or disable match/skip buttons
     function setButtonsEnabled(enabled) {
         document.getElementById('matchBtn').disabled = !enabled;
         document.getElementById('skipBtn').disabled = !enabled;
     }
 
-    // EVENT HANDLERS (USER INPUT)
-    
-    // Handle "New Profile" button click
     function handleNewProfileClick() {
-        // SEQUENCING: Generate profile, then display it, then enable buttons
         currentProfile = generateProfile();
         displayProfile(currentProfile);
         setButtonsEnabled(true);
     }
 
-    // Handle "Match" button click
     function handleMatchClick() {
-        // SELECTION: Only process if there's a current profile
         if (currentProfile) {
             processDecision('match', currentProfile);
         }
     }
 
-    // Handle "Skip" button click
     function handleSkipClick() {
-        // SELECTION: Only process if there's a current profile
         if (currentProfile) {
             processDecision('skip', currentProfile);
         }
+    }
+
+    // ==========================================
+    // REAL MATCHMAKING CODE (New)
+    // ==========================================
+    let realMatchmakingState = {
+        profiles: [],
+        currentIndex: 0,
+        matches: [],
+        skipped: [],
+        currentUser: null,
+        initialized: false
+    };
+
+    async function initRealMatchmaking() {
+        if (realMatchmakingState.initialized) return;
+        
+        const content = document.getElementById('realGameContent');
+        content.innerHTML = `
+            <div style="text-align: center; padding: 2em;">
+                <p style="color: #c0c0c0;">Connecting to backend...</p>
+                <div class="loading-spinner"></div>
+            </div>
+        `;
+
+        try {
+            // Fetch all profiles
+            const response = await fetch('http://127.0.0.1:8001/api/match/all-data', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch profiles');
+            }
+
+            const data = await response.json();
+            
+            // Filter profiles with data
+            realMatchmakingState.profiles = data.setups.filter(p => 
+                p.data && Object.keys(p.data).length > 0
+            );
+
+            if (realMatchmakingState.profiles.length === 0) {
+                showNoProfilesMessage();
+            } else {
+                realMatchmakingState.initialized = true;
+                showRealProfile();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            content.innerHTML = `
+                <div class="error-message">
+                    <strong>Connection Error</strong><br>
+                    Could not connect to backend. Please make sure you're logged in.
+                </div>
+                <button class="btn-new" onclick="initRealMatchmaking()">Retry</button>
+            `;
+        }
+    }
+
+    function showNoProfilesMessage() {
+        const content = document.getElementById('realGameContent');
+        content.innerHTML = `
+            <div style="text-align: center; padding: 2em;">
+                <p style="color: #8b9dff; font-size: 1.2em; margin-bottom: 1em;">
+                    No profiles available yet! 
+                </p>
+                <p style="color: #c0c0c0;">
+                    Be the first to create a profile and start matching with others.
+                </p>
+                <button class="btn-new" onclick="initRealMatchmaking()" style="margin-top: 1em;">
+                    🔄 Refresh
+                </button>
+            </div>
+        `;
+    }
+
+    function calculateRealCompatibility(profile) {
+        // Simple compatibility based on shared data fields
+        if (!profile.data) return 50;
+        
+        let score = 0;
+        const fields = Object.keys(profile.data).length;
+        
+        if (fields > 0) score = 50 + (fields * 5);
+        return Math.min(score, 100);
+    }
+
+    function showRealProfile() {
+        const state = realMatchmakingState;
+        const content = document.getElementById('realGameContent');
+        
+        if (state.currentIndex >= state.profiles.length) {
+            showRealResults();
+            return;
+        }
+
+        const profile = state.profiles[state.currentIndex];
+        const compatibility = calculateRealCompatibility(profile);
+
+        content.innerHTML = `
+            <div class="match-stats">
+                <div class="stat-item">
+                    <div class="stat-value">${state.matches.length}</div>
+                    <div class="stat-label">Matches</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${state.skipped.length}</div>
+                    <div class="stat-label">Skipped</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${state.currentIndex + 1}/${state.profiles.length}</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+
+            <div class="real-profile-card">
+                <div class="profile-header">${profile.data.name || profile.uid}</div>
+                <div style="color: #c0c0c0; margin: 0.5em 0;">
+                    Compatibility: <strong style="color: #8b9dff;">${compatibility}%</strong>
+                </div>
+                <div class="compatibility-bar">
+                    <div class="compatibility-fill" style="width: ${compatibility}%"></div>
+                </div>
+                
+                <div style="margin-top: 1em;">
+                    ${Object.entries(profile.data).map(([key, value]) => {
+                        if (key === 'name') return '';
+                        return `
+                            <div class="profile-detail">
+                                <strong>${key}:</strong> ${value}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-skip" onclick="handleRealSkip()">
+                    ✗ Skip
+                </button>
+                <button class="btn btn-match" onclick="handleRealMatch()">
+                    ✓ Match
+                </button>
+            </div>
+        `;
+    }
+
+    function handleRealMatch() {
+        const state = realMatchmakingState;
+        const profile = state.profiles[state.currentIndex];
+        state.matches.push({
+            ...profile,
+            compatibility: calculateRealCompatibility(profile)
+        });
+        state.currentIndex++;
+        showRealProfile();
+    }
+
+    function handleRealSkip() {
+        const state = realMatchmakingState;
+        state.skipped.push(state.profiles[state.currentIndex]);
+        state.currentIndex++;
+        showRealProfile();
+    }
+
+    function showRealResults() {
+        const state = realMatchmakingState;
+        const content = document.getElementById('realGameContent');
+
+        content.innerHTML = `
+            <div style="text-align: center; margin-bottom: 2em;">
+                <h3 style="color: #8b9dff; font-size: 1.5em;">🎉 Results</h3>
+                <p style="color: #c0c0c0;">You reviewed ${state.profiles.length} profiles</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #3a3a52 0%, #2d2d42 100%); padding: 1.5em; border-radius: 8px; margin-bottom: 1.5em; border: 2px solid #667eea;">
+                <h4 style="color: #8b9dff; margin-top: 0;">✓ Your Matches (${state.matches.length})</h4>
+                ${state.matches.length === 0 ? 
+                    '<p style="color: #c0c0c0;">No matches yet. Try again!</p>' :
+                    state.matches.map(m => `
+                        <div style="background: #2a2a40; padding: 1em; border-radius: 6px; margin: 0.5em 0; border-left: 4px solid #27ae60;">
+                            <strong style="color: #8b9dff;">${m.data.name || m.uid}</strong>
+                            <span style="color: #27ae60; float: right;">${m.compatibility}%</span>
+                        </div>
+                    `).join('')
+                }
+            </div>
+
+            <div style="background: #2a2a40; padding: 1em; border-radius: 8px; border: 1px solid #667eea;">
+                <p style="color: #c0c0c0; margin: 0;">✗ Skipped: ${state.skipped.length}</p>
+            </div>
+
+            <button class="btn-new" onclick="resetRealMatchmaking()">
+                🔄 Start Over
+            </button>
+        `;
+    }
+
+    function resetRealMatchmaking() {
+        realMatchmakingState = {
+            profiles: [],
+            currentIndex: 0,
+            matches: [],
+            skipped: [],
+            currentUser: null,
+            initialized: false
+        };
+        initRealMatchmaking();
     }
 </script>
 
