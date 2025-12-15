@@ -630,8 +630,18 @@ All three concepts work together in most programs, but sequencing is the foundat
         `;
 
         try {
-            // Fetch all profiles
-            const response = await fetch('http://127.0.0.1:8001/api/match/all-data', {
+            console.log('Attempting to fetch from backend...');
+            
+            // Backend is on port 8001, frontend might be on different port (4600)
+            const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? `http://127.0.0.1:8001/api/match/all-data`
+                : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/all-data';
+            
+            console.log('Using backend URL:', backendURL);
+            console.log('Full URL being called:', backendURL);
+            
+            // Fetch all profiles from matchmaking endpoint
+            const response = await fetch(backendURL, {
                 method: 'GET',
                 credentials: 'include',
                 headers: {
@@ -639,16 +649,33 @@ All three concepts work together in most programs, but sequencing is the foundat
                 },
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             if (!response.ok) {
-                throw new Error('Failed to fetch profiles');
+                const errorText = await response.text();
+                console.error('Error response:', errorText);
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
 
             const data = await response.json();
+            console.log('Data received:', data);
+            console.log('Response structure:', Object.keys(data));
+            
+            // Check if we got the expected structure
+            if (!data.setups) {
+                console.error('Unexpected response structure:', data);
+                throw new Error('Invalid response format from API');
+            }
+            
+            console.log('Number of setups:', data.setups.length);
             
             // Filter profiles with data
             realMatchmakingState.profiles = data.setups.filter(p => 
                 p.data && Object.keys(p.data).length > 0
             );
+
+            console.log('Filtered profiles:', realMatchmakingState.profiles.length);
 
             if (realMatchmakingState.profiles.length === 0) {
                 showNoProfilesMessage();
@@ -657,14 +684,52 @@ All three concepts work together in most programs, but sequencing is the foundat
                 showRealProfile();
             }
         } catch (error) {
-            console.error('Error:', error);
-            content.innerHTML = `
-                <div class="error-message">
-                    <strong>Connection Error</strong><br>
-                    Could not connect to backend. Please make sure you're logged in.
-                </div>
-                <button class="btn-new" onclick="initRealMatchmaking()">Retry</button>
-            `;
+            console.error('Full error details:', error);
+            
+            // Check if it's a 401 error (not logged in)
+            const is401 = error.message.includes('401');
+            
+            if (is401) {
+                content.innerHTML = `
+                    <div class="error-message">
+                        <strong>🔒 Authentication Required</strong><br><br>
+                        You need to log in to use Real Matchmaking!
+                    </div>
+                    <div style="background: #2a2a40; padding: 1.5em; border-radius: 8px; margin-top: 1em; text-align: center;">
+                        <p style="color: #c0c0c0; margin-bottom: 1em;">
+                            Real Matchmaking connects to your backend and requires authentication.
+                        </p>
+                        <a href="/login" class="btn-new" style="display: inline-block; text-decoration: none;">
+                            🔐 Go to Login Page
+                        </a>
+                        <p style="color: #8b9dff; margin-top: 1em; font-size: 0.9em;">
+                            Or try the Demo Game (no login required)
+                        </p>
+                        <button class="btn-new" onclick="switchTab('demo')" style="background: #3a3a52; margin-top: 0.5em;">
+                            ← Back to Demo Game
+                        </button>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="error-message">
+                        <strong>Connection Error</strong><br>
+                        ${error.message}<br><br>
+                        <strong>Possible issues:</strong><br>
+                        • Backend URL incorrect<br>
+                        • CORS policy blocking request<br>
+                        • No profiles exist yet
+                    </div>
+                    <div style="background: #2a2a40; padding: 1em; border-radius: 8px; margin-top: 1em; text-align: left;">
+                        <strong style="color: #8b9dff;">Debug Info:</strong><br>
+                        <code style="color: #c0c0c0; font-size: 0.85em;">
+                            API: https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/all-data<br>
+                            Check console (F12) for details
+                        </code>
+                    </div>
+                    <button class="btn-new" onclick="initRealMatchmaking()">Retry</button>
+                `;
+            }
         }
     }
 
