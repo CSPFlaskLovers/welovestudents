@@ -6,664 +6,486 @@ author: Cyrus, William W
 breadcrumb: true
 ---
 
-# Microblog API - Beginner's Guide
+<style>
+/* Force dark mode for entire page */
+.hero-section {
+    background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+    color: #e2e8f0 !important;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
 
-> **A simple social media backend built with Python - perfect for learning**
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #ffffff !important;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    color: #e2e8f0 !important;
+}
+
+.section-card {
+    background: #1e293b !important;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: 1px solid #334155;
+    color: #e2e8f0 !important;
+}
+
+.section-card p, .section-card li, .section-card em, .section-card strong {
+    color: #cbd5e1 !important;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    color: #818cf8 !important;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #6366f1;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.info-box {
+    background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%) !important;
+    color: #ffffff !important;
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.info-box:hover {
+    transform: translateY(-5px);
+}
+
+.info-box h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #ffffff !important;
+}
+
+.info-box p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #e2e8f0 !important;
+}
+
+.code-block, code {
+    background: #0f172a !important;
+    color: #cbd5e1 !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 4px !important;
+    margin: 0 !important;
+    font-family: 'Courier New', monospace;
+    border: 1px solid #1e293b;
+    display: inline !important;
+    font-size: 0.9em !important;
+}
+
+/* For code blocks that should be larger */
+pre code {
+    display: block !important;
+    padding: 1.5rem !important;
+    margin: 1rem 0 !important;
+    border-radius: 8px !important;
+    overflow-x: auto;
+}
+
+/* Bash code blocks */
+.step-card code {
+    background: #0f172a !important;
+    color: #10b981 !important;
+    padding: 0.25rem 0.5rem !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+    display: inline !important;
+}
+
+.step-card {
+    background: #334155 !important;
+    border-left: 4px solid #6366f1;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 8px 8px 0;
+    color: #e2e8f0 !important;
+}
+
+.step-card h4 {
+    color: #818cf8 !important;
+    margin-bottom: 0.5rem;
+}
+
+.step-card p, .step-card em {
+    color: #cbd5e1 !important;
+}
+
+.activity-card {
+    background: linear-gradient(to right, #422006, #78350f) !important;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #f59e0b;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.activity-card h3 {
+    color: #fbbf24 !important;
+    margin-bottom: 0.5rem;
+}
+
+.activity-card ol, .activity-card li, .activity-card strong {
+    color: #fde68a !important;
+}
+
+.tips-banner {
+    background: #1e3a8a !important;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: #bfdbfe !important;
+}
+
+.tips-banner strong, .tips-banner code {
+    color: #dbeafe !important;
+}
+
+/* Navigation styles */
+.section-card ul {
+    color: #cbd5e1 !important;
+}
+
+.section-card a {
+    color: #818cf8 !important;
+}
+
+.section-card a:hover {
+    color: #a5b4fc !important;
+}
+
+/* Table styles */
+.section-card table {
+    background: #0f172a !important;
+    border: 1px solid #334155;
+}
+
+.section-card th {
+    background: #1e293b !important;
+    color: #818cf8 !important;
+    border: 1px solid #334155;
+}
+
+.section-card td {
+    color: #cbd5e1 !important;
+    border: 1px solid #334155;
+}
+
+/* Ordered and unordered lists */
+.section-card ol, .section-card ul {
+    color: #cbd5e1 !important;
+}
+
+.section-card ol li, .section-card ul li {
+    color: #cbd5e1 !important;
+}
+</style>
+
+<div class="hero-section">
+    <h1>🚀 Microblog API - Beginner's Guide</h1>
+    <p>A simple social media backend built with Python - perfect for learning how APIs work!</p>
+</div>
+
+<div id="auth-check-banner" style="display: none; background: #7f1d1d !important; color: #fca5a5 !important; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; border: 2px solid #dc2626;">
+    <h3 style="color: #fca5a5 !important; margin-bottom: 0.5rem;">🔒 Authentication Required</h3>
+    <p style="color: #fecaca !important; margin-bottom: 1rem;">You must be logged in to use the interactive features on this page.</p>
+    <a id="login-redirect-btn" href="#" style="display: inline-block; background: #dc2626 !important; color: white !important; padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: bold; transition: background 0.3s;">
+        Login Now →
+    </a>
+</div>
+
+<script>
+// Check for authentication on page load
+(function() {
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+    
+    const jwtCookie = getCookie('jwt_python_flask');
+    
+    if (!jwtCookie || jwtCookie.trim() === '') {
+        // Show authentication banner
+        const banner = document.getElementById('auth-check-banner');
+        if (banner) {
+            banner.style.display = 'block';
+        }
+        
+        // Set up login redirect button with correct URL
+        const loginBtn = document.getElementById('login-redirect-btn');
+        if (loginBtn) {
+            // Get base URL dynamically
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            
+            let baseUrl;
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                baseUrl = `${protocol}//${hostname}:${port}`;
+            } else {
+                baseUrl = `${protocol}//${hostname}`;
+            }
+            
+            loginBtn.href = `${baseUrl}/welovestudents/login`;
+        }
+    }
+})();
+</script>
 
 ---
 
-## What's Inside This Guide
+## 📚 Quick Navigation
 
-- [What is This?](#-what-is-this)
-- [Why Should I Care?](#-why-should-i-care)
-- [What Do I Need?](#-what-do-i-need)
-- [How to Run It](#-how-to-run-it)
-- [What Can I Learn?](#-what-can-i-learn)
-- [Easy Starter Activities](#-easy-starter-activities)
+- [What is This?](#what-is-this)
+- [Why Should I Care?](#why-should-i-care)
+- [How to Run It](#how-to-run-it)
+- [Matchmaking API Tester](#matchmaking-api-tester)
+- [Knowledge Check Quiz](#knowledge-check-quiz)
 
 ---
 
-## What is This?
+<div class="section-card">
+<h2 class="section-title">🤔 What is This?</h2>
 
 **Microblog API** is like a mini-Twitter backend. It's the server part of a social media app where:
 
-- Users can sign up and log in
-- Users can write posts
-- Users can read other people's posts
+- 👥 Users can sign up and log in
+- 📝 Users can write posts
+- 📖 Users can read other people's posts
 
-**BUT** - this is just the backend. There's no pretty website or app interface. It's the "behind the scenes" code that makes everything work.
+**Important:** This is just the backend - there's no pretty website interface. It's the "behind the scenes" code that makes everything work.
 
-Think of it like this:
-```
-Instagram App (Frontend) ←→ Instagram's Servers (Backend like this!)
-```
+<div class="tips-banner">
+<strong>💡 Think of it like this:</strong><br>
+Instagram App (Frontend) ↔️ Instagram's Servers (Backend like this!)
+</div>
+
+</div>
 
 ---
 
-## Why Should I Care?
+<div class="section-card">
+<h2 class="section-title">🎯 Why Should I Care?</h2>
 
-This project is great for **AP Computer Science Principles** because:
-
-| Reason | Why It Matters |
-|--------|----------------|
-| **Covers AP CSP concepts** | Networks, data, the internet, and how apps work |
-| **Uses Python** | You might already know some Python! |
-| **See it work** | Not just theory - you can actually run it and test it |
-| **Real-world example** | This is how actual apps like Instagram work |
+<div class="info-grid">
+    <div class="info-box">
+        <h3>📚 AP CSP Concepts</h3>
+        <p>Networks, data, the internet, and how apps work</p>
+    </div>
+    <div class="info-box">
+        <h3>🐍 Uses Python</h3>
+        <p>You might already know some Python!</p>
+    </div>
+    <div class="info-box">
+        <h3>👀 See it Work</h3>
+        <p>Not just theory - you can actually run it and test it</p>
+    </div>
+    <div class="info-box">
+        <h3>🌐 Real-World</h3>
+        <p>This is how actual apps like Instagram work</p>
+    </div>
+</div>
 
 **You don't need to understand all the code!** The goal is to:
-- See how a backend works
-- Try using an API
-- Understand the basics of how data moves around
+- ✅ See how a backend works
+- ✅ Try using an API
+- ✅ Understand how data moves around
+
+</div>
 
 ---
 
-## What Do I Need?
+<div class="section-card">
+<h2 class="section-title">🚀 How to Run It</h2>
 
-### Option A: The Easy Way (Using Docker)
-- A computer with **Docker Desktop** installed
-- That's it!
+### Option A: Docker (Recommended) 🐳
 
-### Option B: The Python Way
-- Python 3 installed on your computer
-- Basic command line knowledge (just copying and pasting commands)
+<div class="step-card">
+<h4>Step 1: Get the code</h4>
 
-**Don't worry if you don't know Docker or Python well yet!** The instructions below are step-by-step.
-
----
-
-## How to Run It
-
-### Easy Way: Docker (Recommended)
-
-Think of Docker like a pre-made package that has everything ready to go.
-
-#### Step 1: Get the code
-Open your terminal and type:
 ```bash
 git clone https://github.com/miguelgrinberg/microblog-api
 cd microblog-api
 ```
+</div>
 
-#### Step 2: Set up the settings file
+<div class="step-card">
+<h4>Step 2: Set up the settings file</h4>
+
 ```bash
 cp .env.example .env
 ```
-*(This just copies a template file - you can skip editing it for now)*
+<em>This just copies a template file - you can skip editing it for now</em>
+</div>
 
-#### Step 3: Start it up!
+<div class="step-card">
+<h4>Step 3: Start it up! 🎉</h4>
+
 ```bash
 docker-compose up -d
 ```
+<em>Wait a minute for it to start...</em>
+</div>
 
-Wait a minute for it to start...
+<div class="step-card">
+<h4>Step 4: Check if it's working</h4>
 
-#### Step 4: Check if it's working
-Open your web browser and go to:
-```
-http://localhost:5000/docs
-```
+Open your web browser and go to: `http://localhost:5000/docs`
 
 You should see a page with API documentation!
+</div>
 
-#### Step 5: Add some fake data to play with
+<div class="step-card">
+<h4>Step 5: Add some fake data to play with</h4>
+
 ```bash
 docker-compose run --rm microblog-api bash -c "flask fake users 10 && flask fake posts 100"
 ```
-
 Now you have 10 fake users and 100 fake posts to test with!
+</div>
 
-#### To stop it later:
-```bash
-docker-compose down
-```
+<div class="tips-banner">
+<strong>⚠️ Common Problem:</strong> If you see an error about port 5000, on newer Macs Apple uses that port. Try: <code>flask run --port=4000</code> and visit <code>http://localhost:4000/docs</code>
+</div>
 
----
+### Option B: Python Way 🐍
 
-### Python Way (If Docker doesn't work)
+<div class="step-card">
+<h4>Step 1: Get the code & Set up environment</h4>
 
-#### Step 1: Get the code
 ```bash
 git clone https://github.com/miguelgrinberg/microblog-api
 cd microblog-api
-```
-
-#### Step 2: Set up Python environment
-```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+</div>
 
-#### Step 3: Set up the database
+<div class="step-card">
+<h4>Step 2: Set up the database & Run it</h4>
+
 ```bash
 alembic upgrade head
 flask fake users 10
 flask fake posts 100
-```
-
-#### Step 4: Run it!
-```bash
 flask run
 ```
 
-#### Step 5: Check it out
-Open your browser to:
-```
-http://localhost:5000/docs
-```
+Then visit: `http://localhost:5000/docs`
+</div>
+
+</div>
 
 ---
 
-## Common Problem
+<div class="section-card">
+<h2 class="section-title">🛠️ Matchmaking API Tester</h2>
+<p style="margin-bottom: 1.5rem;">Test your matchmaking API endpoints directly in the browser - just like Postman! <strong>Note:</strong> You must be logged in to use this tool.</p>
 
-**If you see an error about port 5000:**
+<div style="background: #1e3a8a; border: 2px solid #3b82f6; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+<h3 style="color: #dbeafe !important; margin-bottom: 1rem;">📋 Quick Start Guide</h3>
 
-On newer Macs, Apple uses port 5000 for something else. 
+<div id="step-content" style="color: #bfdbfe !important; min-height: 120px;">
+<!-- Step content will be inserted here by JavaScript -->
+</div>
 
-Quick fix - use a different port:
-```bash
-flask run --port=4000
-```
+<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+<button id="prevBtn" onclick="changeStep(-1)" style="background: #475569 !important; color: white !important; padding: 0.5rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+← Previous
+</button>
+<div style="color: #93c5fd !important; font-weight: bold;">
+Step <span id="currentStep">1</span> of 5
+</div>
+<button id="nextBtn" onclick="changeStep(1)" style="background: #3b82f6 !important; color: white !important; padding: 0.5rem 1.5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+Next →
+</button>
+</div>
+</div>
 
-Then visit `http://localhost:4000/docs` instead.
+<script>
+let currentStepIndex = 0;
 
----
+const steps = [
+{
+title: "Step 1: Initialize Your Profile",
+content: "Click <strong>\"POST Setup Profile\"</strong> to create your matchmaking profile. You should see a success message with status 201. ⚠️ <strong>Only do this once!</strong> If you already have a profile, you'll get a 409 error (profile already exists)."
+},
+{
+title: "Step 2: Add Your Information",
+content: "Click <strong>\"POST Add Profile Data\"</strong> to add information like your favorite hobbies, interests, etc. Edit the JSON body to add different data fields. You can call this multiple times to add more data."
+},
+{
+title: "Step 3: View Your Profile",
+content: "Click <strong>\"GET Profile Data\"</strong> to see all your saved information. This shows everything you've added to your profile."
+},
+{
+title: "Step 4: Save Quiz Results",
+content: "Click <strong>\"POST Save Profile JSON\"</strong> to save multiple questions and answers at once (like from a quiz or form). This is useful for bulk updates to your profile."
+},
+{
+title: "Step 5: View All Users",
+content: "Click <strong>\"GET All Users Data\"</strong> to see everyone's profile data (useful for matching algorithms and seeing what others have shared)."
+}
+];
 
-## What Can I Learn?
+function showStep(index) {
+const stepContent = document.getElementById('step-content');
+const currentStepDisplay = document.getElementById('currentStep');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
 
-### For AP CSP, this project shows:
+stepContent.innerHTML = `
+<h4 style="color: #93c5fd !important; margin-bottom: 0.5rem;">${steps[index].title}</h4>
+<p style="color: #bfdbfe !important;">${steps[index].content}</p>
+`;
 
-#### **The Internet**
-- How do apps send and receive data?
-- What is an API? (Answer: A way for programs to talk to each other!)
+currentStepDisplay.textContent = index + 1;
 
-#### **Data**
-- How is user information stored?
-- What is a database?
+// Disable/enable buttons
+prevBtn.disabled = index === 0;
+nextBtn.disabled = index === steps.length - 1;
 
-#### **Security**
-- How do apps know who you are?
-- What is authentication?
+prevBtn.style.opacity = index === 0 ? '0.5' : '1';
+prevBtn.style.cursor = index === 0 ? 'not-allowed' : 'pointer';
 
-#### **Abstraction**
-- How complex systems are broken into smaller pieces
-- Why we organize code into files and folders
-
----
-
-## Easy Starter Activities
-
-### Activity 1: Explore the API (5 minutes)
-1. Go to `http://localhost:5000/docs`
-2. Look at the list of endpoints (the different things the API can do)
-3. Find the "GET /api/users" endpoint
-4. Click "Try it out" and then "Execute"
-5. See the list of fake users!
-
-**What you learned:** How to send a request to an API and get data back
-
----
-
-### Activity 2: Create a User (10 minutes)
-1. Find the "POST /api/users" endpoint
-2. Click "Try it out"
-3. Fill in the example data (make up a username and email)
-4. Click "Execute"
-5. You just created a user!
-
-**What you learned:** How apps send data to servers
-
----
-
-### Activity 3: See the Posts (5 minutes)
-1. Find "GET /api/posts"
-2. Try it out
-3. See all the fake posts that were created
-
-**What you learned:** How social media apps get posts to show you
-
----
-
-<!-- Begin embedded HTML from notebook -->
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Learning - Interactive Fill-in-the-Blanks</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-attachment: fixed;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-        
-        .question-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 25px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .question-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .question {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-        
-        .answer-input {
-            display: inline-block;
-            width: 250px;
-            height: 40px;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-            margin: 0 5px;
-            padding: 0 10px;
-            vertical-align: middle;
-            background-color: #e8f4fc;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .answer-input:focus {
-            outline: none;
-            border-color: #2980b9;
-            background-color: #d6eaf8;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-        }
-        
-        .answer-input.correct {
-            border-color: #27ae60;
-            background-color: #d5f4e6;
-        }
-        
-        .answer-input.incorrect {
-            border-color: #e74c3c;
-            background-color: #fadbd8;
-        }
-        
-        .button-group {
-            margin-top: 15px;
-        }
-        
-        .answer-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .answer-btn:hover {
-            background-color: #2980b9;
-        }
-        
-        .check-btn {
-            background-color: #2ecc71;
-        }
-        
-        .check-btn:hover {
-            background-color: #27ae60;
-        }
-        
-        .show-btn {
-            background-color: #9b59b6;
-        }
-        
-        .show-btn:hover {
-            background-color: #8e44ad;
-        }
-        
-        .reset-btn {
-            background-color: #e74c3c;
-        }
-        
-        .reset-btn:hover {
-            background-color: #c0392b;
-        }
-        
-        .feedback {
-            margin-top: 15px;
-            padding: 12px;
-            background-color: #f8f9fa;
-            border-left: 4px solid #3498db;
-            border-radius: 0 5px 5px 0;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .feedback.correct {
-            border-left-color: #27ae60;
-            background-color: #d5f4e6;
-        }
-        
-        .feedback.incorrect {
-            border-left-color: #e74c3c;
-            background-color: #fadbd8;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .score-container {
-            text-align: center;
-            margin-top: 30px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .score {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .question-card {
-                padding: 15px;
-            }
-            
-            .answer-input {
-                width: 100%;
-                margin: 5px 0;
-            }
-            
-            .button-group {
-                text-align: center;
-            }
-            
-            .answer-btn {
-                width: 100%;
-                margin: 5px 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>API Learning - Interactive Fill-in-the-Blanks</h1>
-            <p class="subtitle">Type your answers in the colored boxes and check them with the buttons</p>
-        </header>
-        
-        <div class="question-card">
-            <div class="question">Q: What is an API?</div>
-            <p>A: It's <input type="text" class="answer-input" id="input1" placeholder="Type your answer here...">. Like how your Instagram app talks to Instagram's servers.</p>
-            <div class="button-group">
-                <button class="answer-btn check-btn" onclick="checkAnswer(1)">Check Answer</button>
-                <button class="answer-btn show-btn" onclick="showAnswer(1)">Show Answer</button>
-                <button class="answer-btn reset-btn" onclick="resetAnswer(1)">Reset</button>
-            </div>
-            <div class="feedback" id="feedback1"></div>
-        </div>
-        
-        <div class="question-card">
-            <div class="question">Q: What does this backend do?</div>
-            <p>A: It <input type="text" class="answer-input" id="input2" placeholder="Type your answer here...">, and lets you get or add data through specific URLs.</p>
-            <div class="button-group">
-                <button class="answer-btn check-btn" onclick="checkAnswer(2)">Check Answer</button>
-                <button class="answer-btn show-btn" onclick="showAnswer(2)">Show Answer</button>
-                <button class="answer-btn reset-btn" onclick="resetAnswer(2)">Reset</button>
-            </div>
-            <div class="feedback" id="feedback2"></div>
-        </div>
-        
-        <div class="question-card">
-            <div class="question">Q: How do you test it?</div>
-            <p>A: <input type="text" class="answer-input" id="input3" placeholder="Type your answer here..."> and try different endpoints.</p>
-            <div class="button-group">
-                <button class="answer-btn check-btn" onclick="checkAnswer(3)">Check Answer</button>
-                <button class="answer-btn show-btn" onclick="showAnswer(3)">Show Answer</button>
-                <button class="answer-btn reset-btn" onclick="resetAnswer(3)">Reset</button>
-            </div>
-            <div class="feedback" id="feedback3"></div>
-        </div>
-        
-        <div class="question-card">
-            <div class="question">Q: What technology is it built with?</div>
-            <p>A: <input type="text" class="answer-input" id="input4" placeholder="Type your answer here...">, plus a database to store information.</p>
-            <div class="button-group">
-                <button class="answer-btn check-btn" onclick="checkAnswer(4)">Check Answer</button>
-                <button class="answer-btn show-btn" onclick="showAnswer(4)">Show Answer</button>
-                <button class="answer-btn reset-btn" onclick="resetAnswer(4)">Reset</button>
-            </div>
-            <div class="feedback" id="feedback4"></div>
-        </div>
-        
-        <div class="question-card">
-            <div class="question">Q: Can you explain how it works?</div>
-            <p>A: When you visit a URL like <input type="text" class="answer-input" id="input5" placeholder="Type your answer here...">, the server looks at its database and sends back the user information as data.</p>
-            <div class="button-group">
-                <button class="answer-btn check-btn" onclick="checkAnswer(5)">Check Answer</button>
-                <button class="answer-btn show-btn" onclick="showAnswer(5)">Show Answer</button>
-                <button class="answer-btn reset-btn" onclick="resetAnswer(5)">Reset</button>
-            </div>
-            <div class="feedback" id="feedback5"></div>
-        </div>
-        
-        <div class="score-container">
-            <div class="score">Score: <span id="score">0</span>/5</div>
-            <button class="answer-btn" onclick="resetAll()" style="margin-top: 10px;">Reset All Answers</button>
-        </div>
-        
-        <div class="footer">
-            <p>API Learning Exercise - Interactive Fill-in-the-Blanks Quiz</p>
-        </div>
-    </div>
-
-    <script>
-        // Define correct answers
-        const correctAnswers = {
-            1: "a way for programs to talk to each other",
-            2: "stores users and posts",
-            3: "Go to /docs in the browser",
-            4: "Python and Flask (a web framework)",
-            5: "/api/users"
-        };
-        
-        // Define full answers for display
-        const fullAnswers = {
-            1: "It's a way for programs to talk to each other. Like how your Instagram app talks to Instagram's servers.",
-            2: "It stores users and posts, and lets you get or add data through specific URLs.",
-            3: "Go to /docs in the browser and try different endpoints.",
-            4: "Python and Flask (a web framework), plus a database to store information.",
-            5: "When you visit a URL like /api/users, the server looks at its database and sends back the user information as data."
-        };
-        
-        let score = 0;
-        const answeredQuestions = new Set();
-        
-        // Function to check answer
-        function checkAnswer(questionNum) {
-            const input = document.getElementById(`input${questionNum}`);
-            const feedback = document.getElementById(`feedback${questionNum}`);
-            const userAnswer = input.value.trim().toLowerCase();
-            const correctAnswer = correctAnswers[questionNum].toLowerCase();
-            
-            // Clear previous styling
-            input.classList.remove("correct", "incorrect");
-            feedback.classList.remove("correct", "incorrect");
-            
-            if (userAnswer === correctAnswer) {
-                // Correct answer
-                input.classList.add("correct");
-                feedback.classList.add("correct");
-                feedback.innerHTML = `<strong>Correct!</strong> ${fullAnswers[questionNum]}`;
-                feedback.style.display = "block";
-                
-                // Update score if not already counted
-                if (!answeredQuestions.has(questionNum)) {
-                    answeredQuestions.add(questionNum);
-                    score++;
-                    updateScore();
-                }
-            } else {
-                // Incorrect answer
-                input.classList.add("incorrect");
-                feedback.classList.add("incorrect");
-                feedback.innerHTML = `<strong>Incorrect.</strong> Try again or click "Show Answer" to see the correct answer.`;
-                feedback.style.display = "block";
-            }
-        }
-        
-        // Function to show answer
-        function showAnswer(questionNum) {
-            const input = document.getElementById(`input${questionNum}`);
-            const feedback = document.getElementById(`feedback${questionNum}`);
-            
-            input.value = correctAnswers[questionNum];
-            input.classList.remove("incorrect");
-            input.classList.add("correct");
-            feedback.classList.remove("incorrect");
-            feedback.classList.add("correct");
-            feedback.innerHTML = `<strong>Answer:</strong> ${fullAnswers[questionNum]}`;
-            feedback.style.display = "block";
-            
-            // Update score if not already counted
-            if (!answeredQuestions.has(questionNum)) {
-                answeredQuestions.add(questionNum);
-                score++;
-                updateScore();
-            }
-        }
-        
-        // Function to reset a single answer
-        function resetAnswer(questionNum) {
-            const input = document.getElementById(`input${questionNum}`);
-            const feedback = document.getElementById(`feedback${questionNum}`);
-            
-            input.value = "";
-            input.classList.remove("correct", "incorrect");
-            feedback.classList.remove("correct", "incorrect");
-            feedback.style.display = "none";
-            
-            // Remove from score if previously counted
-            if (answeredQuestions.has(questionNum)) {
-                answeredQuestions.delete(questionNum);
-                score--;
-                updateScore();
-            }
-        }
-        
-        // Function to reset all answers
-        function resetAll() {
-            for (let i = 1; i <= 5; i++) {
-                resetAnswer(i);
-            }
-        }
-        
-        // Function to update score display
-        function updateScore() {
-            document.getElementById("score").textContent = score;
-        }
-        
-        // Add keyboard event listeners for Enter key
-        document.addEventListener('DOMContentLoaded', function() {
-            for (let i = 1; i <= 5; i++) {
-                const input = document.getElementById(`input${i}`);
-                input.addEventListener('keypress', function(event) {
-                    if (event.key === 'Enter') {
-                        checkAnswer(i);
-                    }
-                });
-            }
-        });
-    </script>
-</body>
-</html>
-
-<!-- End embedded HTML from notebook -->
-
----
-
-<!-- Code runner removed -->
-
-
-<div id="jokeoutput"> Joke Loading...</div>
-
-<script type="module">
-import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
-console.log(pythonURI);
-const output = document.getElementById('jokeoutput');
-
-// Async fetch using try/catch and the shared `fetchOptions` (mirrors exercisegraphs pattern)
-async function tryFetchJoke() {
-    try {
-        const response = await fetch(`${pythonURI}/api/jokes/random`, fetchOptions);
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        const data = await response.json();
-        console.log(data);
-        output.innerHTML = data.joke;
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
+nextBtn.style.opacity = index === steps.length - 1 ? '0.5' : '1';
+nextBtn.style.cursor = index === steps.length - 1 ? 'not-allowed' : 'pointer';
 }
 
-tryFetchJoke();
+function changeStep(direction) {
+currentStepIndex += direction;
+if (currentStepIndex < 0) currentStepIndex = 0;
+if (currentStepIndex >= steps.length) currentStepIndex = steps.length - 1;
+showStep(currentStepIndex);
+}
+
+// Initialize first step
+showStep(0);
 </script>
 
 <html lang="en">
@@ -1009,7 +831,7 @@ tryFetchJoke();
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
-                    API Tester
+                    Matchmaking API Tester
                 </h2>
                 <div class="auth-badge">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1021,16 +843,13 @@ tryFetchJoke();
             </div>
 
             <div class="examples-section">
-                <h3>Quick Examples:</h3>
+                <h3>🎯 Matchmaking API Endpoints:</h3>
                 <div class="examples-buttons">
-                    <button class="example-btn get" onclick="loadExample('getUsers')">GET Users</button>
-                    <button class="example-btn post" onclick="loadExample('createUser')">POST Create User</button>
-                    <button class="example-btn get" onclick="loadExample('getProfile')">GET Profile Data</button>
-                    <button class="example-btn post" onclick="loadExample('addProfileData')">POST Add Profile Data</button>
-                    <button class="example-btn delete" onclick="loadExample('deleteProfileData')">DELETE Profile Data</button>
-                    <button class="example-btn post" onclick="loadExample('setupProfile')">POST Setup Profile</button>
-                    <button class="example-btn get" onclick="loadExample('getAllData')">GET All Users Data</button>
-                    <button class="example-btn post" onclick="loadExample('saveProfileJSON')">POST Save Profile JSON</button>
+                    <button class="example-btn post" onclick="loadExample('setupProfile')">1️⃣ POST Setup Profile</button>
+                    <button class="example-btn post" onclick="loadExample('addProfileData')">2️⃣ POST Add Profile Data</button>
+                    <button class="example-btn get" onclick="loadExample('getProfile')">3️⃣ GET Profile Data</button>
+                    <button class="example-btn post" onclick="loadExample('saveProfileJSON')">4️⃣ POST Save Profile JSON</button>
+                    <button class="example-btn get" onclick="loadExample('getAllData')">5️⃣ GET All Users Data</button>
                 </div>
             </div>
 
@@ -1048,8 +867,8 @@ tryFetchJoke();
                         type="text" 
                         id="url" 
                         class="url-input" 
-                        value="http://localhost:8001/api/"
-                        placeholder="http://localhost:8001/api/endpoint"
+                        value="http://localhost:8001/api/match/"
+                        placeholder="http://localhost:8001/api/match/endpoint"
                     />
                     
                     <button id="sendBtn" class="send-btn GET" onclick="sendRequest()">
@@ -1099,10 +918,13 @@ tryFetchJoke();
         <div class="tips-section">
             <h4>💡 Tips:</h4>
             <ul>
-                <li>• This tool automatically includes your JWT authentication cookie with each request</li>
-                <li>• If you see 401/403 errors, make sure you're logged in to the application first</li>
-                <li>• The server must be running on the specified URL (default: http://localhost:8001)</li>
-                <li>• Use the quick examples above to test common API endpoints</li>
+                <li>• Follow the numbered buttons in order for best results</li>
+                <li>• Start with "Setup Profile" to initialize your matchmaking profile (only once!)</li>
+                <li>• Use "Add Profile Data" to add individual fields like hobbies, interests, etc.</li>
+                <li>• Use "Save Profile JSON" to save multiple questions/answers at once</li>
+                <li>• Check your profile anytime with "GET Profile Data"</li>
+                <li>• Status 201 = Success (Created), 200 = Success, 404 = Not Found, 409 = Already Exists</li>
+                <li>• Your profile data is saved and will be used for matchmaking later!</li>
             </ul>
         </div>
     </div>
@@ -1119,7 +941,6 @@ tryFetchJoke();
         const headersSection = document.getElementById('headersSection');
         const headersContent = document.getElementById('headersContent');
 
-        // Check for JWT cookie on page load
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
@@ -1128,22 +949,17 @@ tryFetchJoke();
         }
 
         function checkAuthentication() {
-            // Try multiple cookie names just in case
             let jwtCookie = getCookie('jwt_python_flask');
             
-            // Debug: log all cookies
             console.log('All cookies:', document.cookie);
             console.log('Looking for jwt_python_flask:', jwtCookie);
             
-            // If cookie exists and has content, user is authenticated
             if (!jwtCookie || jwtCookie.trim() === '') {
-                // Disable all controls
                 methodSelect.disabled = true;
                 urlInput.disabled = true;
                 requestBodyTextarea.disabled = true;
                 sendBtn.disabled = true;
                 
-                // Show authentication required message
                 responseContent.innerHTML = `<div style="color: #fbbf24; font-weight: bold; font-size: 1.2rem; text-align: center; padding: 2rem;">
                     🔒 Authentication Required
                     
@@ -1154,7 +970,6 @@ tryFetchJoke();
                     </div>
                 </div>`;
                 
-                // Disable example buttons
                 const exampleButtons = document.querySelectorAll('.example-btn');
                 exampleButtons.forEach(btn => {
                     btn.disabled = true;
@@ -1167,10 +982,8 @@ tryFetchJoke();
             return true;
         }
 
-        // Check authentication on page load
         const isAuthenticated = checkAuthentication();
 
-        // Show/hide body section based on method
         methodSelect.addEventListener('change', function() {
             if (!isAuthenticated) return;
             
@@ -1191,49 +1004,33 @@ tryFetchJoke();
             }
             
             switch(example) {
-                case 'getUsers':
-                    methodSelect.value = 'GET';
-                    urlInput.value = 'http://localhost:8001/api/users/';
-                    requestBodyTextarea.value = '{\n  \n}';
-                    break;
-                case 'createUser':
+                case 'setupProfile':
                     methodSelect.value = 'POST';
-                    urlInput.value = 'http://localhost:8001/api/user/';
-                    requestBodyTextarea.value = '{\n  "name": "Test User",\n  "uid": "testuser",\n  "email": "test@example.com",\n  "password": "password123"\n}';
-                    break;
-                case 'getProfile':
-                    methodSelect.value = 'GET';
-                    urlInput.value = 'http://localhost:8001/api/match/data';
-                    requestBodyTextarea.value = '{\n  \n}';
+                    urlInput.value = 'http://localhost:8001/api/match/setup';
+                    requestBodyTextarea.value = '{}';
                     break;
                 case 'addProfileData':
                     methodSelect.value = 'POST';
                     urlInput.value = 'http://localhost:8001/api/match/add';
-                    requestBodyTextarea.value = '{\n  "index": "favorite_color",\n  "data": "blue"\n}';
+                    requestBodyTextarea.value = '{\n  "index": "favorite_hobby",\n  "data": "Reading and coding"\n}';
                     break;
-                case 'deleteProfileData':
-                    methodSelect.value = 'DELETE';
-                    urlInput.value = 'http://localhost:8001/api/match/add';
-                    requestBodyTextarea.value = '{\n  "index": "favorite_color"\n}';
-                    break;
-                case 'setupProfile':
-                    methodSelect.value = 'POST';
-                    urlInput.value = 'http://localhost:8001/api/match/setup';
-                    requestBodyTextarea.value = '{\n  \n}';
-                    break;
-                case 'getAllData':
+                case 'getProfile':
                     methodSelect.value = 'GET';
-                    urlInput.value = 'http://localhost:8001/api/match/all-data';
-                    requestBodyTextarea.value = '{\n  \n}';
+                    urlInput.value = 'http://localhost:8001/api/match/data';
+                    requestBodyTextarea.value = '{}';
                     break;
                 case 'saveProfileJSON':
                     methodSelect.value = 'POST';
                     urlInput.value = 'http://localhost:8001/api/match/save-profile-json';
-                    requestBodyTextarea.value = '{\n  "profile_data": [\n    {\n      "question": "What is your favorite hobby?",\n      "response": "Reading"\n    },\n    {\n      "question": "What is your preferred study time?",\n      "response": "Morning"\n    },\n    {\n      "question": "What type of projects do you enjoy?",\n      "response": "Web development"\n    }\n  ]\n}';
+                    requestBodyTextarea.value = '{\n  "profile_data": [\n    {\n      "question": "What is your favorite hobby?",\n      "response": "Reading"\n    },\n    {\n      "question": "What is your preferred study time?",\n      "response": "Morning"\n    },\n    {\n      "question": "What type of projects do you enjoy?",\n      "response": "Web development"\n    },\n    {\n      "question": "What programming language do you prefer?",\n      "response": "Python"\n    }\n  ]\n}';
+                    break;
+                case 'getAllData':
+                    methodSelect.value = 'GET';
+                    urlInput.value = 'http://localhost:8001/api/match/all-data';
+                    requestBodyTextarea.value = '{}';
                     break;
             }
             
-            // Trigger change event to update UI
             methodSelect.dispatchEvent(new Event('change'));
         }
 
@@ -1243,7 +1040,6 @@ tryFetchJoke();
                 return;
             }
             
-            // Double-check JWT cookie still exists
             const jwtCookie = getCookie('jwt_python_flask');
             console.log('JWT cookie check before request:', jwtCookie);
             
@@ -1258,7 +1054,6 @@ tryFetchJoke();
             const url = urlInput.value;
             const requestBody = requestBodyTextarea.value;
 
-            // Reset UI
             btnText.textContent = 'Sending...';
             sendBtn.disabled = true;
             responseContent.textContent = '';
@@ -1276,8 +1071,7 @@ tryFetchJoke();
                     }
                 };
 
-                // Add body for POST/PUT
-                if (method === 'POST' || method === 'PUT') {
+                if (method === 'POST' || method === 'PUT' || method === 'DELETE') {
                     try {
                         JSON.parse(requestBody);
                         options.body = requestBody;
@@ -1293,7 +1087,6 @@ tryFetchJoke();
                 const response = await fetch(url, options);
                 const duration = Date.now() - startTime;
 
-                // Update status badge
                 statusBadge.textContent = `Status: ${response.status}`;
                 statusBadge.style.display = 'inline-block';
                 
@@ -1305,7 +1098,6 @@ tryFetchJoke();
                     statusBadge.className = 'status-badge error';
                 }
 
-                // Get response headers
                 const responseHeaders = {};
                 response.headers.forEach((value, key) => {
                     responseHeaders[key] = value;
@@ -1313,7 +1105,6 @@ tryFetchJoke();
                 headersContent.textContent = JSON.stringify(responseHeaders, null, 2);
                 headersSection.style.display = 'block';
 
-                // Get response body
                 let data;
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
@@ -1350,8 +1141,8 @@ tryFetchJoke();
                 return;
             }
             
-            urlInput.value = 'http://localhost:8001/api/';
-            requestBodyTextarea.value = '{\n  \n}';
+            urlInput.value = 'http://localhost:8001/api/match/';
+            requestBodyTextarea.value = '{}';
             responseContent.textContent = 'Response will appear here...';
             statusBadge.style.display = 'none';
             headersSection.style.display = 'none';
@@ -1359,3 +1150,803 @@ tryFetchJoke();
     </script>
 </body>
 </html>
+
+</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .api-tester-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background: #1a1a2e !important;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .api-tester-header {
+            background: #16213e !important;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #2d3748;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .header-title h2 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #e2e8f0 !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+        
+        .auth-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #fbbf24 !important;
+            background: #422006 !important;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #92400e;
+        }
+        
+        .examples-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .examples-section h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #cbd5e1 !important;
+            margin-bottom: 0.5rem;
+        }
+        
+        .examples-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .example-btn {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        .example-btn.get {
+            background: #1e40af !important;
+            color: #dbeafe !important;
+        }
+        
+        .example-btn.get:hover {
+            background: #1e3a8a !important;
+        }
+        
+        .example-btn.post {
+            background: #065f46 !important;
+            color: #d1fae5 !important;
+        }
+        
+        .example-btn.post:hover {
+            background: #064e3b !important;
+        }
+        
+        .example-btn.delete {
+            background: #991b1b !important;
+            color: #fee2e2 !important;
+        }
+        
+        .example-btn.delete:hover {
+            background: #7f1d1d !important;
+        }
+        
+        .request-section {
+            margin-bottom: 1rem;
+        }
+        
+        .request-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #cbd5e1 !important;
+            margin-bottom: 0.5rem;
+        }
+        
+        .request-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .method-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #4a5568 !important;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            background: #2d3748 !important;
+            color: #e2e8f0 !important;
+            cursor: pointer;
+        }
+        
+        .method-select:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .url-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 0.5rem 1rem;
+            border: 2px solid #4a5568 !important;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: #2d3748 !important;
+            color: #e2e8f0 !important;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .send-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #ffffff !important;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .send-btn.GET {
+            background: #3b82f6 !important;
+        }
+        
+        .send-btn.GET:hover {
+            background: #2563eb !important;
+        }
+        
+        .send-btn.POST {
+            background: #10b981 !important;
+        }
+        
+        .send-btn.POST:hover {
+            background: #059669 !important;
+        }
+        
+        .send-btn.PUT {
+            background: #eab308 !important;
+        }
+        
+        .send-btn.PUT:hover {
+            background: #ca8a04 !important;
+        }
+        
+        .send-btn.DELETE {
+            background: #ef4444 !important;
+        }
+        
+        .send-btn.DELETE:hover {
+            background: #dc2626 !important;
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .clear-btn {
+            padding: 0.5rem 1rem;
+            background: #64748b !important;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .clear-btn:hover {
+            background: #475569 !important;
+        }
+        
+        .body-section {
+            margin-top: 1rem;
+        }
+        
+        .body-textarea {
+            width: 100%;
+            height: 160px;
+            padding: 1rem;
+            border: 2px solid #4a5568 !important;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            background: #2d3748 !important;
+            color: #e2e8f0 !important;
+            resize: vertical;
+        }
+        
+        .body-textarea:focus {
+            outline: none;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .response-container {
+            background: #16213e !important;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #2d3748;
+        }
+        
+        .response-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .response-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #e2e8f0 !important;
+            margin: 0;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.success {
+            color: #6ee7b7 !important;
+            background: #064e3b !important;
+            border: 1px solid #059669;
+        }
+        
+        .status-badge.error {
+            color: #fca5a5 !important;
+            background: #7f1d1d !important;
+            border: 1px solid #dc2626;
+        }
+        
+        .status-badge.auth {
+            color: #fcd34d !important;
+            background: #422006 !important;
+            border: 1px solid #ca8a04;
+        }
+        
+        .response-content {
+            background: #0f172a !important;
+            color: #cbd5e1 !important;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: 1px solid #1e293b;
+        }
+        
+        .tips-section {
+            background: #1e3a8a !important;
+            border: 1px solid #2563eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+<!-- Second API Tester removed -->
+
+<script>
+        const methodSelect = document.getElementById('method');
+        const urlInput = document.getElementById('url');
+        const requestBodyTextarea = document.getElementById('requestBody');
+        const bodySection = document.getElementById('bodySection');
+        const sendBtn = document.getElementById('sendBtn');
+        const btnText = document.getElementById('btnText');
+        const responseContent = document.getElementById('responseContent');
+        const statusBadge = document.getElementById('statusBadge');
+        const headersSection = document.getElementById('headersSection');
+        const headersContent = document.getElementById('headersContent');
+
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        function checkAuthentication() {
+            let jwtCookie = getCookie('jwt_python_flask');
+            
+            console.log('All cookies:', document.cookie);
+            console.log('Looking for jwt_python_flask:', jwtCookie);
+            
+            if (!jwtCookie || jwtCookie.trim() === '') {
+                methodSelect.disabled = true;
+                urlInput.disabled = true;
+                requestBodyTextarea.disabled = true;
+                sendBtn.disabled = true;
+                
+                responseContent.innerHTML = `<div style="color: #fbbf24; font-weight: bold; font-size: 1.2rem; text-align: center; padding: 2rem;">
+                    🔒 Authentication Required
+                    
+                    <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 1rem; font-weight: normal;">
+                        You must be logged in to use the API tester.
+                        
+                        Please log in to your account first, then refresh this page.
+                    </div>
+                </div>`;
+                
+                const exampleButtons = document.querySelectorAll('.example-btn');
+                exampleButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                });
+                
+                return false;
+            }
+            return true;
+        }
+
+        const isAuthenticated = checkAuthentication();
+
+        methodSelect.addEventListener('change', function() {
+            if (!isAuthenticated) return;
+            
+            const method = this.value;
+            sendBtn.className = `send-btn ${method}`;
+            
+            if (method === 'POST' || method === 'PUT') {
+                bodySection.style.display = 'block';
+            } else {
+                bodySection.style.display = 'none';
+            }
+        });
+
+
+
+
+
+<!-- Second API Tester removed -->
+
+---
+
+<div class="section-card">
+<h2 class="section-title">📝 Knowledge Check Quiz</h2>
+<p style="margin-bottom: 1.5rem;">Test your understanding of APIs with this interactive quiz!</p>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .quiz-header h2 {
+            color: white !important;
+            margin-bottom: 10px;
+        }
+        
+        .quiz-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .answer-input {
+            display: inline-block;
+            width: 250px;
+            height: 40px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            margin: 0 5px;
+            padding: 0 10px;
+            vertical-align: middle;
+            background-color: #f8fafc;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
+        }
+        
+        .answer-input.correct {
+            border-color: #10b981;
+            background-color: #d1fae5;
+        }
+        
+        .answer-input.incorrect {
+            border-color: #ef4444;
+            background-color: #fee2e2;
+        }
+        
+        .button-group {
+            margin-top: 15px;
+        }
+        
+        .answer-btn {
+            background-color: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .answer-btn:hover {
+            background-color: #764ba2;
+        }
+        
+        .check-btn {
+            background-color: #10b981;
+        }
+        
+        .check-btn:hover {
+            background-color: #059669;
+        }
+        
+        .show-btn {
+            background-color: #8b5cf6;
+        }
+        
+        .show-btn:hover {
+            background-color: #7c3aed;
+        }
+        
+        .reset-btn {
+            background-color: #ef4444;
+        }
+        
+        .reset-btn:hover {
+            background-color: #dc2626;
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 0 5px 5px 0;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .feedback.correct {
+            border-left-color: #10b981;
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .feedback.incorrect {
+            border-left-color: #ef4444;
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .score-container {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .score {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 10px;
+            }
+            
+            .question-card {
+                padding: 15px;
+            }
+            
+            .answer-input {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .button-group {
+                text-align: center;
+            }
+            
+            .answer-btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h2>API Learning Quiz</h2>
+            <p class="quiz-subtitle">Type your answers in the boxes and check them with the buttons</p>
+        </div>
+        
+        <div class="question-card">
+            <div class="question">Q: What is an API?</div>
+            <p>A: It's <input type="text" class="answer-input" id="input1" placeholder="Type your answer here...">. Like how your Instagram app talks to Instagram's servers.</p>
+            <div class="button-group">
+                <button class="answer-btn check-btn" onclick="checkAnswer(1)">Check Answer</button>
+                <button class="answer-btn show-btn" onclick="showAnswer(1)">Show Answer</button>
+                <button class="answer-btn reset-btn" onclick="resetAnswer(1)">Reset</button>
+            </div>
+            <div class="feedback" id="feedback1"></div>
+        </div>
+        
+        <div class="question-card">
+            <div class="question">Q: What does this backend do?</div>
+            <p>A: It <input type="text" class="answer-input" id="input2" placeholder="Type your answer here...">, and lets you get or add data through specific URLs.</p>
+            <div class="button-group">
+                <button class="answer-btn check-btn" onclick="checkAnswer(2)">Check Answer</button>
+                <button class="answer-btn show-btn" onclick="showAnswer(2)">Show Answer</button>
+                <button class="answer-btn reset-btn" onclick="resetAnswer(2)">Reset</button>
+            </div>
+            <div class="feedback" id="feedback2"></div>
+        </div>
+        
+        <div class="question-card">
+            <div class="question">Q: How do you test it?</div>
+            <p>A: <input type="text" class="answer-input" id="input3" placeholder="Type your answer here..."> and try different endpoints.</p>
+            <div class="button-group">
+                <button class="answer-btn check-btn" onclick="checkAnswer(3)">Check Answer</button>
+                <button class="answer-btn show-btn" onclick="showAnswer(3)">Show Answer</button>
+                <button class="answer-btn reset-btn" onclick="resetAnswer(3)">Reset</button>
+            </div>
+            <div class="feedback" id="feedback3"></div>
+        </div>
+        
+        <div class="question-card">
+            <div class="question">Q: What technology is it built with?</div>
+            <p>A: <input type="text" class="answer-input" id="input4" placeholder="Type your answer here...">, plus a database to store information.</p>
+            <div class="button-group">
+                <button class="answer-btn check-btn" onclick="checkAnswer(4)">Check Answer</button>
+                <button class="answer-btn show-btn" onclick="showAnswer(4)">Show Answer</button>
+                <button class="answer-btn reset-btn" onclick="resetAnswer(4)">Reset</button>
+            </div>
+            <div class="feedback" id="feedback4"></div>
+        </div>
+        
+        <div class="question-card">
+            <div class="question">Q: Can you explain how it works?</div>
+            <p>A: When you visit a URL like <input type="text" class="answer-input" id="input5" placeholder="Type your answer here...">, the server looks at its database and sends back the user information as data.</p>
+            <div class="button-group">
+                <button class="answer-btn check-btn" onclick="checkAnswer(5)">Check Answer</button>
+                <button class="answer-btn show-btn" onclick="showAnswer(5)">Show Answer</button>
+                <button class="answer-btn reset-btn" onclick="resetAnswer(5)">Reset</button>
+            </div>
+            <div class="feedback" id="feedback5"></div>
+        </div>
+        
+        <div class="score-container">
+            <div class="score">Score: <span id="score">0</span>/5</div>
+            <button class="answer-btn" onclick="resetAll()" style="margin-top: 10px; background-color: rgba(255,255,255,0.2);">Reset All Answers</button>
+        </div>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            1: "a way for programs to talk to each other",
+            2: "stores users and posts",
+            3: "Go to /docs in the browser",
+            4: "Python and Flask (a web framework)",
+            5: "/api/users"
+        };
+        
+        const fullAnswers = {
+            1: "It's a way for programs to talk to each other. Like how your Instagram app talks to Instagram's servers.",
+            2: "It stores users and posts, and lets you get or add data through specific URLs.",
+            3: "Go to /docs in the browser and try different endpoints.",
+            4: "Python and Flask (a web framework), plus a database to store information.",
+            5: "When you visit a URL like /api/users, the server looks at its database and sends back the user information as data."
+        };
+        
+        let score = 0;
+        const answeredQuestions = new Set();
+        
+        function checkAnswer(questionNum) {
+            const input = document.getElementById(`input${questionNum}`);
+            const feedback = document.getElementById(`feedback${questionNum}`);
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = correctAnswers[questionNum].toLowerCase();
+            
+            input.classList.remove("correct", "incorrect");
+            feedback.classList.remove("correct", "incorrect");
+            
+            if (userAnswer === correctAnswer) {
+                input.classList.add("correct");
+                feedback.classList.add("correct");
+                feedback.innerHTML = `<strong>✅ Correct!</strong> ${fullAnswers[questionNum]}`;
+                feedback.style.display = "block";
+                
+                if (!answeredQuestions.has(questionNum)) {
+                    answeredQuestions.add(questionNum);
+                    score++;
+                    updateScore();
+                }
+            } else {
+                input.classList.add("incorrect");
+                feedback.classList.add("incorrect");
+                feedback.innerHTML = `<strong>❌ Incorrect.</strong> Try again or click "Show Answer" to see the correct answer.`;
+                feedback.style.display = "block";
+            }
+        }
+        
+        function showAnswer(questionNum) {
+            const input = document.getElementById(`input${questionNum}`);
+            const feedback = document.getElementById(`feedback${questionNum}`);
+            
+            input.value = correctAnswers[questionNum];
+            input.classList.remove("incorrect");
+            input.classList.add("correct");
+            feedback.classList.remove("incorrect");
+            feedback.classList.add("correct");
+            feedback.innerHTML = `<strong>💡 Answer:</strong> ${fullAnswers[questionNum]}`;
+            feedback.style.display = "block";
+            
+            if (!answeredQuestions.has(questionNum)) {
+                answeredQuestions.add(questionNum);
+                score++;
+                updateScore();
+            }
+        }
+        
+        function resetAnswer(questionNum) {
+            const input = document.getElementById(`input${questionNum}`);
+            const feedback = document.getElementById(`feedback${questionNum}`);
+            
+            input.value = "";
+            input.classList.remove("correct", "incorrect");
+            feedback.classList.remove("correct", "incorrect");
+            feedback.style.display = "none";
+            
+            if (answeredQuestions.has(questionNum)) {
+                answeredQuestions.delete(questionNum);
+                score--;
+                updateScore();
+            }
+        }
+        
+        function resetAll() {
+            for (let i = 1; i <= 5; i++) {
+                resetAnswer(i);
+            }
+        }
+        
+        function updateScore() {
+            document.getElementById("score").textContent = score;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`input${i}`);
+                input.addEventListener('keypress', function(event) {
+                    if (event.key === 'Enter') {
+                        checkAnswer(i);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+</div>
+
+---
+
+<div class="section-card">
+<h2 class="section-title">🎉 Random Joke</h2>
+
+<div id="jokeoutput" style="padding: 1.5rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b; color: #92400e; font-size: 1.1rem;">
+Joke Loading...
+</div>
+
+<script type="module">
+import { pythonURI, fetchOptions } from '{{site.baseurl}}/assets/js/api/config.js';
+const output = document.getElementById('jokeoutput');
+
+async function tryFetchJoke() {
+    try {
+        const response = await fetch(`${pythonURI}/api/jokes/random`, fetchOptions);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        output.innerHTML = `😄 ${data.joke}`;
+    } catch (error) {
+        output.innerHTML = `😅 Couldn't fetch a joke right now. Try refreshing!`;
+        console.error('Error fetching data:', error);
+    }
+}
+
+tryFetchJoke();
+</script>
+
+</div>
