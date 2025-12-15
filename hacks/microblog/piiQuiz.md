@@ -478,28 +478,72 @@ breadcrumb: true
             displayQuestion();
         }
 
-        saveProfileBtn.onclick = () => {
-            // Send user data to backend
+        // Save profile button: use imported config (if loaded) or window globals
+        saveProfileBtn.onclick = async () => {
             const userDataJSON = sessionStorage.getItem('userQuizResponses');
-            console.log('Saving profile with data:', userDataJSON);
-            
-            // Example backend call (adjust endpoint as needed)
-            fetch('/api/save-profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: userDataJSON
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Profile saved:', data);
-                alert('Profile saved successfully!');
-            })
-            .catch(error => {
-                console.error('Error saving profile:', error);
-                alert('Profile saved locally. Backend integration may be needed.');
+            if (!userDataJSON) {
+                alert("No profile data found to save.");
+                return;
+            }
+
+            let profileData;
+            try {
+                profileData = JSON.parse(userDataJSON);
+            } catch (err) {
+                console.error('piiQuiz: invalid JSON in sessionStorage userQuizResponses', err, userDataJSON);
+                alert('Saved responses are not valid JSON. Please retake quiz.');
+                return;
+            }
+
+            // Prefer config imported by a module script, fall back to window globals
+            const importedCfg = window._piiImportedConfig || {};
+            const pythonURI = importedCfg.pythonURI || window.pythonURI || '';
+            const globalFetchOptions = importedCfg.fetchOptions || window.fetchOptions || {};
+
+            const endpoint = pythonURI ? `${pythonURI}/api/match/save-profile-json` : '/api/match/save-profile-json';
+
+            // Merge headers but don't mutate globalFetchOptions
+            const mergedHeaders = Object.assign({}, (globalFetchOptions.headers || {}), {
+                'Content-Type': 'application/json'
             });
+
+            const payload = { profile_data: profileData };
+            let bodyStr;
+            try {
+                bodyStr = JSON.stringify(payload);
+            } catch (err) {
+                console.error('piiQuiz: failed to stringify payload', err);
+                alert('Failed to prepare profile JSON: ' + (err && err.message ? err.message : String(err)));
+                return;
+            }
+
+            console.log('piiQuiz: profile payload length', bodyStr.length);
+
+            const options = Object.assign({}, globalFetchOptions, {
+                method: 'POST',
+                headers: mergedHeaders,
+                body: bodyStr
+            });
+
+            // Prefer configured credentials (config.js default is 'include')
+            if (!options.credentials) options.credentials = (globalFetchOptions && globalFetchOptions.credentials) ? globalFetchOptions.credentials : 'include';
+
+            try {
+                const response = await fetch(endpoint, options);
+                const data = await response.json().catch(() => null);
+
+                if (!response.ok) {
+                    alert("Failed to save profile: " + (data && data.message ? data.message : "Unknown error"));
+                    console.error("Backend response:", data);
+                    return;
+                }
+
+                console.log("Profile saved:", data);
+                alert("Profile saved successfully!");
+            } catch (err) {
+                console.error("Error saving profile:", err);
+                alert("Failed to save profile. Backend may be down.");
+            }
         };
 
         retakeQuizBtn.onclick = () => {
@@ -511,44 +555,23 @@ breadcrumb: true
 
         // Start the quiz
         displayQuestion();
-<!-- added this -->
-saveProfileBtn.onclick = async () => {
-    const userDataJSON = sessionStorage.getItem('userQuizResponses');
-    if (!userDataJSON) {
-        alert("No profile data found to save.");
-        return;
-    }
-
-    const profileData = JSON.parse(userDataJSON);
-
-    try {
-        const response = await fetch('/api/match/save-profile-json', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'same-origin', // ensures JWT cookie is sent
-            body: JSON.stringify({ profile_data: profileData })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert("Failed to save profile: " + (data.message || "Unknown error"));
-            console.error("Backend response:", data);
-            return;
-        }
-
-        console.log("Profile saved:", data);
-        alert("Profile saved successfully!");
-
-    } catch (err) {
-        console.error("Error saving profile:", err);
-        alert("Failed to save profile. Backend may be down.");
-    }
-};
-<!-- yah -->
     </script>
+
+    <script type="module">
+        // Import site config non-blocking for the quiz save handler
+        try {
+            const mod = await import('{{site.baseurl}}/assets/js/api/config.js');
+            window._piiImportedConfig = {
+                pythonURI: mod.pythonURI,
+                fetchOptions: mod.fetchOptions
+            };
+            console.log('piiQuiz: imported config', window._piiImportedConfig);
+        } catch (err) {
+            console.warn('piiQuiz: could not import config.js; save will fall back to window globals', err);
+            window._piiImportedConfig = window._piiImportedConfig || {};
+        }
+    </script>
+
 </body>
 </html>
 
