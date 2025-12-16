@@ -632,9 +632,9 @@ All three concepts work together in most programs, but sequencing is the foundat
         try {
             console.log('Attempting to fetch from backend...');
             
-            // Backend is on port 8001, frontend might be on different port (4600)
+            // Use localhost (not 127.0.0.1) to match cookie domain
             const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? `http://127.0.0.1:8001/api/match/all-data`
+                ? `http://localhost:8001/api/match/all-data`
                 : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/all-data';
             
             console.log('Using backend URL:', backendURL);
@@ -670,12 +670,19 @@ All three concepts work together in most programs, but sequencing is the foundat
             
             console.log('Number of setups:', data.setups.length);
             
-            // Filter profiles with data
-            realMatchmakingState.profiles = data.setups.filter(p => 
-                p.data && Object.keys(p.data).length > 0
-            );
+            // Show ALL profiles, even those without data filled in yet
+            realMatchmakingState.profiles = data.setups.map(p => {
+                // If no data field exists, create an empty one with at least the uid
+                if (!p.data || Object.keys(p.data).length === 0) {
+                    p.data = {
+                        name: p.uid,
+                        bio: 'No profile data yet'
+                    };
+                }
+                return p;
+            });
 
-            console.log('Filtered profiles:', realMatchmakingState.profiles.length);
+            console.log('Total profiles to show:', realMatchmakingState.profiles.length);
 
             if (realMatchmakingState.profiles.length === 0) {
                 showNoProfilesMessage();
