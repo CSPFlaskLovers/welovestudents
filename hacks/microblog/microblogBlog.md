@@ -12,274 +12,358 @@ breadcrumb: true
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Online Safety Interactive Lesson – Visual Mode</title>
+<title>Digital Safety & Online Awareness</title>
+
+<script>
+/* ---------- BACKEND URI ---------- */
+let pythonURI;
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+    pythonURI = "http://localhost:8001";
+} else {
+    pythonURI = "https://flaskstu.opencodingsociety.com";
+}
+</script>
+
 <style>
-    body {
-        font-family: 'Inter', Arial, sans-serif;
-        background: #0a0a0a;
-        color: #eaeaea;
-        margin: 0;
-        padding: 0;
-    }
+:root {
+    --bg-dark: #0a0a0a;
+    --card-bg: #111826;
+    --accent: #7ad7ff;
+    --accent-dark: #0f6fa4;
+    --border: #1d3247;
+    --text: #eaeaea;
+}
 
-    header {
-        background: linear-gradient(135deg, #0a2a43, #001119);
-        padding: 30px;
-        text-align: center;
-        font-size: 38px;
-        font-weight: 800;
-        color: #8fd4ff;
-        border-bottom: 2px solid #0e3a55;
-        letter-spacing: 1.2px;
-        text-shadow: 0 0 12px #0099ff;
-    }
+/* ---------- GLOBAL ---------- */
+body {
+    margin: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-    .container {
-        width: 88%;
-        max-width: 1100px;
-        margin: auto;
-        padding: 30px 10px;
-    }
+h1, h2, h3 {
+    margin: 0;
+    text-align: center;
+}
 
-    .info-card {
-        background: #111826;
-        padding: 25px;
-        margin: 20px 0;
-        border-radius: 14px;
-        box-shadow: 0 0 20px #000;
-        border: 1px solid #1d3247;
-        transition: 0.25s ease;
-        cursor: pointer;
-    }
+/* ---------- HEADER ---------- */
+header {
+    width: 100%;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #0a2a43, #001119);
+    text-align: center;
+}
 
-    .info-card h3 {
-        margin: 0 0 10px;
-        font-size: 26px;
-        color: #7ad7ff;
-        font-weight: 700;
-    }
+header h1 {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--accent);
+}
 
-    .info-card p, .info-card ul {
-        font-size: 16px;
-        color: #d3d3d3;
-        line-height: 1.6;
-        margin-top: 5px;
-    }
+header p {
+    margin-top: 10px;
+    font-size: 16px;
+    opacity: 0.85;
+}
 
-    .info-card:hover {
-        transform: scale(1.02);
-        border-color: #4db8ff;
-        box-shadow: 0 0 25px #003b5c;
-    }
+/* ---------- CONTAINER ---------- */
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center all children horizontally */
+    gap: 25px;
+}
 
-    .visual-mode {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(6px);
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
-    }
+/* ---------- INFO CARDS ---------- */
+.info-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    width: 80%; /* Make cards narrower */
+    max-width: 600px; /* Limit maximum width */
+    margin: 0 auto; /* Center horizontally */
+}
 
-    .visual-box {
-        background: #0e1622;
-        padding: 30px;
-        border-radius: 20px;
-        width: 80%;
-        max-width: 700px;
-        text-align: center;
-        box-shadow: 0 0 25px #000;
-        border: 1px solid #2b4d6b;
-        animation: pop 0.35s ease;
-    }
 
-    @keyframes pop {
-        from { transform: scale(0.8); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
 
-    .visual-box h2 {
-        color: #9cdcff;
-        margin-bottom: 15px;
-    }
+.info-card h3 {
+    color: var(--accent);
+    margin-bottom: 10px;
+}
 
-    .visual-box p {
-        font-size: 18px;
-        color: #d9d9d9;
-        line-height: 1.7;
-    }
+/* ---------- MODAL OVERLAY ---------- */
+.visual-mode {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 9999; /* OVER EVERYTHING */
+    justify-content: center;
+    align-items: center;
+}
 
-    .close-btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background: #0f6fa4;
-        border: none;
-        border-radius: 8px;
-        color: white;
-        cursor: pointer;
-        font-size: 16px;
-        transition: 0.2s;
-    }
+.visual-box {
+    background: #0e1622;
+    border-radius: 20px;
+    padding: 35px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+}
 
-    .close-btn:hover {
-        background: #45b5ff;
-        transform: scale(1.08);
-    }
+.visual-box h2 {
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+.visual-box p {
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+/* ---------- FORM ---------- */
+label {
+    margin-top: 18px;
+    display: block;
+    font-weight: 600;
+}
+
+select, input {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    background: #111826;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+button {
+    margin-top: 25px;
+    padding: 14px;
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent-dark);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* ---------- RESULT ---------- */
+#result-box {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
 </style>
 </head>
+
 <body>
 
-<header>Online Safety Interactive Lesson – Visual Mode</header>
+<header>
+    <h1>Digital Safety & Online Awareness</h1>
+    <p>Learn how to protect yourself in online and matchmaking environments</p>
+</header>
+
 <div class="container">
 
     <div class="info-card" onclick="openVisual('safety')">
-        <h3>What Is Online Safety?</h3>
-        <p>Online safety is about protecting your personal information, maintaining privacy, and avoiding risky interactions on the internet, including social platforms and matchmaking apps.</p>
+        <h3>Understanding Online Safety</h3>
+        <p>Learn how to protect your identity and privacy online.</p>
     </div>
 
     <div class="info-card" onclick="openVisual('matchmaking')">
         <h3>Why Matchmaking Safety Matters</h3>
-        <p>When connecting with others online for friendships, dating, or communities, safety is key. Being aware of potential risks ensures healthier interactions and reduces scams or harassment.</p>
-        <ul>
-            <li>Protect personal info</li>
-            <li>Verify identities before trust</li>
-            <li>Avoid suspicious links or behavior</li>
-            <li>Report and block harmful interactions</li>
-        </ul>
+        <p>Understand the risks of anonymous online interactions.</p>
     </div>
 
     <div class="info-card" onclick="openVisual('tips')">
-        <h3>Key Safety Tips</h3>
-        <p>Simple strategies keep you safe online, whether in chatrooms, social media, or matchmaking platforms.</p>
-        <ul>
-            <li>Strong passwords & two-factor authentication</li>
-            <li>Privacy settings for profiles</li>
-            <li>Think before sharing personal info</li>
-            <li>Verify people before meeting</li>
-            <li>Report suspicious activity</li>
-        </ul>
+        <h3>Practical Digital Safety Tips</h3>
+        <p>Simple habits that reduce online risk.</p>
+    </div>
+
+</div>
+
+<!-- ---------- MODAL ---------- -->
+<div id="visual-mode" class="visual-mode" onclick="closeVisual(event)">
+    <div class="visual-box">
+        <h2 id="visual-title"></h2>
+        <p id="visual-text"></p>
+        <button onclick="closeVisual(event)">Close</button>
     </div>
 </div>
 
-<div id="visual-mode" class="visual-mode" onclick="closeVisual(event)">
-    <div class="visual-box" id="visual-box">
-        <h2 id="visual-title"></h2>
-        <p id="visual-text"></p>
-        <button class="close-btn" onclick="closeVisual(event)">Close</button>
+<!-- ---------- ACTIVITY ---------- -->
+<div class="container">
+    <div class="info-card" style="cursor:default;">
+        <h3>Digital Safety Reflection</h3>
+
+        <label>How would you describe your online interaction style?</label>
+        <select id="style">
+            <option value="Cautious and selective, prioritizing security over convenience">Cautious</option>
+            <option value="Balanced, engaging socially while maintaining clear boundaries">Balanced</option>
+            <option value="Open and communicative, but aware of risks">Open</option>
+        </select>
+
+        <label>Your personal online safety principle</label>
+        <input id="phrase" placeholder="Example: I verify identities before trusting">
+
+        <label>How do you respond to suspicious behavior?</label>
+        <select id="question4">
+            <option value="I disengage and block the individual immediately">Block immediately</option>
+            <option value="I evaluate the situation before acting">Evaluate first</option>
+        </select>
+
+        <label>Rule for sharing personal information</label>
+        <select id="question5">
+            <option value="I only share information when absolutely necessary">Share minimally</option>
+            <option value="I share selectively with verified users">Share selectively</option>
+        </select>
+
+        <label>Most important digital safety habit</label>
+        <select id="question6">
+            <option value="Strong authentication">Strong authentication</option>
+            <option value="Clear boundaries">Clear boundaries</option>
+        </select>
+
+        <button onclick="submitPersona()">Submit Reflection</button>
+
+        <div id="result-box" style="display:none;">
+            <h3>Your Safety Profile</h3>
+            <p id="result-text"></p>
+            <p id="server-status" style="color:var(--accent); margin-top:10px;"></p>
+        </div>
     </div>
 </div>
 
 <script>
-const visuals = {
-    safety: {
+/* ---------- POPUP CONTENT ---------- */
+const visuals = [
+    {
+        id: "safety",
         title: "Understanding Online Safety",
-        text: "Online safety is about staying cautious, verifying information, and keeping control over what you share online."
+        text: `Online safety involves protecting your personal information, privacy, and digital identity.
+
+It includes recognizing scams, managing privacy settings, and understanding how online actions can have real-world consequences.`
     },
-    matchmaking: {
-        title: "Matchmaking Safety",
-        text: "Online matchmaking can be fun, but always check profiles, avoid sharing sensitive information, and report suspicious behavior."
+    {
+        id: "matchmaking",
+        title: "Why Matchmaking Safety Matters",
+        text: `Matchmaking platforms often involve anonymous interactions.
+
+This can lead to impersonation, manipulation, or harmful behavior if users are not cautious.`
     },
-    tips: {
-        title: "Practical Safety Tips",
-        text: "Use strong passwords, enable two-factor authentication, limit personal info sharing, and always stay aware of your digital footprint."
+    {
+        id: "tips",
+        title: "Practical Digital Safety Tips",
+        text: `• Use strong, unique passwords
+• Enable two-factor authentication
+• Verify identities
+• Set boundaries
+• Trust your instincts`
     }
-};
+];
 
 function openVisual(id) {
-    document.getElementById("visual-title").textContent = visuals[id].title;
-    document.getElementById("visual-text").textContent = visuals[id].text;
+    const v = visuals.find(x => x.id === id);
+    document.getElementById("visual-title").textContent = v.title;
+    document.getElementById("visual-text").textContent = v.text;
     document.getElementById("visual-mode").style.display = "flex";
 }
 
-function closeVisual(event) {
-    if (event.target.id === "visual-mode" || event.target.classList.contains("close-btn")) {
+function closeVisual(e) {
+    if (e.target.id === "visual-mode" || e.target.tagName === "BUTTON") {
         document.getElementById("visual-mode").style.display = "none";
     }
 }
-</script>
 
-<!-- INTERACTIVE GAME: ONLINE SAFETY -->
-<div class="container" style="margin-top:40px;">
-    <div class="info-card" style="cursor:default;">
-        <h3>Interactive Game: Build Your Online Safety Persona</h3>
-        <p>Answer the prompts below to create a custom online safety identity. Your responses will be safely saved.</p>
+function analyzeResponses(list) {
+    let score = 0;
+    list.forEach(v => {
+        const s = v.toLowerCase();
+        if (s.includes("block") || s.includes("verify") || s.includes("necessary")) score++;
+    });
+    if (score >= 3) return "You demonstrate strong digital safety awareness.";
+    if (score === 2) return "You show balanced online safety habits.";
+    return "You should strengthen your digital safety practices.";
+}
 
-        <!-- Question 1 -->
-        <div style="margin-top:20px;">
-            <label>1. Choose your approach to online safety:</label>
-            <select id="style" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
-                <option value="Cautious Explorer">Cautious Explorer</option>
-                <option value="Tech-Savvy Protector">Tech-Savvy Protector</option>
-                <option value="Friendly Connector">Friendly Connector</option>
-                <option value="Minimal Sharer">Minimal Sharer</option>
-            </select>
-        </div>
+function isLoggedIn() {
+    return document.cookie.includes("jwt"); // checks for the JWT cookie
+}
 
-        <!-- Question 2 -->
-        <div style="margin-top:20px;">
-            <label>2. Your safety motto:</label>
-            <input id="phrase" type="text" placeholder="ex: Stay aware, stay safe" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
-        </div>
-
-        <!-- Question 3 -->
-        <div style="margin-top:20px;">
-            <label>3. Pick your safety vibe color:</label>
-            <input id="color" type="color" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;border:1px solid #2b4d6b;">
-        </div>
-
-        <!-- Question 4 -->
-        <div style="margin-top:20px;">
-            <label>4. How would you handle a suspicious online match?</label>
-            <select id="question4" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
-                <option value="Report immediately">Report immediately</option>
-                <option value="Ignore and block">Ignore and block</option>
-                <option value="Share personal info">Share personal info</option>
-                <option value="Continue chatting">Continue chatting</option>
-            </select>
-        </div>
-
-        <!-- Question 5 -->
-        <div style="margin-top:20px;">
-            <label>5. What’s your approach to sharing personal information?</label>
-            <select id="question5" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
-                <option value="Share minimally">Share minimally</option>
-                <option value="Share freely">Share freely</option>
-                <option value="Only to verified profiles">Only to verified profiles</option>
-                <option value="Never share">Never share</option>
-            </select>
-        </div>
-
-        <!-- Question 6 -->
-        <div style="margin-top:20px;">
-            <label>6. Which of these is most important for online safety?</label>
-            <select id="question6" style="width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#0e1622;color:#dcdcdc;border:1px solid #2b4d6b;">
-                <option value="Strong passwords">Strong passwords</option>
-                <option value="Two-factor authentication">Two-factor authentication</option>
-                <option value="Privacy settings">Privacy settings</option>
-                <option value="All of the above">All of the above</option>
-            </select>
-        </div>
-
-        <button class="close-btn" style="margin-top:25px;" onclick="submitPersona()">Save to Backend</button>
-        <p id="save-status" style="margin-top:15px;font-size:16px;color:#7ad7ff;display:none;">Saving...</p>
-    </div>
-</div>
-
-<script>
 function submitPersona() {
-    const data = {
-        style: document.getElementById("style").value,
-        phrase: document.getElementById("phrase").value,
-        color: document.getElementById("color").value,
-        question4: document.getElementById("question4").value,
-        question5: document.getElementById("question5").value,
-        question6: document.getElementById("question6").value
+
+    if (!isLoggedIn()) {
+        document.getElementById("result-box").style.display = "block";
+        document.getElementById("result-text").textContent =
+            "You must be logged in to submit your reflection.";
+        document.getElementById("server-status").textContent =
+            "Please log in before posting to the microblog.";
+        return;
+    }
+
+    const responses = {
+        style: style.value,
+        principle: phrase.value,
+        reaction: question4.value,
+        sharing: question5.value,
+        priority: question6.value
     };
 
-    document.getElementById("save-status").style.display = "block";
-    document.getElementById("save-status").textConten
+    const analysis = analyzeResponses(Object.values(responses));
+
+    document.getElementById("result-text").textContent = analysis;
+    document.getElementById("result-box").style.display = "block";
+    document.getElementById("server-status").textContent = "Posting to microblog…";
+
+    fetch(`${pythonURI}/api/microblog`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Origin": "client"
+        },
+        body: JSON.stringify({
+            content: `Safety Reflection:\n${analysis}`,
+            topicPath: "/digital-famine/microblog/microb/",
+            data: responses
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("server-status").textContent =
+            data.error ? data.message : "Reflection successfully posted!";
+    })
+    .catch(err => {
+        document.getElementById("server-status").textContent = "Could not connect to server.";
+        console.error(err);
+    });
+}
+</script>
+
+</body>
+</html>
