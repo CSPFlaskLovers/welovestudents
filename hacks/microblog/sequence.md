@@ -469,7 +469,7 @@ All three concepts work together in most programs, but sequencing is the foundat
     }
 
     // ==========================================
-    // DEMO GAME CODE (Original)
+    // DEMO GAME CODE (AP CSP COMPLIANT)
     // ==========================================
     let profileHistory = [];
     let matchCount = 0;
@@ -561,26 +561,61 @@ All three concepts work together in most programs, but sequencing is the foundat
         document.getElementById('totalCount').textContent = totalCount;
     }
 
-    function updateHistoryDisplay() {
-        const historyList = document.getElementById('historyList');
+    // ==========================================
+    // AP CSP REQUIREMENT: STUDENT-DEVELOPED PROCEDURE
+    // Contains: Parameters, Return Type, Sequencing, Selection, Iteration
+    // ==========================================
+    
+    /**
+     * Generates HTML for displaying decision history
+     * @param {Array} historyArray - Collection of decision entries (LIST requirement)
+     * @param {number} maxItems - Maximum number of items to display (PARAMETER)
+     * @returns {string} HTML string for history display (RETURN TYPE)
+     */
+    function generateHistoryHTML(historyArray, maxItems) {
+        // SEQUENCING: Steps execute in order
         
-        if (profileHistory.length === 0) {
-            historyList.innerHTML = '<em>No decisions yet...</em>';
-        } else {
-            let htmlContent = '';
-            let itemsToShow = Math.min(10, profileHistory.length);
+        // Step 1: SELECTION - Check if history is empty
+        if (historyArray.length === 0) {
+            return '<em>No decisions yet...</em>';
+        }
+        
+        // Step 2: Initialize output string
+        let htmlContent = '';
+        let itemsToShow = Math.min(maxItems, historyArray.length);
+        
+        // Step 3: ITERATION - Loop through history entries
+        for (let i = 0; i < itemsToShow; i++) {
+            const entry = historyArray[i];
             
-            for (let i = 0; i < itemsToShow; i++) {
-                const entry = profileHistory[i];
-                const colorClass = entry.decision === 'match' ? '#27ae60' : '#e74c3c';
-                const symbol = entry.decision === 'match' ? '✓' : '✗';
-                const action = entry.decision === 'match' ? 'Matched' : 'Skipped';
-                
-                htmlContent += `<span style="color:${colorClass};">${symbol} ${action}</span> with ${entry.profile.name}, ${entry.profile.age}<br>`;
+            // SELECTION - Determine styling based on decision type
+            let colorClass, symbol, action;
+            if (entry.decision === 'match') {
+                colorClass = '#27ae60';
+                symbol = '✓';
+                action = 'Matched';
+            } else {
+                colorClass = '#e74c3c';
+                symbol = '✗';
+                action = 'Skipped';
             }
             
-            historyList.innerHTML = htmlContent;
+            // Build HTML string
+            htmlContent += `<span style="color:${colorClass};">${symbol} ${action}</span> with ${entry.profile.name}, ${entry.profile.age}<br>`;
         }
+        
+        // Step 4: RETURN the generated HTML
+        return htmlContent;
+    }
+    
+    /**
+     * Updates the history display by calling student-developed procedure
+     * (CALLS TO STUDENT-DEVELOPED PROCEDURE requirement)
+     */
+    function updateHistoryDisplay() {
+        const historyList = document.getElementById('historyList');
+        // Call student-developed procedure with parameters
+        historyList.innerHTML = generateHistoryHTML(profileHistory, 10);
     }
 
     function setButtonsEnabled(enabled) {
