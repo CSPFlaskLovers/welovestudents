@@ -469,7 +469,7 @@ All three concepts work together in most programs, but sequencing is the foundat
     }
 
     // ==========================================
-    // DEMO GAME CODE (AP CSP COMPLIANT)
+    // DEMO GAME CODE (Original)
     // ==========================================
     let profileHistory = [];
     let matchCount = 0;
@@ -561,61 +561,26 @@ All three concepts work together in most programs, but sequencing is the foundat
         document.getElementById('totalCount').textContent = totalCount;
     }
 
-    // ==========================================
-    // AP CSP REQUIREMENT: STUDENT-DEVELOPED PROCEDURE
-    // Contains: Parameters, Return Type, Sequencing, Selection, Iteration
-    // ==========================================
-    
-    /**
-     * Generates HTML for displaying decision history
-     * @param {Array} historyArray - Collection of decision entries (LIST requirement)
-     * @param {number} maxItems - Maximum number of items to display (PARAMETER)
-     * @returns {string} HTML string for history display (RETURN TYPE)
-     */
-    function generateHistoryHTML(historyArray, maxItems) {
-        // SEQUENCING: Steps execute in order
-        
-        // Step 1: SELECTION - Check if history is empty
-        if (historyArray.length === 0) {
-            return '<em>No decisions yet...</em>';
-        }
-        
-        // Step 2: Initialize output string
-        let htmlContent = '';
-        let itemsToShow = Math.min(maxItems, historyArray.length);
-        
-        // Step 3: ITERATION - Loop through history entries
-        for (let i = 0; i < itemsToShow; i++) {
-            const entry = historyArray[i];
-            
-            // SELECTION - Determine styling based on decision type
-            let colorClass, symbol, action;
-            if (entry.decision === 'match') {
-                colorClass = '#27ae60';
-                symbol = '✓';
-                action = 'Matched';
-            } else {
-                colorClass = '#e74c3c';
-                symbol = '✗';
-                action = 'Skipped';
-            }
-            
-            // Build HTML string
-            htmlContent += `<span style="color:${colorClass};">${symbol} ${action}</span> with ${entry.profile.name}, ${entry.profile.age}<br>`;
-        }
-        
-        // Step 4: RETURN the generated HTML
-        return htmlContent;
-    }
-    
-    /**
-     * Updates the history display by calling student-developed procedure
-     * (CALLS TO STUDENT-DEVELOPED PROCEDURE requirement)
-     */
     function updateHistoryDisplay() {
         const historyList = document.getElementById('historyList');
-        // Call student-developed procedure with parameters
-        historyList.innerHTML = generateHistoryHTML(profileHistory, 10);
+        
+        if (profileHistory.length === 0) {
+            historyList.innerHTML = '<em>No decisions yet...</em>';
+        } else {
+            let htmlContent = '';
+            let itemsToShow = Math.min(10, profileHistory.length);
+            
+            for (let i = 0; i < itemsToShow; i++) {
+                const entry = profileHistory[i];
+                const colorClass = entry.decision === 'match' ? '#27ae60' : '#e74c3c';
+                const symbol = entry.decision === 'match' ? '✓' : '✗';
+                const action = entry.decision === 'match' ? 'Matched' : 'Skipped';
+                
+                htmlContent += `<span style="color:${colorClass};">${symbol} ${action}</span> with ${entry.profile.name}, ${entry.profile.age}<br>`;
+            }
+            
+            historyList.innerHTML = htmlContent;
+        }
     }
 
     function setButtonsEnabled(enabled) {
@@ -863,13 +828,70 @@ All three concepts work together in most programs, but sequencing is the foundat
         `;
     }
 
-    function handleRealMatch() {
+    async function handleRealMatch() {
         const state = realMatchmakingState;
         const profile = state.profiles[state.currentIndex];
+        const compatibility = calculateRealCompatibility(profile);
+        
+        // Add to local state
         state.matches.push({
             ...profile,
-            compatibility: calculateRealCompatibility(profile)
+            compatibility: compatibility
         });
+        
+        // Save match to backend - get existing matches first, then add new one
+        try {
+            const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? `http://localhost:8001/api/match/`
+                : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/';
+            
+            // Get current user's data to retrieve existing matches
+            const getResponse = await fetch(backendURL + 'data', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            let existingMatches = [];
+            if (getResponse.ok) {
+                const userData = await getResponse.json();
+                // Check if user already has matches saved
+                if (userData.setup && userData.setup.data && userData.setup.data.matched_with) {
+                    existingMatches = Array.isArray(userData.setup.data.matched_with) 
+                        ? userData.setup.data.matched_with 
+                        : [userData.setup.data.matched_with];
+                }
+            }
+            
+            // Add new match to the list (avoid duplicates)
+            if (!existingMatches.includes(profile.uid)) {
+                existingMatches.push(profile.uid);
+            }
+            
+            // Save updated matches array to backend
+            const saveResponse = await fetch(backendURL + 'add', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    index: 'matched_with',
+                    data: existingMatches
+                })
+            });
+            
+            if (saveResponse.ok) {
+                console.log(`Match with ${profile.uid} saved to backend. Total matches: ${existingMatches.length}`);
+            } else {
+                console.error('Failed to save match to backend');
+            }
+        } catch (error) {
+            console.error('Error saving match:', error);
+        }
+        
         state.currentIndex++;
         showRealProfile();
     }
