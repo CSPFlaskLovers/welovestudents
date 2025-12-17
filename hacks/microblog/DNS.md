@@ -14,7 +14,6 @@ breadcrumb: true
 backend_enabled: true
 backend_api: "/api"
 ---
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -621,9 +620,3 @@ backend_api: "/api"
                 console.error('Network error:', error);
             }
         }
-
-        // Initialize on load
-        window.onload = () => {
-            checkServerStatus();
-            initializeGame();
-        };b
