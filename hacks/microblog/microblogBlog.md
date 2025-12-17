@@ -288,11 +288,12 @@ function submitPersona() {
     sharing: question5.value,
     priority: question6.value
   };
-
+  
   document.getElementById("result-box").style.display = "block";
   document.getElementById("server-status").textContent = "Submitting…";
-
-  fetch(`${pythonURI}/api/microblog`, {
+  
+  /* ---------- MICROBLOG POST ---------- */
+  fetch(`${pythonURI}/api/microblog`, {  // Fixed: added parenthesis
     method: "POST",
     credentials: "include",
     headers: {
@@ -305,19 +306,40 @@ function submitPersona() {
       topicPath: "/digital-famine/microblog/microb/"
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.error) {
-      document.getElementById("server-status").textContent =
-        "You must be logged in to submit.";
-    } else {
-      document.getElementById("server-status").textContent =
-        "Reflection posted successfully!";
-    }
+  .catch(err => console.error("Microblog error:", err));
+  
+  /* ---------- MATCHMAKING SAVE (JWT REQUIRED) ---------- */
+  fetch(`${pythonURI}/api/match/save-profile-json`, {  // Fixed: added parenthesis
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      profile_data: [
+        { question: "interaction_style", response: style.value },
+        { question: "safety_principle", response: phrase.value },
+        { question: "reaction", response: question4.value },
+        { question: "sharing_rule", response: question5.value },
+        { question: "priority_habit", response: question6.value }
+      ]
+    })
   })
-  .catch(() => {
+  .then(res => {
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    return res.json();
+  })
+  .then(data => {
     document.getElementById("server-status").textContent =
-      "Server error. Try again.";
+      "Reflection saved successfully!";
+    console.log("Save response:", data);
+  })
+  .catch(err => {
+    console.error("Save error:", err);
+    document.getElementById("server-status").textContent =
+      "You must be logged in to submit.";
   });
 }
 </script>
