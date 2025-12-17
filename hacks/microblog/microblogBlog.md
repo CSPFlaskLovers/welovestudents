@@ -9,8 +9,6 @@ tags: [online safety, matchmaking, submodule]
 author: "Nicolas Diaz"
 breadcrumb: true
 ---
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
