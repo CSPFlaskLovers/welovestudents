@@ -172,6 +172,12 @@ button:hover {
   border-top: 1px solid var(--border);
   text-align: center;
 }
+
+/* ---------- ERROR STYLING ---------- */
+.error {
+  border-color: #ff4444 !important;
+  background: #1a0a0a !important;
+}
 </style>
 </head>
 
@@ -280,7 +286,65 @@ function closeVisual(e) {
   }
 }
 
+// ========== LISTS TO MANAGE PROGRAM COMPLEXITY ==========
+const formFields = ['style', 'phrase', 'question4', 'question5', 'question6'];
+const questionKeys = ['interaction_style', 'safety_principle', 'reaction', 'sharing_rule', 'priority_habit'];
+
+// ========== PROCEDURE WITH PARAMETERS, RETURN TYPE, AND ALGORITHM ==========
+/**
+ * Validates and builds profile data from form fields
+ * @param {Array} fieldIds - List of form field element IDs
+ * @param {Array} questionNames - List of corresponding question keys
+ * @returns {Array|null} - Array of profile data objects, or null if validation fails
+ */
+function buildAndValidateProfileData(fieldIds, questionNames) {
+  const profileData = [];
+  let allValid = true;
+  
+  // ITERATION: Loop through all form fields
+  for (let i = 0; i < fieldIds.length; i++) {
+    const element = document.getElementById(fieldIds[i]);
+    const value = element ? element.value.trim() : '';
+    
+    // SELECTION: Check if field is valid
+    if (value === '') {
+      allValid = false;
+      if (element) {
+        element.classList.add('error');
+      }
+    } else {
+      if (element) {
+        element.classList.remove('error');
+      }
+      
+      // SEQUENCING: Add valid data in order
+      profileData.push({
+        question: questionNames[i],
+        response: value
+      });
+    }
+  }
+  
+  // SELECTION: Return data only if all fields are valid
+  if (allValid && profileData.length === fieldIds.length) {
+    return profileData;
+  } else {
+    return null;
+  }
+}
+
+// ========== ORIGINAL FUNCTION (KEPT INTACT, NOW CALLS NEW PROCEDURE) ==========
 function submitPersona() {
+  // CALL TO STUDENT-DEVELOPED PROCEDURE
+  const validatedProfileData = buildAndValidateProfileData(formFields, questionKeys);
+  
+  // SELECTION: Check if validation passed
+  if (validatedProfileData === null) {
+    document.getElementById("server-status").textContent = "Please fill out all fields";
+    document.getElementById("result-box").style.display = "block";
+    return;
+  }
+  
   const responses = {
     style: style.value,
     principle: phrase.value,
@@ -293,7 +357,7 @@ function submitPersona() {
   document.getElementById("server-status").textContent = "Submitting…";
   
   /* ---------- MICROBLOG POST ---------- */
-  fetch(`${pythonURI}/api/microblog`, {  // Fixed: added parenthesis
+  fetch(`${pythonURI}/api/microblog`, {
     method: "POST",
     credentials: "include",
     headers: {
@@ -309,20 +373,14 @@ function submitPersona() {
   .catch(err => console.error("Microblog error:", err));
   
   /* ---------- MATCHMAKING SAVE (JWT REQUIRED) ---------- */
-  fetch(`${pythonURI}/api/match/save-profile-json`, {  // Fixed: added parenthesis
+  fetch(`${pythonURI}/api/match/save-profile-json`, {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      profile_data: [
-        { question: "interaction_style", response: style.value },
-        { question: "safety_principle", response: phrase.value },
-        { question: "reaction", response: question4.value },
-        { question: "sharing_rule", response: question5.value },
-        { question: "priority_habit", response: question6.value }
-      ]
+      profile_data: validatedProfileData  // Using validated data from procedure
     })
   })
   .then(res => {
