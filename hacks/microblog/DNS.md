@@ -14,6 +14,7 @@ breadcrumb: true
 backend_enabled: true
 backend_api: "/api"
 ---
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -32,6 +33,39 @@ backend_api: "/api"
         }
         .slide-in { animation: slide-in 0.3s ease; }
     </style>
+    
+    <!-- Import config.js FIRST, before main game script -->
+    <script type="module">
+        try {
+            const baseurl = "{{ site.baseurl }}";
+            console.log('Attempting to import config.js from:', baseurl + '/assets/js/api/config.js');
+            
+            const mod = await import(baseurl + '/assets/js/api/config.js');
+            
+            // Set on window object so inline scripts can access it
+            window._apiImportedConfig = {
+                pythonURI: mod.pythonURI,
+                fetchOptions: mod.fetchOptions
+            };
+            window.pythonURI = mod.pythonURI;  // Also set here for easy access
+            
+            console.log('✓ matchmakingLesson: config imported successfully');
+            console.log('✓ pythonURI from config:', mod.pythonURI);
+            console.log('✓ window.pythonURI set to:', window.pythonURI);
+        } catch (err) {
+            console.warn('✗ matchmakingLesson: could not import config.js', err);
+            console.warn('Will use hostname-based fallback');
+            
+            // Set fallback directly
+            if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+                window._apiImportedConfig = {
+                    pythonURI: "http://localhost:8001"
+                };
+                window.pythonURI = "http://localhost:8001";
+                console.log('✓ Set fallback pythonURI: http://localhost:8001');
+            }
+        }
+    </script>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
@@ -596,7 +630,7 @@ backend_api: "/api"
             ];
 
             try {
-                const response = await fetch('/api/match/save-profile-json', {
+                const response = await fetch('http://localhost:8001/api/match/save-profile-json', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
