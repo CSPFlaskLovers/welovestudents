@@ -2,7 +2,7 @@
 layout: page
 title: Microblogging Communications Network Establishment
 description: Navigate through interconnected challenges in a satellite communication network
-permalink: /digital-famine/microblog/
+permalink: /digital-matchmaking/
 breadcrumb: true
 author: Lucas M
 ---
@@ -69,32 +69,32 @@ The system is now defunct, as humans took to the stars. We'll have the reestabli
 
     // create an array with nodes
     var nodes = new vis.DataSet([
-        {id: 1, label: 'API blog', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/api/', title: 'Open Node 1',
+        {id: 1, label: 'API blog', url: '{{ base.siteurl }}/welovestudents/digital-matchmaking/matchmaking/api/', title: 'Open Node 1',
          image: defaultImgUrl,
          longTitle: 'Comm Relay Alpha',
          description: 'Primary uplink relay. Repairs required to restore long-range comms.',
          tags: ['relay','priority-high']},
-        {id: 2, label: 'Microblog', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/microb/', title: 'Open Node 2',
+        {id: 2, label: 'Microblog', url: '{{ base.siteurl }}/welovestudents/digital-matchmaking/matchmaking/microb/', title: 'Open Node 2',
          image: defaultImgUrl,
          longTitle: 'Orbital Hub Gamma',
          description: 'Orbital hub with degraded power systems.',
          tags: ['orbital','maintenance']},
-        {id: 3, label: 'PII quiz', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/mcq/', title: 'Open Node 3',
+        {id: 3, label: 'PII quiz', url: '{{ base.siteurl }}/welovestudents/digital-matchmaking/matchmaking/mcq/', title: 'Open Node 3',
          image: defaultImgUrl,
          longTitle: 'Tactical Beacon Beta',
          description: 'Short-range beacon used for local operative coordination.',
          tags: ['beacon','local']},
-        {id: 4, label: 'Hints', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/hints/', title: 'Open Node 4',
+        {id: 4, label: 'Hints', url: '{{ base.siteurl }}/welovestudents/digital-matchmaking/microblog/hints/', title: 'Open Node 4',
          image: defaultImgUrl,
          longTitle: 'Ground Station Delta',
          description: 'Ground station for southern hemisphere coverage.',
          tags: ['ground','coverage']},
-        {id: 5, label: 'DNS Sendoff', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/dns/', title: 'Open Node 5',
+        {id: 5, label: 'DNS Sendoff', url: '{{ base.siteurl }}/welovestudents/digital-matchmaking/matchmaking/dns/', title: 'Open Node 5',
          image: defaultImgUrl,
          longTitle: 'Backup Array Epsilon',
          description: 'Cold backup array; bring spare modules to reactivate.',
          tags: ['backup','spare-parts']},
-        {id: 6, label: 'Matchmaking Sequence', url: '{{ base.siteurl }}/welovestudents/digital-famine/microblog/matchmaking_sequence/', title: 'Open Node 6',
+        {id: 6, label: 'Matchmaking Sequence', url: '{{ base.siteurl }}/welovestudents/digital-matchmaking/matchmaking/matchmaking_sequence/', title: 'Open Node 6',
          image: defaultImgUrl,
          longTitle: 'Backup Array Zeta',
          description: 'Cold backup array; bring spare modules to reactivate.',

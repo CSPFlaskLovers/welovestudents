@@ -2,7 +2,7 @@
 layout: post
 title: "DNS"
 description: "Submodule 4 of Hints Mini-Quest"
-permalink: /digital-famine/microblog/dns/
+permalink: /digital-matchmaking/matchmaking/dns/
 parent: "AI Usage"
 team: "FlaskLovers"
 submodule: 2
