@@ -1,17 +1,10 @@
 ---
 layout: page
-title: Microblogging Communications Network Establishment
-description: Navigate through interconnected challenges in a satellite communication network
+description: Digital Matchmaking - go through the nodes to create your profile
 permalink: /digital-matchmaking/
 breadcrumb: true
-author: Lucas M
+author: 
 ---
-
-<div class="mission-header">
-  <h2 class="glitch-text">RAMPART-B NETWORK RESTORATION</h2>
-  <p class="mission-brief">To begin your mission, you'll have to repair Old Earth's communications network <strong>Rampart-B</strong>. The old Rampart-A network was a partnership between global agencies and the NSA to monitor all internet activity worldwide (monitoring at a rate of 3 terabits/sec!), but as an apocalyptic event occurred, the network was repurposed as a fallback communications network for humanity.</p>
-  <p class="mission-objective">The system is now defunct, as humans took to the stars. We'll have to reestablish this network to maintain contact with our operatives.</p>
-</div>
 
 <!--Enhanced Network Style-->
 <style type="text/css">
@@ -85,60 +78,75 @@ author: Lucas M
         border: 2px solid #00d9ff;
         border-radius: 12px;
         position: relative;
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: hidden;
         box-shadow: 0 10px 40px rgba(0, 217, 255, 0.3);
-        cursor: grab;
-    }
-
-    #comm_network:active {
-        cursor: grabbing;
-    }
-
-    #comm_network::-webkit-scrollbar {
-        display: none;
-    }
-
-    #comm_network {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    .network-container {
-        position: relative;
-        width: fit-content;
-        height: 100%;
-        max-width: 100%;
-    }
-
-    .network-canvas {
-        width: 1200px;
-        height: 100%;
-        position: relative;
-        z-index: 2;
-        display: inline-block;
     }
 
     .warp-background {
         position: absolute;
-        top: -100%;
-        left: -100%;
-        width: 300%;
-        height: 300%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         pointer-events: none;
         z-index: 1;
         overflow: hidden;
+        perspective: 1200px;
+        perspective-origin: center center;
     }
 
     .warp-grid {
         position: absolute;
-        width: 100%;
-        height: 100%;
+        width: 200%;
+        height: 200%;
+        left: -50%;
+        top: -50%;
         background-image: 
             repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0, 217, 255, 0.1) 49px, rgba(0, 217, 255, 0.1) 50px),
             repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0, 217, 255, 0.1) 49px, rgba(0, 217, 255, 0.1) 50px);
         background-size: 50px 50px;
+        transform-style: preserve-3d;
         transition: transform 0.1s ease-out;
+    }
+
+    .scroll-wrapper {
+        width: 100%;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        cursor: default;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: relative;
+        z-index: 2;
+        perspective: 1200px;
+        perspective-origin: center center;
+    }
+
+    .scroll-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroll-wrapper.grabbing {
+        cursor: grabbing;
+    }
+
+    .network-container {
+        position: relative;
+        height: 100%;
+        display: inline-block;
+        min-width: 100%;
+        transform-style: preserve-3d;
+        pointer-events: none;
+    }
+
+    .network-canvas {
+        height: 100%;
+        position: relative;
+        display: inline-block;
+        transform-style: preserve-3d;
+        transition: transform 0.1s ease-out;
+        pointer-events: none;
     }
 
     .hints-panel {
@@ -274,8 +282,10 @@ author: Lucas M
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 5;
+        z-index: 100;
         transform-origin: center;
+        transform-style: preserve-3d;
+        pointer-events: auto;
     }
 
     .node::before {
@@ -295,27 +305,30 @@ author: Lucas M
     }
 
     .node.locked {
-        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-        border: 2px solid #444;
+        background: linear-gradient(135deg, rgba(42, 42, 42, 0.4) 0%, rgba(26, 26, 26, 0.4) 100%);
+        border: 2px solid rgba(68, 68, 68, 0.6);
         cursor: not-allowed;
+        backdrop-filter: blur(5px);
     }
 
     .node.locked::before { animation: none; }
 
     .node.unlocked {
-        background: linear-gradient(135deg, #3a4a5a 0%, #2a3a4a 100%);
-        border: 2px solid #00d9ff;
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(0, 136, 255, 0.15) 100%);
+        border: 2px solid rgba(0, 217, 255, 0.8);
         box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        backdrop-filter: blur(5px);
     }
 
     .node.visited {
-        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-        border: 2px solid #66bb6a;
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(56, 142, 60, 0.2) 100%);
+        border: 2px solid rgba(102, 187, 106, 0.8);
         box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+        backdrop-filter: blur(5px);
     }
 
     .node:not(.locked):hover {
-        transform: scale(1.15) translateY(-5px);
+        transform: scale(1.15) translateY(-5px) translateZ(50px) !important;
         box-shadow: 0 10px 30px rgba(0, 217, 255, 0.6);
         z-index: 100;
     }
@@ -354,12 +367,14 @@ author: Lucas M
         z-index: 1;
         opacity: 0.6;
         box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        pointer-events: none;
     }
 
     .connection-line.locked {
         background: linear-gradient(90deg, #444 0%, #333 100%);
         box-shadow: none;
         opacity: 0.3;
+        pointer-events: none;
     }
 
     .node-card {
@@ -374,7 +389,7 @@ author: Lucas M
         border: 2px solid #00d9ff;
         box-shadow: 0 10px 40px rgba(0, 217, 255, 0.4);
         padding: 20px;
-        z-index: 9999;
+        z-index: 10000;
         font-family: 'Segoe UI', sans-serif;
         backdrop-filter: blur(10px);
         animation: slideIn 0.3s ease-out;
@@ -489,8 +504,10 @@ author: Lucas M
         </div>
     </div>
     
-    <div class="network-container">
-        <div class="network-canvas" id="networkCanvas"></div>
+    <div class="scroll-wrapper" id="scrollWrapper">
+        <div class="network-container" id="networkContainer">
+            <div class="network-canvas" id="networkCanvas"></div>
+        </div>
     </div>
     
     <div class="node-card" id="nodeCard"></div>
@@ -604,24 +621,38 @@ author: Lucas M
     }
 
     function createNetwork() {
+        console.log('Creating network...');
         const canvas = document.getElementById('networkCanvas');
         const card = document.getElementById('nodeCard');
         const container = document.getElementById('comm_network');
-        const networkContainer = document.querySelector('.network-container');
+        const scrollWrapper = document.getElementById('scrollWrapper');
+        const networkContainer = document.getElementById('networkContainer');
         
-        // Create nodes in linear arrangement with more spacing
+        console.log('Elements found:', {canvas, card, container, scrollWrapper, networkContainer});
+        
+        // Create nodes in linear arrangement - centered vertically
         const startX = 150;
         const spacing = 200;
-        const yBase = 350;
-        const yVariation = 80;
+        const yBase = 350; // Keep centered
+        const yVariation = 0; // Remove vertical variation to center nodes
 
-        // Calculate exact width needed for all nodes
-        const lastNodeX = startX + (nodes.length - 1) * spacing;
-        const canvasWidth = lastNodeX + 100; // Node position + padding
+        // Get viewport width
+        const viewportWidth = scrollWrapper.clientWidth;
         
-        // Set both canvas and container to exact width
+        // Calculate positions
+        const lastNodeX = startX + (nodes.length - 1) * spacing;
+        const nodeWidth = 80;
+        
+        // Canvas width: just enough to fit last node with padding, but not excessive
+        const canvasWidth = lastNodeX + nodeWidth + 150;
+        
+        // Container width: viewport + distance to last node
+        const containerWidth = Math.max(viewportWidth, canvasWidth);
+        
         canvas.style.width = canvasWidth + 'px';
-        networkContainer.style.width = canvasWidth + 'px';
+        networkContainer.style.width = containerWidth + 'px';
+
+        console.log('Canvas dimensions:', {canvasWidth, containerWidth, viewportWidth});
 
         // Create connection lines
         for (let i = 0; i < nodes.length - 1; i++) {
@@ -643,13 +674,15 @@ author: Lucas M
             line.style.width = length + 'px';
             line.style.left = x1 + 40 + 'px';
             line.style.top = y1 + 40 + 'px';
-            line.style.transform = `rotate(${angle}deg)`;
+            line.style.transform = `rotate(${angle}deg) translateZ(-50px)`; // Push lines behind nodes
+            line.style.transformStyle = 'preserve-3d';
             
             canvas.appendChild(line);
         }
 
         // Create nodes
         nodes.forEach((node, index) => {
+            console.log('Creating node:', node.id, node.label);
             const nodeEl = document.createElement('div');
             nodeEl.id = 'node-' + node.id;
             nodeEl.className = 'node';
@@ -660,16 +693,21 @@ author: Lucas M
             nodeEl.style.left = x + 'px';
             nodeEl.style.top = y + 'px';
             
+            console.log('Node position:', {id: node.id, x, y});
+            
             nodeEl.innerHTML = `
                 <div class="node-number">${node.id}</div>
                 <div class="node-label">${node.label}</div>
             `;
 
             nodeEl.addEventListener('mouseenter', (e) => {
+                console.log('Mouse entered node:', node.id);
                 const rect = container.getBoundingClientRect();
-                const canvasRect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const nodeRect = nodeEl.getBoundingClientRect();
+                const x = nodeRect.left - rect.left + 40; // Center of node
+                const y = nodeRect.top - rect.top + 40;
+                
+                console.log('Card position:', {x, y, rectWidth: rect.width, rectHeight: rect.height});
                 
                 card.innerHTML = `
                     <div class="card-title">${node.longTitle}</div>
@@ -682,20 +720,39 @@ author: Lucas M
                 card.style.left = Math.min(rect.width - 360, x + 20) + 'px';
                 card.style.top = Math.min(rect.height - 200, y + 20) + 'px';
                 card.style.display = 'block';
+                card.style.pointerEvents = 'none';
+                console.log('Card display set to block, styles:', card.style.left, card.style.top);
             });
 
             nodeEl.addEventListener('mouseleave', () => {
+                console.log('Mouse left node:', node.id);
                 card.style.display = 'none';
             });
 
             nodeEl.addEventListener('click', () => {
+                console.log('Node clicked:', node.id, 'Unlocked:', isUnlocked(node.id));
                 if (isUnlocked(node.id)) {
+                    console.log('Navigating to:', node.url);
                     markVisited(node.id);
                     window.location.href = node.url;
+                } else {
+                    console.log('Node is locked');
                 }
             });
 
             canvas.appendChild(nodeEl);
+        });
+
+        // Enforce scroll limit
+        const maxScrollLeft = canvasWidth - viewportWidth;
+        
+        scrollWrapper.addEventListener('scroll', function(e) {
+            if (this.scrollLeft > maxScrollLeft) {
+                this.scrollLeft = maxScrollLeft;
+            }
+            if (this.scrollLeft < 0) {
+                this.scrollLeft = 0;
+            }
         });
 
         updateNodeStates();
@@ -705,6 +762,52 @@ author: Lucas M
     // Initialize
     visitedMap = loadVisited();
     createNetwork();
+
+    // Handle drag scrolling manually
+    const scrollWrapper = document.getElementById('scrollWrapper');
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+    let hasMoved = false;
+
+    scrollWrapper.addEventListener('mousedown', (e) => {
+        console.log('Mousedown on scrollWrapper, target:', e.target);
+        // Don't start drag if clicking on a node
+        if (e.target.closest('.node')) {
+            console.log('Clicked on node, not starting drag');
+            return;
+        }
+        isDragging = true;
+        hasMoved = false;
+        scrollWrapper.classList.add('grabbing');
+        scrollWrapper.style.cursor = 'grabbing';
+        startX = e.pageX - scrollWrapper.offsetLeft;
+        scrollLeft = scrollWrapper.scrollLeft;
+        console.log('Started dragging');
+    });
+
+    scrollWrapper.addEventListener('mouseleave', () => {
+        console.log('Mouse left scrollWrapper');
+        isDragging = false;
+        scrollWrapper.classList.remove('grabbing');
+        scrollWrapper.style.cursor = 'default';
+    });
+
+    scrollWrapper.addEventListener('mouseup', (e) => {
+        console.log('Mouseup, isDragging:', isDragging, 'hasMoved:', hasMoved);
+        isDragging = false;
+        scrollWrapper.classList.remove('grabbing');
+        scrollWrapper.style.cursor = 'default';
+    });
+
+    scrollWrapper.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        hasMoved = true;
+        const x = e.pageX - scrollWrapper.offsetLeft;
+        const walk = (x - startX) * 2;
+        scrollWrapper.scrollLeft = scrollLeft - walk;
+    });
 
     // Dropdown toggle for hints
     const hintsToggle = document.getElementById('hintsToggle');
@@ -729,21 +832,45 @@ author: Lucas M
     });
 
     function animateWarp() {
-        // Smooth interpolation with reduced intensity
-        currentX += (mouseX - 0.5 - currentX) * 0.08;
-        currentY += (mouseY - 0.5 - currentY) * 0.08;
+        // Faster interpolation to reduce lag
+        currentX += (mouseX - 0.5 - currentX) * 0.15;
+        currentY += (mouseY - 0.5 - currentY) * 0.15;
 
-        // Reduced warp intensity
-        const warpX = currentX * 15;
-        const warpY = currentY * 15;
-        const perspective = 1200 - Math.abs(currentX * 100) - Math.abs(currentY * 100);
+        // Very subtle angles with minimal up/down tilt
+        const rotateX = -8 + (currentY * 3); // Minimal tilt: -9.5 to -6.5 degrees
+        const rotateY = currentX * 15; // Moderate side-to-side rotation
+        const rotateZ = 0; // No roll
 
+        // Apply to background grid - push it back further
         warpGrid.style.transform = `
-            perspective(${perspective}px)
-            rotateX(${-warpY}deg)
-            rotateY(${warpX}deg)
-            translateZ(-50px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            rotateZ(${rotateZ}deg)
+            translateZ(-200px)
         `;
+
+        // Apply same transform to canvas and nodes - keep them closer to camera
+        const canvas = document.getElementById('networkCanvas');
+        canvas.style.transform = `
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            rotateZ(${rotateZ}deg)
+            translateZ(-180px)
+        `;
+
+        // Give nodes individual depth based on their Y position
+        nodes.forEach((node, index) => {
+            const nodeEl = document.getElementById('node-' + node.id);
+            if (!nodeEl) return;
+            
+            // Smaller depth variation for subtle effect
+            const baseDepth = (index % 2 === 0 ? 15 : -15);
+            
+            // Reset any hover transforms and apply only depth
+            if (!nodeEl.matches(':hover')) {
+                nodeEl.style.transform = `translateZ(${baseDepth}px)`;
+            }
+        });
 
         requestAnimationFrame(animateWarp);
     }
