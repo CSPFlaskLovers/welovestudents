@@ -1,17 +1,10 @@
 ---
 layout: page
-title: Microblogging Communications Network Establishment
-description: Navigate through interconnected challenges in a satellite communication network
+description: Digital Matchmaking - go through the nodes to create your profile
 permalink: /digital-matchmaking/
 breadcrumb: true
-author: Lucas M
+author: 
 ---
-
-<div class="mission-header">
-  <h2 class="glitch-text">RAMPART-B NETWORK RESTORATION</h2>
-  <p class="mission-brief">To begin your mission, you'll have to repair Old Earth's communications network <strong>Rampart-B</strong>. The old Rampart-A network was a partnership between global agencies and the NSA to monitor all internet activity worldwide (monitoring at a rate of 3 terabits/sec!), but as an apocalyptic event occurred, the network was repurposed as a fallback communications network for humanity.</p>
-  <p class="mission-objective">The system is now defunct, as humans took to the stars. We'll have to reestablish this network to maintain contact with our operatives.</p>
-</div>
 
 <!--Enhanced Network Style-->
 <style type="text/css">
@@ -85,46 +78,16 @@ author: Lucas M
         border: 2px solid #00d9ff;
         border-radius: 12px;
         position: relative;
-        overflow-x: auto;
-        overflow-y: hidden;
+        overflow: hidden;
         box-shadow: 0 10px 40px rgba(0, 217, 255, 0.3);
-        cursor: grab;
-    }
-
-    #comm_network:active {
-        cursor: grabbing;
-    }
-
-    #comm_network::-webkit-scrollbar {
-        display: none;
-    }
-
-    #comm_network {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    .network-container {
-        position: relative;
-        width: fit-content;
-        height: 100%;
-        max-width: 100%;
-    }
-
-    .network-canvas {
-        width: 1200px;
-        height: 100%;
-        position: relative;
-        z-index: 2;
-        display: inline-block;
     }
 
     .warp-background {
         position: absolute;
-        top: -100%;
-        left: -100%;
-        width: 300%;
-        height: 300%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         pointer-events: none;
         z-index: 1;
         overflow: hidden;
@@ -132,13 +95,48 @@ author: Lucas M
 
     .warp-grid {
         position: absolute;
-        width: 100%;
-        height: 100%;
+        width: 200%;
+        height: 200%;
+        left: -50%;
+        top: -50%;
         background-image: 
             repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0, 217, 255, 0.1) 49px, rgba(0, 217, 255, 0.1) 50px),
             repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0, 217, 255, 0.1) 49px, rgba(0, 217, 255, 0.1) 50px);
         background-size: 50px 50px;
         transition: transform 0.1s ease-out;
+    }
+
+    .scroll-wrapper {
+        width: 100%;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        cursor: grab;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: relative;
+        z-index: 2;
+    }
+
+    .scroll-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroll-wrapper:active {
+        cursor: grabbing;
+    }
+
+    .network-container {
+        position: relative;
+        height: 100%;
+        display: inline-block;
+        min-width: 100%;
+    }
+
+    .network-canvas {
+        height: 100%;
+        position: relative;
+        display: inline-block;
     }
 
     .hints-panel {
@@ -489,8 +487,10 @@ author: Lucas M
         </div>
     </div>
     
-    <div class="network-container">
-        <div class="network-canvas" id="networkCanvas"></div>
+    <div class="scroll-wrapper" id="scrollWrapper">
+        <div class="network-container" id="networkContainer">
+            <div class="network-canvas" id="networkCanvas"></div>
+        </div>
     </div>
     
     <div class="node-card" id="nodeCard"></div>
@@ -607,7 +607,8 @@ author: Lucas M
         const canvas = document.getElementById('networkCanvas');
         const card = document.getElementById('nodeCard');
         const container = document.getElementById('comm_network');
-        const networkContainer = document.querySelector('.network-container');
+        const scrollWrapper = document.getElementById('scrollWrapper');
+        const networkContainer = document.getElementById('networkContainer');
         
         // Create nodes in linear arrangement with more spacing
         const startX = 150;
@@ -615,13 +616,21 @@ author: Lucas M
         const yBase = 350;
         const yVariation = 80;
 
-        // Calculate exact width needed for all nodes
-        const lastNodeX = startX + (nodes.length - 1) * spacing;
-        const canvasWidth = lastNodeX + 100; // Node position + padding
+        // Get viewport width
+        const viewportWidth = scrollWrapper.clientWidth;
         
-        // Set both canvas and container to exact width
+        // Calculate positions
+        const lastNodeX = startX + (nodes.length - 1) * spacing;
+        const nodeWidth = 80;
+        
+        // Canvas width: just enough to fit last node with padding, but not excessive
+        const canvasWidth = lastNodeX + nodeWidth + 150;
+        
+        // Container width: viewport + distance to last node
+        const containerWidth = Math.max(viewportWidth, canvasWidth);
+        
         canvas.style.width = canvasWidth + 'px';
-        networkContainer.style.width = canvasWidth + 'px';
+        networkContainer.style.width = containerWidth + 'px';
 
         // Create connection lines
         for (let i = 0; i < nodes.length - 1; i++) {
@@ -667,7 +676,6 @@ author: Lucas M
 
             nodeEl.addEventListener('mouseenter', (e) => {
                 const rect = container.getBoundingClientRect();
-                const canvasRect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
@@ -698,6 +706,18 @@ author: Lucas M
             canvas.appendChild(nodeEl);
         });
 
+        // Enforce scroll limit
+        const maxScrollLeft = canvasWidth - viewportWidth;
+        
+        scrollWrapper.addEventListener('scroll', function(e) {
+            if (this.scrollLeft > maxScrollLeft) {
+                this.scrollLeft = maxScrollLeft;
+            }
+            if (this.scrollLeft < 0) {
+                this.scrollLeft = 0;
+            }
+        });
+
         updateNodeStates();
         updateProgress();
     }
@@ -717,8 +737,9 @@ author: Lucas M
     });
 
     // Warp background effect
-    const container = document.getElementById('comm_network');
+    const scrollWrapper = document.getElementById('scrollWrapper');
     const warpGrid = document.getElementById('warpGrid');
+    const container = document.getElementById('comm_network');
     let mouseX = 0, mouseY = 0;
     let currentX = 0, currentY = 0;
 
