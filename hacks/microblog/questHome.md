@@ -91,6 +91,8 @@ author:
         pointer-events: none;
         z-index: 1;
         overflow: hidden;
+        perspective: 1200px;
+        perspective-origin: center center;
     }
 
     .warp-grid {
@@ -103,6 +105,7 @@ author:
             repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0, 217, 255, 0.1) 49px, rgba(0, 217, 255, 0.1) 50px),
             repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0, 217, 255, 0.1) 49px, rgba(0, 217, 255, 0.1) 50px);
         background-size: 50px 50px;
+        transform-style: preserve-3d;
         transition: transform 0.1s ease-out;
     }
 
@@ -111,18 +114,20 @@ author:
         height: 100%;
         overflow-x: auto;
         overflow-y: hidden;
-        cursor: grab;
+        cursor: default;
         scrollbar-width: none;
         -ms-overflow-style: none;
         position: relative;
         z-index: 2;
+        perspective: 1200px;
+        perspective-origin: center center;
     }
 
     .scroll-wrapper::-webkit-scrollbar {
         display: none;
     }
 
-    .scroll-wrapper:active {
+    .scroll-wrapper.grabbing {
         cursor: grabbing;
     }
 
@@ -131,12 +136,17 @@ author:
         height: 100%;
         display: inline-block;
         min-width: 100%;
+        transform-style: preserve-3d;
+        pointer-events: none;
     }
 
     .network-canvas {
         height: 100%;
         position: relative;
         display: inline-block;
+        transform-style: preserve-3d;
+        transition: transform 0.1s ease-out;
+        pointer-events: none;
     }
 
     .hints-panel {
@@ -272,8 +282,10 @@ author:
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 5;
+        z-index: 100;
         transform-origin: center;
+        transform-style: preserve-3d;
+        pointer-events: auto;
     }
 
     .node::before {
@@ -293,27 +305,30 @@ author:
     }
 
     .node.locked {
-        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-        border: 2px solid #444;
+        background: linear-gradient(135deg, rgba(42, 42, 42, 0.4) 0%, rgba(26, 26, 26, 0.4) 100%);
+        border: 2px solid rgba(68, 68, 68, 0.6);
         cursor: not-allowed;
+        backdrop-filter: blur(5px);
     }
 
     .node.locked::before { animation: none; }
 
     .node.unlocked {
-        background: linear-gradient(135deg, #3a4a5a 0%, #2a3a4a 100%);
-        border: 2px solid #00d9ff;
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.15) 0%, rgba(0, 136, 255, 0.15) 100%);
+        border: 2px solid rgba(0, 217, 255, 0.8);
         box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+        backdrop-filter: blur(5px);
     }
 
     .node.visited {
-        background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-        border: 2px solid #66bb6a;
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(56, 142, 60, 0.2) 100%);
+        border: 2px solid rgba(102, 187, 106, 0.8);
         box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+        backdrop-filter: blur(5px);
     }
 
     .node:not(.locked):hover {
-        transform: scale(1.15) translateY(-5px);
+        transform: scale(1.15) translateY(-5px) translateZ(50px) !important;
         box-shadow: 0 10px 30px rgba(0, 217, 255, 0.6);
         z-index: 100;
     }
@@ -352,12 +367,14 @@ author:
         z-index: 1;
         opacity: 0.6;
         box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        pointer-events: none;
     }
 
     .connection-line.locked {
         background: linear-gradient(90deg, #444 0%, #333 100%);
         box-shadow: none;
         opacity: 0.3;
+        pointer-events: none;
     }
 
     .node-card {
@@ -372,7 +389,7 @@ author:
         border: 2px solid #00d9ff;
         box-shadow: 0 10px 40px rgba(0, 217, 255, 0.4);
         padding: 20px;
-        z-index: 9999;
+        z-index: 10000;
         font-family: 'Segoe UI', sans-serif;
         backdrop-filter: blur(10px);
         animation: slideIn 0.3s ease-out;
@@ -604,17 +621,20 @@ author:
     }
 
     function createNetwork() {
+        console.log('Creating network...');
         const canvas = document.getElementById('networkCanvas');
         const card = document.getElementById('nodeCard');
         const container = document.getElementById('comm_network');
         const scrollWrapper = document.getElementById('scrollWrapper');
         const networkContainer = document.getElementById('networkContainer');
         
-        // Create nodes in linear arrangement with more spacing
+        console.log('Elements found:', {canvas, card, container, scrollWrapper, networkContainer});
+        
+        // Create nodes in linear arrangement - centered vertically
         const startX = 150;
         const spacing = 200;
-        const yBase = 350;
-        const yVariation = 80;
+        const yBase = 350; // Keep centered
+        const yVariation = 0; // Remove vertical variation to center nodes
 
         // Get viewport width
         const viewportWidth = scrollWrapper.clientWidth;
@@ -631,6 +651,8 @@ author:
         
         canvas.style.width = canvasWidth + 'px';
         networkContainer.style.width = containerWidth + 'px';
+
+        console.log('Canvas dimensions:', {canvasWidth, containerWidth, viewportWidth});
 
         // Create connection lines
         for (let i = 0; i < nodes.length - 1; i++) {
@@ -652,13 +674,15 @@ author:
             line.style.width = length + 'px';
             line.style.left = x1 + 40 + 'px';
             line.style.top = y1 + 40 + 'px';
-            line.style.transform = `rotate(${angle}deg)`;
+            line.style.transform = `rotate(${angle}deg) translateZ(-50px)`; // Push lines behind nodes
+            line.style.transformStyle = 'preserve-3d';
             
             canvas.appendChild(line);
         }
 
         // Create nodes
         nodes.forEach((node, index) => {
+            console.log('Creating node:', node.id, node.label);
             const nodeEl = document.createElement('div');
             nodeEl.id = 'node-' + node.id;
             nodeEl.className = 'node';
@@ -669,15 +693,21 @@ author:
             nodeEl.style.left = x + 'px';
             nodeEl.style.top = y + 'px';
             
+            console.log('Node position:', {id: node.id, x, y});
+            
             nodeEl.innerHTML = `
                 <div class="node-number">${node.id}</div>
                 <div class="node-label">${node.label}</div>
             `;
 
             nodeEl.addEventListener('mouseenter', (e) => {
+                console.log('Mouse entered node:', node.id);
                 const rect = container.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const nodeRect = nodeEl.getBoundingClientRect();
+                const x = nodeRect.left - rect.left + 40; // Center of node
+                const y = nodeRect.top - rect.top + 40;
+                
+                console.log('Card position:', {x, y, rectWidth: rect.width, rectHeight: rect.height});
                 
                 card.innerHTML = `
                     <div class="card-title">${node.longTitle}</div>
@@ -690,16 +720,23 @@ author:
                 card.style.left = Math.min(rect.width - 360, x + 20) + 'px';
                 card.style.top = Math.min(rect.height - 200, y + 20) + 'px';
                 card.style.display = 'block';
+                card.style.pointerEvents = 'none';
+                console.log('Card display set to block, styles:', card.style.left, card.style.top);
             });
 
             nodeEl.addEventListener('mouseleave', () => {
+                console.log('Mouse left node:', node.id);
                 card.style.display = 'none';
             });
 
             nodeEl.addEventListener('click', () => {
+                console.log('Node clicked:', node.id, 'Unlocked:', isUnlocked(node.id));
                 if (isUnlocked(node.id)) {
+                    console.log('Navigating to:', node.url);
                     markVisited(node.id);
                     window.location.href = node.url;
+                } else {
+                    console.log('Node is locked');
                 }
             });
 
@@ -726,6 +763,52 @@ author:
     visitedMap = loadVisited();
     createNetwork();
 
+    // Handle drag scrolling manually
+    const scrollWrapper = document.getElementById('scrollWrapper');
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+    let hasMoved = false;
+
+    scrollWrapper.addEventListener('mousedown', (e) => {
+        console.log('Mousedown on scrollWrapper, target:', e.target);
+        // Don't start drag if clicking on a node
+        if (e.target.closest('.node')) {
+            console.log('Clicked on node, not starting drag');
+            return;
+        }
+        isDragging = true;
+        hasMoved = false;
+        scrollWrapper.classList.add('grabbing');
+        scrollWrapper.style.cursor = 'grabbing';
+        startX = e.pageX - scrollWrapper.offsetLeft;
+        scrollLeft = scrollWrapper.scrollLeft;
+        console.log('Started dragging');
+    });
+
+    scrollWrapper.addEventListener('mouseleave', () => {
+        console.log('Mouse left scrollWrapper');
+        isDragging = false;
+        scrollWrapper.classList.remove('grabbing');
+        scrollWrapper.style.cursor = 'default';
+    });
+
+    scrollWrapper.addEventListener('mouseup', (e) => {
+        console.log('Mouseup, isDragging:', isDragging, 'hasMoved:', hasMoved);
+        isDragging = false;
+        scrollWrapper.classList.remove('grabbing');
+        scrollWrapper.style.cursor = 'default';
+    });
+
+    scrollWrapper.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        hasMoved = true;
+        const x = e.pageX - scrollWrapper.offsetLeft;
+        const walk = (x - startX) * 2;
+        scrollWrapper.scrollLeft = scrollLeft - walk;
+    });
+
     // Dropdown toggle for hints
     const hintsToggle = document.getElementById('hintsToggle');
     const hintsContent = document.getElementById('hintsContent');
@@ -737,9 +820,8 @@ author:
     });
 
     // Warp background effect
-    const scrollWrapper = document.getElementById('scrollWrapper');
-    const warpGrid = document.getElementById('warpGrid');
     const container = document.getElementById('comm_network');
+    const warpGrid = document.getElementById('warpGrid');
     let mouseX = 0, mouseY = 0;
     let currentX = 0, currentY = 0;
 
@@ -750,21 +832,45 @@ author:
     });
 
     function animateWarp() {
-        // Smooth interpolation with reduced intensity
-        currentX += (mouseX - 0.5 - currentX) * 0.08;
-        currentY += (mouseY - 0.5 - currentY) * 0.08;
+        // Faster interpolation to reduce lag
+        currentX += (mouseX - 0.5 - currentX) * 0.15;
+        currentY += (mouseY - 0.5 - currentY) * 0.15;
 
-        // Reduced warp intensity
-        const warpX = currentX * 15;
-        const warpY = currentY * 15;
-        const perspective = 1200 - Math.abs(currentX * 100) - Math.abs(currentY * 100);
+        // Very subtle angles with minimal up/down tilt
+        const rotateX = -8 + (currentY * 3); // Minimal tilt: -9.5 to -6.5 degrees
+        const rotateY = currentX * 15; // Moderate side-to-side rotation
+        const rotateZ = 0; // No roll
 
+        // Apply to background grid - push it back further
         warpGrid.style.transform = `
-            perspective(${perspective}px)
-            rotateX(${-warpY}deg)
-            rotateY(${warpX}deg)
-            translateZ(-50px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            rotateZ(${rotateZ}deg)
+            translateZ(-200px)
         `;
+
+        // Apply same transform to canvas and nodes - keep them closer to camera
+        const canvas = document.getElementById('networkCanvas');
+        canvas.style.transform = `
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            rotateZ(${rotateZ}deg)
+            translateZ(-180px)
+        `;
+
+        // Give nodes individual depth based on their Y position
+        nodes.forEach((node, index) => {
+            const nodeEl = document.getElementById('node-' + node.id);
+            if (!nodeEl) return;
+            
+            // Smaller depth variation for subtle effect
+            const baseDepth = (index % 2 === 0 ? 15 : -15);
+            
+            // Reset any hover transforms and apply only depth
+            if (!nodeEl.matches(':hover')) {
+                nodeEl.style.transform = `translateZ(${baseDepth}px)`;
+            }
+        });
 
         requestAnimationFrame(animateWarp);
     }
