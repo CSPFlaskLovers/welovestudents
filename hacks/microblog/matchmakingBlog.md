@@ -17,7 +17,7 @@ breadcrumb: true
 
 <script>
 /* ---------- FLASK BACKEND (FORCED, SAFE) ---------- */
-const pythonURI = "http://localhost:8001";
+const pythonURI = "http://localhost:8401";
 </script> 
 
 <style>

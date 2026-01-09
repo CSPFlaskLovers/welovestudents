@@ -667,8 +667,8 @@ breadcrumb: false
                         type="text" 
                         id="url" 
                         class="url-input" 
-                        value="http://localhost:8001/api/match/"
-                        placeholder="http://localhost:8001/api/match/endpoint"
+                        value="http://localhost:8401/api/match/"
+                        placeholder="http://localhost:8401/api/match/endpoint"
                     />
                     
                     <button id="sendBtn" class="send-btn GET" onclick="sendRequest()">
@@ -819,7 +819,7 @@ breadcrumb: false
                         baseUrl = `${protocol}//${hostname}`;
                     }
                     
-                    loginBtn.href = `${baseUrl}/welovestudents/login`;
+                    loginBtn.href = `${baseUrl}/digitalmatchmaking/login`;
                 }
             }
         })();
@@ -965,27 +965,27 @@ breadcrumb: false
             switch(example) {
                 case 'setupProfile':
                     methodSelect.value = 'POST';
-                    urlInput.value = 'http://localhost:8001/api/match/setup';
+                    urlInput.value = 'http://localhost:8401/api/match/setup';
                     requestBodyTextarea.value = '{}';
                     break;
                 case 'addProfileData':
                     methodSelect.value = 'POST';
-                    urlInput.value = 'http://localhost:8001/api/match/add';
+                    urlInput.value = 'http://localhost:8401/api/match/add';
                     requestBodyTextarea.value = '{\n  "index": "favorite_hobby",\n  "data": "Reading and coding"\n}';
                     break;
                 case 'getProfile':
                     methodSelect.value = 'GET';
-                    urlInput.value = 'http://localhost:8001/api/match/data';
+                    urlInput.value = 'http://localhost:8401/api/match/data';
                     requestBodyTextarea.value = '{}';
                     break;
                 case 'saveProfileJSON':
                     methodSelect.value = 'POST';
-                    urlInput.value = 'http://localhost:8001/api/match/save-profile-json';
+                    urlInput.value = 'http://localhost:8401/api/match/save-profile-json';
                     requestBodyTextarea.value = '{\n  "profile_data": [\n    {\n      "question": "What is your favorite hobby?",\n      "response": "Reading"\n    },\n    {\n      "question": "What is your preferred study time?",\n      "response": "Morning"\n    },\n    {\n      "question": "What type of projects do you enjoy?",\n      "response": "Web development"\n    },\n    {\n      "question": "What programming language do you prefer?",\n      "response": "Python"\n    }\n  ]\n}';
                     break;
                 case 'getAllData':
                     methodSelect.value = 'GET';
-                    urlInput.value = 'http://localhost:8001/api/match/all-data';
+                    urlInput.value = 'http://localhost:8401/api/match/all-data';
                     requestBodyTextarea.value = '{}';
                     break;
             }
@@ -1099,7 +1099,7 @@ breadcrumb: false
                 return;
             }
             
-            urlInput.value = 'http://localhost:8001/api/match/';
+            urlInput.value = 'http://localhost:8401/api/match/';
             requestBodyTextarea.value = '{}';
             responseContent.textContent = 'Response will appear here...';
             statusBadge.style.display = 'none';

@@ -403,7 +403,7 @@ breadcrumb: true
     <script>
         // Temporary config - replace with your actual Flask backend URL
         if (!window.pythonURI) {
-            window.pythonURI = "http://localhost:8001"; // Flask backend port
+            window.pythonURI = "http://localhost:8401"; // Flask backend port
         }
         
         const questions = [

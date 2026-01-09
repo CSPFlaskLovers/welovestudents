@@ -2,7 +2,7 @@ export const baseurl = "{{ site.baseurl }}";
 
 export var pythonURI;
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-    pythonURI = "http://localhost:8001";  // Same URI for localhost or 127.0.0.1
+    pythonURI = "http://localhost:8401";  // Same URI for localhost or 127.0.0.1
 } else {
     pythonURI = "https://flaskstu.opencodingsociety.com";
 
@@ -11,7 +11,7 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
 export var javaURI;
 // 127.0.0.1:8585 does not work for some machines
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-        javaURI = "http://localhost:8001";
+        javaURI = "http://localhost:8401";
 } else {
     javaURI = "https://springstu.opencodingsociety.com";
 }

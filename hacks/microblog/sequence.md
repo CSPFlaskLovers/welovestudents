@@ -634,7 +634,7 @@ All three concepts work together in most programs, but sequencing is the foundat
             
             // Use localhost (not 127.0.0.1) to match cookie domain
             const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? `http://localhost:8001/api/match/all-data`
+                ? `http://localhost:8401/api/match/all-data`
                 : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/all-data';
             
             console.log('Using backend URL:', backendURL);
@@ -842,7 +842,7 @@ All three concepts work together in most programs, but sequencing is the foundat
         // Save match to backend - get existing matches first, then add new one
         try {
             const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? `http://localhost:8001/api/match/`
+                ? `http://localhost:8401/api/match/`
                 : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/';
             
             // Get current user's data to retrieve existing matches

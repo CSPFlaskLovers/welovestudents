@@ -520,7 +520,7 @@ author:
         {
             id: 1, 
             label: 'API Blog', 
-            url: '/welovestudents/digital-matchmaking/matchmaking/api/',
+            url: '/digitalmatchmaking/digital-matchmaking/matchmaking/api/',
             longTitle: 'Comm Relay Alpha',
             description: 'Primary uplink relay. Repairs required to restore long-range communications.',
             tags: ['relay', 'priority-high', 'uplink']
@@ -528,7 +528,7 @@ author:
         {
             id: 2, 
             label: 'Microblog', 
-            url: '/welovestudents/digital-matchmaking/matchmaking/microb/',
+            url: '/digitalmatchmaking/digital-matchmaking/matchmaking/microb/',
             longTitle: 'Orbital Hub Gamma',
             description: 'Orbital hub with degraded power systems. Critical for network synchronization.',
             tags: ['orbital', 'maintenance', 'power-sys']
@@ -536,7 +536,7 @@ author:
         {
             id: 3, 
             label: 'PII Quiz', 
-            url: '/welovestudents/digital-matchmaking/matchmaking/mcq/',
+            url: '/digitalmatchmaking/digital-matchmaking/matchmaking/mcq/',
             longTitle: 'Tactical Beacon Beta',
             description: 'Short-range beacon used for local operative coordination and security verification.',
             tags: ['beacon', 'local', 'security']
@@ -544,7 +544,7 @@ author:
         {
             id: 4, 
             label: 'DNS Sendoff', 
-            url: '/welovestudents/digital-matchmaking/matchmaking/dns/',
+            url: '/digitalmatchmaking/digital-matchmaking/matchmaking/dns/',
             longTitle: 'Backup Array Epsilon',
             description: 'Cold backup array. Bring spare modules to reactivate routing protocols.',
             tags: ['backup', 'spare-parts', 'routing']
@@ -552,7 +552,7 @@ author:
         {
             id: 5, 
             label: 'Matchmaking', 
-            url: '/welovestudents/digital-matchmaking/matchmaking/matchmaking_sequence/',
+            url: '/digitalmatchmaking/digital-matchmaking/matchmaking/matchmaking_sequence/',
             longTitle: 'Integration Module Zeta',
             description: 'Final integration module. Complete sequence to restore full network functionality.',
             tags: ['integration', 'final-stage', 'critical']

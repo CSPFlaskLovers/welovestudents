@@ -59,10 +59,10 @@ backend_api: "/api"
             // Set fallback directly
             if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
                 window._apiImportedConfig = {
-                    pythonURI: "http://localhost:8001"
+                    pythonURI: "http://localhost:8401"
                 };
-                window.pythonURI = "http://localhost:8001";
-                console.log('✓ Set fallback pythonURI: http://localhost:8001');
+                window.pythonURI = "http://localhost:8401";
+                console.log('✓ Set fallback pythonURI: http://localhost:8401');
             }
         }
     </script>
@@ -630,7 +630,7 @@ backend_api: "/api"
             ];
 
             try {
-                const response = await fetch('http://localhost:8001/api/match/save-profile-json', {
+                const response = await fetch('http://localhost:8401/api/match/save-profile-json', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
