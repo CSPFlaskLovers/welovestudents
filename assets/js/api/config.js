@@ -4,7 +4,7 @@ export const baseurl = "{{ site.baseurl }}";
   if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       pythonURI = "http://localhost:8401";  // Same URI for localhost or 127.0.0.1
   } else {
-      pythonURI = "https://matchmakers.opencodingsociety.com";
+      pythonURI = "matchmakers.opencodingsociety.com";
   }
 
 export var javaURI;
