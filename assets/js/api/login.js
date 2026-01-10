@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function getCredentials(baseurl) {
     const URL = pythonURI + '/api/id';
+    console.log(pythonURI)
+    
     return fetch(URL, {
         ...fetchOptions,
         credentials: 'include' // Add this to include cookies
