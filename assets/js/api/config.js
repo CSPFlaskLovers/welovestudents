@@ -45,6 +45,7 @@ export function login(options) {
         if (!response.ok) {
             const errorMsg = 'Login error: ' + response.status;
             console.log(errorMsg);
+            console.log(response)
             document.getElementById(options.message).textContent = errorMsg;
             return response;  // Exit early if response is not OK
         }
