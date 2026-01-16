@@ -498,7 +498,7 @@ breadcrumb: true
             const pythonURI = importedCfg.pythonURI || window.pythonURI || '';
             const globalFetchOptions = importedCfg.fetchOptions || window.fetchOptions || {};
 
-            const endpoint = pythonURI ? `${pythonURI}/api/match/save-profile-json` : '/api/match/save-profile-json';
+            const endpoint = pythonURI ? `${pythonURI}/api/pii/profile` : '/api/pii/profile';
 
             console.log('=== PROFILE CHECK DEBUG ===');
             console.log('pythonURI:', pythonURI);
@@ -823,7 +823,7 @@ breadcrumb: true
             const pythonURI = importedCfg.pythonURI || window.pythonURI || '';
             const globalFetchOptions = importedCfg.fetchOptions || window.fetchOptions || {};
 
-            const endpoint = pythonURI ? `${pythonURI}/api/match/save-profile-json` : '/api/match/save-profile-json';
+            const endpoint = pythonURI ? `${pythonURI}/api/pii/profile` : '/api/pii/profile';
 
             // Merge headers but don't mutate globalFetchOptions
             const mergedHeaders = Object.assign({}, (globalFetchOptions.headers || {}), {
@@ -885,7 +885,7 @@ breadcrumb: true
                 }
 
                 console.log("Profile saved successfully:", data);
-                alert("Profile saved successfully! Data is now in profile_setups.json");
+                alert("Profile saved successfully! Data is now in database");
             } catch (err) {
                 console.error("Error saving profile:", err);
                 console.error("Error stack:", err.stack);
