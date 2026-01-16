@@ -794,25 +794,43 @@ breadcrumb: false
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
+            
+            // DEBUG: Log cookie search
+            console.log(`[DEBUG] Searching for cookie: "${name}"`);
+            console.log(`[DEBUG] document.cookie = "${document.cookie}"`);
+            console.log(`[DEBUG] Cookie parts:`, parts);
+            
+            if (parts.length === 2) {
+                const cookieValue = parts.pop().split(';').shift();
+                console.log(`[DEBUG] Found cookie "${name}" = "${cookieValue}"`);
+                return cookieValue;
+            }
+            
+            console.log(`[DEBUG] Cookie "${name}" NOT found`);
             return null;
         }
 
         function waitForCookie(cookieName, timeout = 3000) {
             return new Promise((resolve) => {
                 const startTime = Date.now();
+                let attemptCount = 0;
                 
                 const checkCookie = () => {
+                    attemptCount++;
+                    console.log(`[DEBUG] Cookie check attempt #${attemptCount} (elapsed: ${Date.now() - startTime}ms)`);
+                    
                     const cookie = getCookie(cookieName);
                     
                     if (cookie && cookie.trim() !== '') {
-                        console.log(`Cookie "${cookieName}" found!`);
+                        console.log(`[DEBUG] ✅ Cookie "${cookieName}" found after ${attemptCount} attempts!`);
+                        console.log(`[DEBUG] Cookie value:`, cookie);
                         resolve(true);
                         return;
                     }
                     
                     if (Date.now() - startTime > timeout) {
-                        console.log(`Cookie "${cookieName}" not found after ${timeout}ms`);
+                        console.log(`[DEBUG] ❌ Cookie "${cookieName}" not found after ${timeout}ms (${attemptCount} attempts)`);
+                        console.log(`[DEBUG] Final document.cookie state:`, document.cookie);
                         resolve(false);
                         return;
                     }
@@ -826,12 +844,20 @@ breadcrumb: false
         }
 
         async function checkAuthentication() {
-            console.log('Checking for authentication cookie...');
+            console.log('[DEBUG] ========================================');
+            console.log('[DEBUG] Starting authentication check...');
+            console.log('[DEBUG] Current URL:', window.location.href);
+            console.log('[DEBUG] Current domain:', window.location.hostname);
+            console.log('[DEBUG] Initial cookies:', document.cookie);
+            console.log('[DEBUG] ========================================');
             
             // Wait up to 3 seconds for cookie to appear
             const cookieFound = await waitForCookie('jwt_python_flask', 3000);
             
             if (!cookieFound) {
+                console.log('[DEBUG] ❌ Authentication FAILED - disabling API tester');
+                console.log('[DEBUG] All cookies at failure:', document.cookie);
+                
                 // Disable everything
                 methodSelect.disabled = true;
                 urlInput.disabled = true;
@@ -858,17 +884,21 @@ breadcrumb: false
                 return false;
             }
             
-            console.log('Authentication successful!');
+            console.log('[DEBUG] ✅ Authentication SUCCESSFUL - enabling API tester');
+            console.log('[DEBUG] ========================================');
             return true;
         }
 
         // Authentication banner check (runs immediately)
         (function() {
+            console.log('[DEBUG] Running immediate banner check...');
             const jwtCookie = getCookie('jwt_python_flask');
+            console.log('[DEBUG] Banner check - cookie found:', jwtCookie ? 'YES' : 'NO');
             
             if (!jwtCookie || jwtCookie.trim() === '') {
                 const banner = document.getElementById('auth-check-banner');
                 if (banner) {
+                    console.log('[DEBUG] Showing auth banner');
                     banner.style.display = 'block';
                 }
                 
@@ -886,7 +916,10 @@ breadcrumb: false
                     }
                     
                     loginBtn.href = `${baseUrl}/digitalmatchmaking/login`;
+                    console.log('[DEBUG] Login redirect URL:', loginBtn.href);
                 }
+            } else {
+                console.log('[DEBUG] Cookie found immediately - no banner needed');
             }
         })();
 
@@ -973,15 +1006,23 @@ breadcrumb: false
         let isAuthenticated = false;
 
         (async function() {
+            console.log('[DEBUG] Starting main authentication process...');
             isAuthenticated = await checkAuthentication();
+            
+            console.log('[DEBUG] Final isAuthenticated value:', isAuthenticated);
             
             if (isAuthenticated) {
                 // Hide the auth banner if cookie was found
                 const banner = document.getElementById('auth-check-banner');
                 if (banner) {
+                    console.log('[DEBUG] Hiding auth banner');
                     banner.style.display = 'none';
                 }
+            } else {
+                console.log('[DEBUG] Keeping auth banner visible');
             }
+            
+            console.log('[DEBUG] Authentication process complete');
         })();
 
         methodSelect.addEventListener('change', function() {
