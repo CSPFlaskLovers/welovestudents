@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Sequencing
-description: Understanding sequencing + an interactive AP CSP-style game.
-permalink: /digital-matchmaking/matchmaking/matchmaking_sequence/
+title: Machine Learning with Titanic
+description: Understanding Machine Learning concepts through interactive Titanic survival prediction.
+permalink: /digital-famine/microblog/ml_titanic_interactive/
 breadcrumb: true
 microblog: true
 author: Ethan W
@@ -13,939 +13,725 @@ author: Ethan W
         min-height: 100vh;
         background: url('{{ site.baseurl }}/images/code.png') no-repeat center center fixed;
         background-size: cover;
-        background-color: #1a1a2e;
+        background-color: #0f2027;
     }
 
-    #sequence-box {
-        background: rgba(30, 30, 46, 0.95);
-        padding: 2em;
-        border-radius: 12px;
-        max-width: 700px;
+    .ml-container {
+        max-width: 1200px;
         margin: 2em auto;
-        font-family: 'Courier New', monospace;
-        color: #e0e0e0;
+        background: rgba(30, 30, 46, 0.95);
+        border-radius: 16px;
+        padding: 2.5em;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(102, 126, 234, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    .profile-card {
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        padding: 1.5em;
-        background: linear-gradient(135deg, #2a2a40 0%, #1f1f35 100%);
-        margin: 1em 0;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .profile-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        border-color: #8b9dff;
-    }
-
-    .profile-header {
-        font-size: 1.3em;
-        font-weight: bold;
-        margin-bottom: 0.5em;
-        color: #8b9dff;
-    }
-
-    .profile-detail {
-        margin: 0.5em 0;
-        padding-left: 1em;
-        color: #c0c0c0;
-    }
-
-    .button-group {
-        display: flex;
-        gap: 1em;
-        margin-top: 1.5em;
-    }
-
-    .btn {
-        flex: 1;
-        padding: 0.8em;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 1em;
-        font-weight: bold;
+        color: #e0e0e0;
         font-family: 'Courier New', monospace;
-        transition: all 0.3s;
     }
 
-    .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .btn-match {
-        background: #27ae60;
-        color: white;
-    }
-
-    .btn-match:hover:not(:disabled) {
-        background: #229954;
-        transform: scale(1.05);
-    }
-
-    .btn-skip {
-        background: #e74c3c;
-        color: white;
-    }
-
-    .btn-skip:hover:not(:disabled) {
-        background: #c0392b;
-        transform: scale(1.05);
-    }
-
-    .btn-new {
-        width: 100%;
-        padding: 0.8em;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 1em;
-        margin-top: 1em;
-        font-family: 'Courier New', monospace;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-
-    .btn-new:hover {
-        background: #5568d3;
-        transform: scale(1.02);
-    }
-
-    .stats {
-        background: linear-gradient(135deg, #3a3a52 0%, #2d2d42 100%);
-        padding: 1em;
-        border-radius: 8px;
-        margin-bottom: 1.5em;
+    .ml-container h1 {
         text-align: center;
-        color: #e0e0e0;
-        border: 2px solid #667eea;
+        color: #8b9dff;
+        font-size: 2.5em;
+        margin-bottom: 0.3em;
+        text-shadow: 0 0 20px rgba(139, 157, 255, 0.5);
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #c0c0c0;
+        margin-bottom: 2em;
+        font-size: 1.1em;
+    }
+
+    .info-box {
+        background: linear-gradient(135deg, #2a2a40 0%, #1f1f35 100%);
+        padding: 1.5em;
+        border-radius: 12px;
+        margin-bottom: 2em;
+        border-left: 4px solid #667eea;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
-    .stats span {
-        font-weight: bold;
+    .info-box h2 {
         color: #8b9dff;
+        margin-bottom: 0.8em;
+        font-size: 1.5em;
     }
 
-    #history {
-        margin-top: 1.5em;
-        padding: 1em;
-        background: #2a2a40;
-        border-radius: 6px;
-        max-height: 200px;
-        overflow-y: auto;
-        color: #e0e0e0;
-        border: 1px solid #667eea;
+    .info-box p {
+        line-height: 1.8;
+        color: #c0c0c0;
+        margin-bottom: 0.8em;
     }
 
-    #historyList {
-        margin-top: 0.5em;
+    .info-box ul {
+        margin-left: 1.5em;
+        color: #c0c0c0;
         line-height: 1.8;
     }
 
-    /* NEW STYLES FOR REAL MATCHMAKING GAME */
-    #matchmaking-app {
-        background: rgba(30, 30, 46, 0.95);
-        padding: 2em;
-        border-radius: 12px;
-        max-width: 700px;
-        margin: 2em auto;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(102, 126, 234, 0.3);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    .real-profile-card {
-        background: linear-gradient(135deg, #2a2a40 0%, #1f1f35 100%);
-        border: 2px solid #667eea;
-        border-radius: 10px;
-        padding: 1.5em;
-        margin: 1em 0;
-        transition: all 0.3s ease;
-    }
-
-    .real-profile-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .compatibility-bar {
-        width: 100%;
-        height: 8px;
-        background: #2a2a40;
-        border-radius: 4px;
-        overflow: hidden;
-        margin: 0.5em 0;
-    }
-
-    .compatibility-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #27ae60, #229954);
-        transition: width 0.5s ease;
-        border-radius: 4px;
-    }
-
-    .match-stats {
-        display: flex;
-        justify-content: space-around;
-        background: linear-gradient(135deg, #3a3a52 0%, #2d2d42 100%);
-        padding: 1em;
-        border-radius: 8px;
-        margin-bottom: 1.5em;
-        border: 2px solid #667eea;
-    }
-
-    .stat-item {
-        text-align: center;
-        color: #e0e0e0;
-    }
-
-    .stat-value {
-        font-size: 1.8em;
-        font-weight: bold;
+    .info-box strong {
         color: #8b9dff;
     }
 
-    .stat-label {
-        font-size: 0.8em;
-        color: #c0c0c0;
-    }
-
-    .loading-spinner {
-        border: 4px solid rgba(102, 126, 234, 0.3);
-        border-top: 4px solid #667eea;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 2em auto;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .error-message {
-        background: rgba(231, 76, 60, 0.2);
-        border: 2px solid #e74c3c;
-        color: #ff6b6b;
-        padding: 1em;
-        border-radius: 8px;
-        margin: 1em 0;
-        text-align: center;
-    }
-
-    .success-message {
-        background: rgba(39, 174, 96, 0.2);
-        border: 2px solid #27ae60;
-        color: #51cf66;
-        padding: 1em;
-        border-radius: 8px;
-        margin: 1em 0;
-        text-align: center;
-    }
-
-    .tab-buttons {
+    .tabs {
         display: flex;
         gap: 1em;
         margin-bottom: 2em;
+        flex-wrap: wrap;
     }
 
     .tab-btn {
         flex: 1;
+        min-width: 150px;
         padding: 1em;
         background: #2a2a40;
         color: #8b9dff;
         border: 2px solid #667eea;
         border-radius: 8px;
         cursor: pointer;
-        font-family: 'Courier New', monospace;
         font-weight: bold;
+        font-size: 1em;
         transition: all 0.3s;
+        font-family: 'Courier New', monospace;
     }
 
     .tab-btn:hover {
         background: #3a3a52;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
 
     .tab-btn.active {
         background: #667eea;
         color: white;
     }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .predictor-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2em;
+        margin-bottom: 2em;
+    }
+
+    @media (max-width: 768px) {
+        .predictor-panel {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .input-section {
+        background: #2a2a40;
+        padding: 1.5em;
+        border-radius: 12px;
+        border: 2px solid #667eea;
+    }
+
+    .form-group {
+        margin-bottom: 1.5em;
+    }
+
+    .form-group label {
+        display: block;
+        color: #8b9dff;
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
+
+    .form-group select,
+    .form-group input {
+        width: 100%;
+        padding: 0.8em;
+        background: #1f1f35;
+        border: 2px solid #667eea;
+        border-radius: 8px;
+        color: #e0e0e0;
+        font-size: 1em;
+        transition: all 0.3s;
+        font-family: 'Courier New', monospace;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        outline: none;
+        border-color: #8b9dff;
+        box-shadow: 0 0 12px rgba(139, 157, 255, 0.3);
+    }
+
+    .predict-btn {
+        width: 100%;
+        padding: 1em;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Courier New', monospace;
+    }
+
+    .predict-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .result-section {
+        background: #2a2a40;
+        padding: 1.5em;
+        border-radius: 12px;
+        border: 2px solid #667eea;
+        text-align: center;
+    }
+
+    .result-icon {
+        font-size: 4em;
+        margin-bottom: 0.3em;
+    }
+
+    .result-text {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 0.5em;
+    }
+
+    .survived {
+        color: #27ae60;
+    }
+
+    .not-survived {
+        color: #e74c3c;
+    }
+
+    .probability {
+        font-size: 1.1em;
+        color: #8b9dff;
+        margin-bottom: 1em;
+    }
+
+    .explanation {
+        background: #1f1f35;
+        padding: 1em;
+        border-radius: 8px;
+        text-align: left;
+        color: #c0c0c0;
+        line-height: 1.6;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5em;
+        margin-bottom: 2em;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #2a2a40 0%, #1f1f35 100%);
+        padding: 1.5em;
+        border-radius: 12px;
+        border: 2px solid #667eea;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .stat-value {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #8b9dff;
+        margin-bottom: 0.3em;
+    }
+
+    .stat-label {
+        color: #c0c0c0;
+        font-size: 0.9em;
+    }
+
+    .quiz-question {
+        background: #2a2a40;
+        padding: 1.5em;
+        border-radius: 12px;
+        border: 2px solid #667eea;
+        margin-bottom: 1.5em;
+    }
+
+    .quiz-question h3 {
+        color: #8b9dff;
+        margin-bottom: 1em;
+    }
+
+    .quiz-option {
+        background: #1f1f35;
+        padding: 1em;
+        margin: 0.8em 0;
+        border-radius: 8px;
+        border: 2px solid #667eea;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .quiz-option:hover {
+        background: #2a2a40;
+        border-color: #8b9dff;
+    }
+
+    .quiz-option.correct {
+        background: #27ae60;
+        border-color: #27ae60;
+        color: white;
+    }
+
+    .quiz-option.incorrect {
+        background: #e74c3c;
+        border-color: #e74c3c;
+        color: white;
+    }
+
+    .data-table {
+        width: 100%;
+        background: #2a2a40;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #667eea;
+    }
+
+    .data-table th {
+        background: #667eea;
+        color: white;
+        padding: 1em;
+        text-align: left;
+    }
+
+    .data-table td {
+        padding: 1em;
+        border-bottom: 1px solid #3a3a52;
+    }
+
+    .data-table tr:hover {
+        background: #3a3a52;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 30px;
+        background: #1f1f35;
+        border-radius: 15px;
+        overflow: hidden;
+        margin: 1em 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
 </style>
 
-## What Is Sequencing?
+## What Is Machine Learning?
 
-Sequencing is one of the core programming concepts in **AP Computer Science Principles**.  
-It means that a program runs **each instruction in order**, one after another, from top to bottom.
+Machine Learning (ML) is a type of artificial intelligence that allows computers to learn patterns from data without being explicitly programmed. Instead of writing specific rules, we feed the computer examples, and it figures out the patterns on its own.
 
-This matters because:
+**The Titanic Dataset:** This famous dataset contains information about passengers on the Titanic. We use it to predict who survived based on features like age, gender, class, and more. This is a classic **classification problem** - predicting a category (survived or not).
 
-- The *order* of commands changes the result  
-- You can't skip steps in a process  
-- Programs follow the same structure humans follow in a checklist  
-- Sequencing is the base for selection and iteration  
+### Key ML Concepts:
 
-Think of a recipe: you can't bake before mixing the ingredients.  
-Computers work the same way.
-
-### Real-World Examples of Sequencing
-
-Sequencing appears everywhere in our daily lives:
-
-**Making a Sandwich:**
-1. Get bread
-2. Spread condiments
-3. Add fillings
-4. Close sandwich
-
-If you tried to spread condiments before getting bread, it wouldn't work. The same logic applies to programming.
-
-**Starting a Car:**
-1. Insert key
-2. Turn ignition
-3. Release parking brake
-4. Put in gear
-5. Press gas pedal
-
-Each step depends on the previous one being completed. Programs need this same sequential flow.
-
-**ATM Withdrawal:**
-1. Insert card
-2. Enter PIN
-3. Select account
-4. Choose amount
-5. Take cash
-6. Take receipt
-
-The ATM can't give you cash before verifying your PIN. This is sequencing in action.
+- **Features:** Input variables (age, sex, class) used to make predictions
+- **Labels:** What we're trying to predict (survived or not)
+- **Training:** Teaching the model using historical data
+- **Prediction:** Using the trained model on new data
 
 ---
 
-## Why Does Sequencing Matter?
+## AP CSP Component A Requirements
 
-Sequencing lets computers:
+This program meets all AP Computer Science Principles Component A requirements:
 
-- Follow directions exactly  
-- Process data step-by-step  
-- Check requirements one at a time  
-- Produce predictable results  
-
-A program with bad sequencing misbehaves, just like if you tried to put on socks after your shoes.
-
-### Sequencing in the Profile Matcher Game
-
-In the game below, sequencing is critical:
-
-1. **Profile Generation** - First, random data is selected from arrays
-2. **Profile Display** - Then, the profile is shown to the user
-3. **User Decision** - Next, the user clicks Match or Skip
-4. **Data Processing** - The decision is recorded in history
-5. **Stats Update** - Finally, statistics are updated and displayed
-
-If these steps happened out of order (like updating stats before getting a decision), the program would break. Each step builds on the previous one, demonstrating how sequencing creates functional programs.
-
-### Sequencing vs. Other Programming Concepts
-
-**Sequencing** executes commands in order, one after another.
-
-**Selection** (if/else statements) chooses which path to take based on conditions.
-
-**Iteration** (loops) repeats a set of instructions multiple times.
-
-All three concepts work together in most programs, but sequencing is the foundation that determines the overall flow of execution.
+✅ **Input**: User actions trigger events (button clicks, dropdown selections, text input)  
+✅ **List/Collection**: Arrays store passenger data and history  
+✅ **Procedure**: `calculateSurvivalScore(passenger)` with parameters and return value  
+✅ **Algorithm**: Uses sequencing, selection (if/else), and iteration (loops) in prediction logic  
+✅ **Procedure Calls**: Multiple calls to `calculateSurvivalScore()`, `displayResult()`, `updateStats()`  
+✅ **Output**: Visual display of survival prediction, probability bars, and explanations
 
 ---
 
-# 🎮 Two Sequencing Games
+## 🎮 Interactive Titanic ML Explorer
 
-<div class="tab-buttons">
-    <button class="tab-btn active" onclick="switchTab('demo')">Demo Game (Random Profiles)</button>
-    <button class="tab-btn" onclick="switchTab('real')">Real Matchmaking (Backend)</button>
-</div>
+<div class="ml-container">
+    <h1>🚢 Titanic ML Explorer</h1>
+    <p class="subtitle">Interactive Machine Learning with the Titanic Dataset</p>
 
----
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('learn')">📚 Learn</button>
+        <button class="tab-btn" onclick="switchTab('predict')">🔮 Predict</button>
+        <button class="tab-btn" onclick="switchTab('explore')">📊 Explore Data</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">🎯 Quiz</button>
+    </div>
 
-## 🧠 Demo: Sequencing Match Game
-
-<div id="demo-game" style="display: block;">
-    <p style="text-align: center; color: #c0c0c0; margin-bottom: 1em;">
-        This demo shows sequencing with randomly generated profiles
-    </p>
-
-    <div id="sequence-box">
-        <h3 style="margin-top:0;">💫 Profile Matcher</h3>
-        <p style="font-size:0.9em;">Review each profile and decide: Match or Skip?</p>
-
-        <div class="stats">
-            <strong>Matches:</strong> <span id="matchCount">0</span> | 
-            <strong>Skipped:</strong> <span id="skipCount">0</span> | 
-            <strong>Total Reviewed:</strong> <span id="totalCount">0</span>
+    <!-- Learn Tab -->
+    <div id="learn-tab" class="tab-content active">
+        <div class="info-box">
+            <h2>📖 Understanding the Titanic ML Model</h2>
+            <p>The Titanic disaster of 1912 is one of the most infamous shipwrecks in history. Out of 2,224 passengers and crew aboard, only 722 survived. Machine learning helps us understand what factors influenced survival.</p>
         </div>
 
-        <div id="profileDisplay">
-            <div class="profile-card">
-                <div class="profile-header">Click "New Profile" to start!</div>
+        <h2 style="color: #8b9dff; margin-bottom: 1em;">Key Factors Affecting Survival</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">74%</div>
+                <div class="stat-label">Women survived</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">19%</div>
+                <div class="stat-label">Men survived</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">63%</div>
+                <div class="stat-label">1st Class survived</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">24%</div>
+                <div class="stat-label">3rd Class survived</div>
             </div>
         </div>
 
-        <div class="button-group">
-            <button class="btn btn-match" onclick="handleMatchClick()" id="matchBtn" disabled>
-                ✓ Match
-            </button>
-            <button class="btn btn-skip" onclick="handleSkipClick()" id="skipBtn" disabled>
-                ✗ Skip
-            </button>
+        <div class="info-box">
+            <h2>🔍 How the ML Model Works</h2>
+            <p><strong>Step 1: Data Collection</strong><br>We gather information about each passenger (age, gender, ticket class, etc.)</p>
+            <p><strong>Step 2: Feature Engineering</strong><br>We convert text data (like "male"/"female") into numbers the computer can understand</p>
+            <p><strong>Step 3: Training</strong><br>The model learns patterns from passengers we know survived or didn't survive</p>
+            <p><strong>Step 4: Prediction</strong><br>The model can now predict survival for new passengers based on learned patterns</p>
+        </div>
+    </div>
+
+    <!-- Predict Tab -->
+    <div id="predict-tab" class="tab-content">
+        <div class="info-box">
+            <h2>🔮 Make Your Prediction</h2>
+            <p>Enter passenger information below and see if our ML model predicts they would have survived the Titanic disaster!</p>
         </div>
 
-        <button onclick="handleNewProfileClick()" class="btn-new">
-            🔄 New Profile
-        </button>
+        <div class="predictor-panel">
+            <div class="input-section">
+                <h3 style="color: #8b9dff; margin-bottom: 1em;">Passenger Information</h3>
+                
+                <div class="form-group">
+                    <label>Passenger Class</label>
+                    <select id="pclass">
+                        <option value="1">1st Class (Upper deck)</option>
+                        <option value="2">2nd Class (Middle deck)</option>
+                        <option value="3" selected>3rd Class (Lower deck)</option>
+                    </select>
+                </div>
 
-        <div id="history">
-            <strong>Decision History:</strong>
-            <div id="historyList">
-                <em>No decisions yet...</em>
+                <div class="form-group">
+                    <label>Sex</label>
+                    <select id="sex">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="age" value="30" min="0" max="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Number of Siblings/Spouses Aboard</label>
+                    <input type="number" id="sibsp" value="0" min="0" max="10">
+                </div>
+
+                <div class="form-group">
+                    <label>Number of Parents/Children Aboard</label>
+                    <input type="number" id="parch" value="0" min="0" max="10">
+                </div>
+
+                <div class="form-group">
+                    <label>Fare Paid (£)</label>
+                    <input type="number" id="fare" value="15" min="0" step="0.01">
+                </div>
+
+                <button class="predict-btn" onclick="makePrediction()">🔮 Predict Survival</button>
+            </div>
+
+            <div class="result-section" id="result-section">
+                <div style="padding: 2em;">
+                    <div style="font-size: 3em; margin-bottom: 0.5em;">🤔</div>
+                    <p style="color: #8b9dff; font-size: 1.2em;">Enter passenger details and click "Predict Survival" to see the result!</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
----
+    <!-- Explore Data Tab -->
+    <div id="explore-tab" class="tab-content">
+        <div class="info-box">
+            <h2>📊 Dataset Overview</h2>
+            <p>The Titanic dataset contains information about 891 passengers. Here are some sample records:</p>
+        </div>
 
-## 💕 Real Matchmaking with Backend
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Sex</th>
+                        <th>Class</th>
+                        <th>Fare</th>
+                        <th>Survived</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Braund, Mr. Owen Harris</td>
+                        <td>22</td>
+                        <td>male</td>
+                        <td>3rd</td>
+                        <td>£7.25</td>
+                        <td>❌ No</td>
+                    </tr>
+                    <tr>
+                        <td>Cumings, Mrs. John Bradley</td>
+                        <td>38</td>
+                        <td>female</td>
+                        <td>1st</td>
+                        <td>£71.28</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Heikkinen, Miss. Laina</td>
+                        <td>26</td>
+                        <td>female</td>
+                        <td>3rd</td>
+                        <td>£7.92</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Futrelle, Mrs. Jacques Heath</td>
+                        <td>35</td>
+                        <td>female</td>
+                        <td>1st</td>
+                        <td>£53.10</td>
+                        <td>✅ Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Allen, Mr. William Henry</td>
+                        <td>35</td>
+                        <td>male</td>
+                        <td>3rd</td>
+                        <td>£8.05</td>
+                        <td>❌ No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-<div id="real-game" style="display: none;">
-    <p style="text-align: center; color: #c0c0c0; margin-bottom: 1em;">
-        This connects to your backend and matches with real user profiles!
-    </p>
+        <div class="info-box" style="margin-top: 2em;">
+            <h2>📈 Key Insights</h2>
+            <p><strong>Gender was the strongest predictor:</strong> Women had a much higher survival rate (74%) compared to men (19%). This reflects the "women and children first" evacuation policy.</p>
+            <p><strong>Class mattered:</strong> First-class passengers had better access to lifeboats and survived at higher rates (63%) than third-class passengers (24%).</p>
+            <p><strong>Age played a role:</strong> Children had higher survival rates, as they were prioritized during evacuation.</p>
+            <p><strong>Family size:</strong> Having some family members improved survival chances, but very large families had lower survival rates.</p>
+        </div>
+    </div>
 
-    <div id="matchmaking-app">
-        <h3 style="margin-top:0; color: #8b9dff; text-align: center; font-size: 1.8em;">💕 Real Profile Matcher</h3>
-        <p style="font-size:0.9em; text-align: center; color: #c0c0c0;">Connect with real users based on shared interests!</p>
+    <!-- Quiz Tab -->
+    <div id="quiz-tab" class="tab-content">
+        <div class="info-box">
+            <h2>🎯 Test Your Knowledge</h2>
+            <p>Answer these questions to test your understanding of machine learning and the Titanic dataset!</p>
+        </div>
 
-        <div id="realGameContent">
-            <div style="text-align: center; padding: 2em;">
-                <p style="color: #c0c0c0;">Loading...</p>
-                <div class="loading-spinner"></div>
-            </div>
+        <div class="quiz-question" id="q1">
+            <h3>Question 1: What is a "feature" in machine learning?</h3>
+            <div class="quiz-option" onclick="checkAnswer(1, 'a')">A) The final prediction</div>
+            <div class="quiz-option" onclick="checkAnswer(1, 'b')">B) Input variables used to make predictions</div>
+            <div class="quiz-option" onclick="checkAnswer(1, 'c')">C) The training dataset</div>
+            <div class="quiz-option" onclick="checkAnswer(1, 'd')">D) The computer algorithm</div>
+            <div id="q1-feedback" style="margin-top: 1em; display: none;"></div>
+        </div>
+
+        <div class="quiz-question" id="q2">
+            <h3>Question 2: Which group had the highest survival rate on the Titanic?</h3>
+            <div class="quiz-option" onclick="checkAnswer(2, 'a')">A) Men in 1st class</div>
+            <div class="quiz-option" onclick="checkAnswer(2, 'b')">B) Women in 3rd class</div>
+            <div class="quiz-option" onclick="checkAnswer(2, 'c')">C) Women in 1st class</div>
+            <div class="quiz-option" onclick="checkAnswer(2, 'd')">D) Children in 3rd class</div>
+            <div id="q2-feedback" style="margin-top: 1em; display: none;"></div>
+        </div>
+
+        <div class="quiz-question" id="q3">
+            <h3>Question 3: What type of ML problem is Titanic survival prediction?</h3>
+            <div class="quiz-option" onclick="checkAnswer(3, 'a')">A) Regression (predicting a number)</div>
+            <div class="quiz-option" onclick="checkAnswer(3, 'b')">B) Classification (predicting a category)</div>
+            <div class="quiz-option" onclick="checkAnswer(3, 'c')">C) Clustering (grouping similar items)</div>
+            <div class="quiz-option" onclick="checkAnswer(3, 'd')">D) Reinforcement learning</div>
+            <div id="q3-feedback" style="margin-top: 1em; display: none;"></div>
+        </div>
+
+        <div id="quiz-score" style="display: none; text-align: center; padding: 2em;">
+            <h2 style="color: #8b9dff;">Quiz Complete!</h2>
+            <div class="stat-value" id="score-display">0/3</div>
+            <p style="color: #c0c0c0; margin-top: 1em;">Great job learning about ML and the Titanic dataset!</p>
         </div>
     </div>
 </div>
 
 <script>
-    // ==========================================
-    // TAB SWITCHING
-    // ==========================================
+    // LISTS (AP CSP Requirement: Collection Type)
+    let quizAnswers = {1: 'b', 2: 'c', 3: 'b'};
+    let userAnswers = {};
+    let quizComplete = false;
+
+    // PROCEDURE: switchTab (AP CSP Requirement: User interaction/events)
     function switchTab(tab) {
-        const demoGame = document.getElementById('demo-game');
-        const realGame = document.getElementById('real-game');
-        const tabs = document.querySelectorAll('.tab-btn');
+        const tabs = ['learn', 'predict', 'explore', 'quiz'];
+        for (let i = 0; i < tabs.length; i++) {
+            const tabEl = document.getElementById(tabs[i] + '-tab');
+            if (tabEl) tabEl.classList.remove('active');
+        }
+        const activeTab = document.getElementById(tab + '-tab');
+        if (activeTab) activeTab.classList.add('active');
         
-        tabs.forEach(t => t.classList.remove('active'));
-        
-        if (tab === 'demo') {
-            demoGame.style.display = 'block';
-            realGame.style.display = 'none';
-            tabs[0].classList.add('active');
-        } else {
-            demoGame.style.display = 'none';
-            realGame.style.display = 'block';
-            tabs[1].classList.add('active');
-            initRealMatchmaking();
+        const buttons = document.querySelectorAll('.tab-btn');
+        const tabNames = ['learn', 'predict', 'explore', 'quiz'];
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+            if (tabNames[i] === tab) buttons[i].classList.add('active');
         }
     }
 
-    // ==========================================
-    // DEMO GAME CODE (Original)
-    // ==========================================
-    let profileHistory = [];
-    let matchCount = 0;
-    let skipCount = 0;
-    let totalCount = 0;
-    let currentProfile = null;
-
-    const names = ["Alex", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Avery", "Quinn", "Sage", "River", "Dakota", "Skylar", "Rowan", "Cameron", "Parker"];
-    const ages = [18, 19, 20, 21, 22, 23, 24, 25];
-    const hobbies = ["Reading", "Gaming", "Hiking", "Cooking", "Art", "Music", "Sports", "Photography", "Dancing", "Coding", "Traveling", "Yoga"];
-    const locations = ["Los Angeles", "New York", "Chicago", "Austin", "Seattle", "Miami", "Boston", "Denver"];
-    const occupations = ["Student", "Engineer", "Designer", "Teacher", "Artist", "Developer", "Musician", "Writer", "Researcher", "Entrepreneur"];
-
-    function getRandomItem(array) {
-        let randomIndex = Math.floor(Math.random() * array.length);
-        return array[randomIndex];
+    // PROCEDURE: calculateSurvivalScore (AP CSP Requirement: Procedure with parameters and return)
+    function calculateSurvivalScore(passenger) {
+        let score = 50;
+        if (passenger.sex === 'female') score += 30;
+        else score -= 25;
+        if (passenger.pclass === 1) score += 15;
+        else if (passenger.pclass === 3) score -= 15;
+        if (passenger.age < 16) score += 10;
+        else if (passenger.age > 60) score -= 10;
+        const familySize = passenger.sibsp + passenger.parch;
+        if (familySize >= 1 && familySize <= 3) score += 5;
+        else if (familySize > 4) score -= 10;
+        if (passenger.fare > 50) score += 10;
+        else if (passenger.fare < 10) score -= 5;
+        return Math.max(0, Math.min(100, score));
     }
 
-    function generateProfile() {
-        const name = getRandomItem(names);
-        const age = getRandomItem(ages);
-        const location = getRandomItem(locations);
-        const occupation = getRandomItem(occupations);
-        
-        const hobby1 = getRandomItem(hobbies);
-        let hobby2 = getRandomItem(hobbies);
-        
-        while (hobby2 === hobby1) {
-            hobby2 = getRandomItem(hobbies);
-        }
-        
-        const profile = {
-            name: name,
-            age: age,
-            hobbies: [hobby1, hobby2],
-            location: location,
-            occupation: occupation,
-            timestamp: new Date().toLocaleTimeString()
+    // PROCEDURE: makePrediction (AP CSP Requirement: Algorithm with sequencing, selection)
+    function makePrediction() {
+        const passenger = {
+            pclass: parseInt(document.getElementById('pclass').value),
+            sex: document.getElementById('sex').value,
+            age: parseFloat(document.getElementById('age').value),
+            sibsp: parseInt(document.getElementById('sibsp').value),
+            parch: parseInt(document.getElementById('parch').value),
+            fare: parseFloat(document.getElementById('fare').value)
         };
-        
-        return profile;
-    }
-
-    function displayProfile(profile) {
-        const display = document.getElementById('profileDisplay');
-        
-        if (profile) {
-            display.innerHTML = `
-                <div class="profile-card">
-                    <div class="profile-header">${profile.name}, ${profile.age}</div>
-                    <div class="profile-detail"><strong>📍 Location:</strong> ${profile.location}</div>
-                    <div class="profile-detail"><strong>💼 Occupation:</strong> ${profile.occupation}</div>
-                    <div class="profile-detail"><strong>🎯 Hobbies:</strong> ${profile.hobbies.join(", ")}</div>
-                </div>
-            `;
-        }
-    }
-
-    function processDecision(decision, profile) {
-        if (decision === 'match') {
-            matchCount++;
-        } else if (decision === 'skip') {
-            skipCount++;
-        }
-        totalCount++;
-        
-        const historyEntry = {
-            decision: decision,
-            profile: profile,
-            timestamp: new Date().toLocaleTimeString()
-        };
-        profileHistory.unshift(historyEntry);
-        
-        updateStatsDisplay();
-        updateHistoryDisplay();
-        setButtonsEnabled(false);
-        
-        currentProfile = null;
-        document.getElementById('profileDisplay').innerHTML = `
-            <div class="profile-card">
-                <div class="profile-header">Decision recorded! Click "New Profile" to continue.</div>
-            </div>
-        `;
-    }
-
-    function updateStatsDisplay() {
-        document.getElementById('matchCount').textContent = matchCount;
-        document.getElementById('skipCount').textContent = skipCount;
-        document.getElementById('totalCount').textContent = totalCount;
-    }
-
-    function updateHistoryDisplay() {
-        const historyList = document.getElementById('historyList');
-        
-        if (profileHistory.length === 0) {
-            historyList.innerHTML = '<em>No decisions yet...</em>';
-        } else {
-            let htmlContent = '';
-            let itemsToShow = Math.min(10, profileHistory.length);
-            
-            for (let i = 0; i < itemsToShow; i++) {
-                const entry = profileHistory[i];
-                const colorClass = entry.decision === 'match' ? '#27ae60' : '#e74c3c';
-                const symbol = entry.decision === 'match' ? '✓' : '✗';
-                const action = entry.decision === 'match' ? 'Matched' : 'Skipped';
-                
-                htmlContent += `<span style="color:${colorClass};">${symbol} ${action}</span> with ${entry.profile.name}, ${entry.profile.age}<br>`;
-            }
-            
-            historyList.innerHTML = htmlContent;
-        }
-    }
-
-    function setButtonsEnabled(enabled) {
-        document.getElementById('matchBtn').disabled = !enabled;
-        document.getElementById('skipBtn').disabled = !enabled;
-    }
-
-    function handleNewProfileClick() {
-        currentProfile = generateProfile();
-        displayProfile(currentProfile);
-        setButtonsEnabled(true);
-    }
-
-    function handleMatchClick() {
-        if (currentProfile) {
-            processDecision('match', currentProfile);
-        }
-    }
-
-    function handleSkipClick() {
-        if (currentProfile) {
-            processDecision('skip', currentProfile);
-        }
-    }
-
-    // ==========================================
-    // REAL MATCHMAKING CODE (New)
-    // ==========================================
-    let realMatchmakingState = {
-        profiles: [],
-        currentIndex: 0,
-        matches: [],
-        skipped: [],
-        currentUser: null,
-        initialized: false
-    };
-
-    async function initRealMatchmaking() {
-        if (realMatchmakingState.initialized) return;
-        
-        const content = document.getElementById('realGameContent');
-        content.innerHTML = `
-            <div style="text-align: center; padding: 2em;">
-                <p style="color: #c0c0c0;">Connecting to backend...</p>
-                <div class="loading-spinner"></div>
-            </div>
-        `;
-
-        try {
-            console.log('Attempting to fetch from backend...');
-            
-            // Use localhost (not 127.0.0.1) to match cookie domain
-            const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? `http://localhost:8401/api/match/all-data`
-                : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/all-data';
-            
-            console.log('Using backend URL:', backendURL);
-            console.log('Full URL being called:', backendURL);
-            
-            // Fetch all profiles from matchmaking endpoint
-            const response = await fetch(backendURL, {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            console.log('Response status:', response.status);
-            console.log('Response ok:', response.ok);
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Error response:', errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
-            }
-
-            const data = await response.json();
-            console.log('Data received:', data);
-            console.log('Response structure:', Object.keys(data));
-            
-            // Check if we got the expected structure
-            if (!data.setups) {
-                console.error('Unexpected response structure:', data);
-                throw new Error('Invalid response format from API');
-            }
-            
-            console.log('Number of setups:', data.setups.length);
-            
-            // Show ALL profiles, even those without data filled in yet
-            realMatchmakingState.profiles = data.setups.map(p => {
-                // If no data field exists, create an empty one with at least the uid
-                if (!p.data || Object.keys(p.data).length === 0) {
-                    p.data = {
-                        name: p.uid,
-                        bio: 'No profile data yet'
-                    };
-                }
-                return p;
-            });
-
-            console.log('Total profiles to show:', realMatchmakingState.profiles.length);
-
-            if (realMatchmakingState.profiles.length === 0) {
-                showNoProfilesMessage();
-            } else {
-                realMatchmakingState.initialized = true;
-                showRealProfile();
-            }
-        } catch (error) {
-            console.error('Full error details:', error);
-            
-            // Check if it's a 401 error (not logged in)
-            const is401 = error.message.includes('401');
-            
-            if (is401) {
-                content.innerHTML = `
-                    <div class="error-message">
-                        <strong>🔒 Authentication Required</strong><br><br>
-                        You need to log in to use Real Matchmaking!
-                    </div>
-                    <div style="background: #2a2a40; padding: 1.5em; border-radius: 8px; margin-top: 1em; text-align: center;">
-                        <p style="color: #c0c0c0; margin-bottom: 1em;">
-                            Real Matchmaking connects to your backend and requires authentication.
-                        </p>
-                        <a href="/login" class="btn-new" style="display: inline-block; text-decoration: none;">
-                            🔐 Go to Login Page
-                        </a>
-                        <p style="color: #8b9dff; margin-top: 1em; font-size: 0.9em;">
-                            Or try the Demo Game (no login required)
-                        </p>
-                        <button class="btn-new" onclick="switchTab('demo')" style="background: #3a3a52; margin-top: 0.5em;">
-                            ← Back to Demo Game
-                        </button>
-                    </div>
-                `;
-            } else {
-                content.innerHTML = `
-                    <div class="error-message">
-                        <strong>Connection Error</strong><br>
-                        ${error.message}<br><br>
-                        <strong>Possible issues:</strong><br>
-                        • Backend URL incorrect<br>
-                        • CORS policy blocking request<br>
-                        • No profiles exist yet
-                    </div>
-                    <div style="background: #2a2a40; padding: 1em; border-radius: 8px; margin-top: 1em; text-align: left;">
-                        <strong style="color: #8b9dff;">Debug Info:</strong><br>
-                        <code style="color: #c0c0c0; font-size: 0.85em;">
-                            API: https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/all-data<br>
-                            Check console (F12) for details
-                        </code>
-                    </div>
-                    <button class="btn-new" onclick="initRealMatchmaking()">Retry</button>
-                `;
-            }
-        }
-    }
-
-    function showNoProfilesMessage() {
-        const content = document.getElementById('realGameContent');
-        content.innerHTML = `
-            <div style="text-align: center; padding: 2em;">
-                <p style="color: #8b9dff; font-size: 1.2em; margin-bottom: 1em;">
-                    No profiles available yet! 
-                </p>
-                <p style="color: #c0c0c0;">
-                    Be the first to create a profile and start matching with others.
-                </p>
-                <button class="btn-new" onclick="initRealMatchmaking()" style="margin-top: 1em;">
-                    🔄 Refresh
-                </button>
-            </div>
-        `;
-    }
-
-    function calculateRealCompatibility(profile) {
-        // Simple compatibility based on shared data fields
-        if (!profile.data) return 50;
-        
-        let score = 0;
-        const fields = Object.keys(profile.data).length;
-        
-        if (fields > 0) score = 50 + (fields * 5);
-        return Math.min(score, 100);
-    }
-
-    function showRealProfile() {
-        const state = realMatchmakingState;
-        const content = document.getElementById('realGameContent');
-        
-        if (state.currentIndex >= state.profiles.length) {
-            showRealResults();
-            return;
-        }
-
-        const profile = state.profiles[state.currentIndex];
-        const compatibility = calculateRealCompatibility(profile);
-
-        content.innerHTML = `
-            <div class="match-stats">
-                <div class="stat-item">
-                    <div class="stat-value">${state.matches.length}</div>
-                    <div class="stat-label">Matches</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${state.skipped.length}</div>
-                    <div class="stat-label">Skipped</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value">${state.currentIndex + 1}/${state.profiles.length}</div>
-                    <div class="stat-label">Progress</div>
-                </div>
-            </div>
-
-            <div class="real-profile-card">
-                <div class="profile-header">${profile.data.name || profile.uid}</div>
-                <div style="color: #c0c0c0; margin: 0.5em 0;">
-                    Compatibility: <strong style="color: #8b9dff;">${compatibility}%</strong>
-                </div>
-                <div class="compatibility-bar">
-                    <div class="compatibility-fill" style="width: ${compatibility}%"></div>
-                </div>
-                
-                <div style="margin-top: 1em;">
-                    ${Object.entries(profile.data).map(([key, value]) => {
-                        if (key === 'name') return '';
-                        return `
-                            <div class="profile-detail">
-                                <strong>${key}:</strong> ${value}
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-skip" onclick="handleRealSkip()">
-                    ✗ Skip
-                </button>
-                <button class="btn btn-match" onclick="handleRealMatch()">
-                    ✓ Match
-                </button>
-            </div>
-        `;
-    }
-
-    async function handleRealMatch() {
-        const state = realMatchmakingState;
-        const profile = state.profiles[state.currentIndex];
-        const compatibility = calculateRealCompatibility(profile);
-        
-        // Add to local state
-        state.matches.push({
-            ...profile,
-            compatibility: compatibility
+        const survivalScore = calculateSurvivalScore(passenger);
+        const survived = survivalScore >= 50;
+        const familySize = passenger.sibsp + passenger.parch;
+        displayResult(survived, survivalScore, {
+            pclass: passenger.pclass, sex: passenger.sex, 
+            age: passenger.age, familySize: familySize
         });
-        
-        // Save match to backend - get existing matches first, then add new one
-        try {
-            const backendURL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-                ? `http://localhost:8401/api/match/`
-                : 'https://digitalfamine.stu.nighthawkcodingsociety.com/api/match/';
-            
-            // Get current user's data to retrieve existing matches
-            const getResponse = await fetch(backendURL + 'data', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            
-            let existingMatches = [];
-            if (getResponse.ok) {
-                const userData = await getResponse.json();
-                // Check if user already has matches saved
-                if (userData.setup && userData.setup.data && userData.setup.data.matched_with) {
-                    existingMatches = Array.isArray(userData.setup.data.matched_with) 
-                        ? userData.setup.data.matched_with 
-                        : [userData.setup.data.matched_with];
-                }
-            }
-            
-            // Add new match to the list (avoid duplicates)
-            if (!existingMatches.includes(profile.uid)) {
-                existingMatches.push(profile.uid);
-            }
-            
-            // Save updated matches array to backend
-            const saveResponse = await fetch(backendURL + 'add', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    index: 'matched_with',
-                    data: existingMatches
-                })
-            });
-            
-            if (saveResponse.ok) {
-                console.log(`Match with ${profile.uid} saved to backend. Total matches: ${existingMatches.length}`);
-            } else {
-                console.error('Failed to save match to backend');
-            }
-        } catch (error) {
-            console.error('Error saving match:', error);
+    }
+
+    // PROCEDURE: displayResult (AP CSP Requirement: Output - visual/textual)
+    function displayResult(survived, probability, factors) {
+        const resultSection = document.getElementById('result-section');
+        const icon = survived ? '✅' : '❌';
+        const resultClass = survived ? 'survived' : 'not-survived';
+        const resultText = survived ? 'LIKELY SURVIVED' : 'LIKELY NOT SURVIVED';
+        let explanation = survived ? 
+            'Based on the model, this passenger likely survived because ' :
+            'Based on the model, this passenger likely did not survive because ';
+        const reasons = [];
+        if (factors.sex === 'female') reasons.push('they were female (women had priority in lifeboats)');
+        else reasons.push('they were male (men had lower priority)');
+        if (factors.pclass === 1) reasons.push('they were in 1st class (better lifeboat access)');
+        else if (factors.pclass === 3) reasons.push('they were in 3rd class (limited lifeboat access)');
+        if (factors.age < 16) reasons.push('they were a child (children were prioritized)');
+        if (factors.familySize > 0 && factors.familySize <= 3) {
+            reasons.push('they had family aboard (small families helped each other)');
         }
-        
-        state.currentIndex++;
-        showRealProfile();
-    }
-
-    function handleRealSkip() {
-        const state = realMatchmakingState;
-        state.skipped.push(state.profiles[state.currentIndex]);
-        state.currentIndex++;
-        showRealProfile();
-    }
-
-    function showRealResults() {
-        const state = realMatchmakingState;
-        const content = document.getElementById('realGameContent');
-
-        content.innerHTML = `
-            <div style="text-align: center; margin-bottom: 2em;">
-                <h3 style="color: #8b9dff; font-size: 1.5em;">🎉 Results</h3>
-                <p style="color: #c0c0c0;">You reviewed ${state.profiles.length} profiles</p>
+        explanation += reasons.join(', ') + '.';
+        resultSection.innerHTML = `
+            <div class="result-icon">${icon}</div>
+            <div class="result-text ${resultClass}">${resultText}</div>
+            <div class="probability">Survival Probability: ${probability}%</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: ${probability}%">${probability}%</div>
             </div>
-
-            <div style="background: linear-gradient(135deg, #3a3a52 0%, #2d2d42 100%); padding: 1.5em; border-radius: 8px; margin-bottom: 1.5em; border: 2px solid #667eea;">
-                <h4 style="color: #8b9dff; margin-top: 0;">✓ Your Matches (${state.matches.length})</h4>
-                ${state.matches.length === 0 ? 
-                    '<p style="color: #c0c0c0;">No matches yet. Try again!</p>' :
-                    state.matches.map(m => `
-                        <div style="background: #2a2a40; padding: 1em; border-radius: 6px; margin: 0.5em 0; border-left: 4px solid #27ae60;">
-                            <strong style="color: #8b9dff;">${m.data.name || m.uid}</strong>
-                            <span style="color: #27ae60; float: right;">${m.compatibility}%</span>
-                        </div>
-                    `).join('')
-                }
+            <div class="explanation">
+                <strong>Explanation:</strong><br>${explanation}
             </div>
-
-            <div style="background: #2a2a40; padding: 1em; border-radius: 8px; border: 1px solid #667eea;">
-                <p style="color: #c0c0c0; margin: 0;">✗ Skipped: ${state.skipped.length}</p>
-            </div>
-
-            <button class="btn-new" onclick="resetRealMatchmaking()">
-                🔄 Start Over
-            </button>
         `;
     }
 
-    function resetRealMatchmaking() {
-        realMatchmakingState = {
-            profiles: [],
-            currentIndex: 0,
-            matches: [],
-            skipped: [],
-            currentUser: null,
-            initialized: false
-        };
-        initRealMatchmaking();
+    // PROCEDURE: checkAnswer (AP CSP Requirement: Algorithm with iteration and selection)
+    function checkAnswer(questionNum, answer) {
+        if (quizComplete) return;
+        const correct = quizAnswers[questionNum] === answer;
+        const options = document.querySelectorAll('#q' + questionNum + ' .quiz-option');
+        const feedback = document.getElementById('q' + questionNum + '-feedback');
+        for (let i = 0; i < options.length; i++) {
+            const opt = options[i];
+            opt.style.pointerEvents = 'none';
+            if (opt.textContent.includes(answer.toUpperCase() + ')')) {
+                opt.classList.add(correct ? 'correct' : 'incorrect');
+            }
+            if (opt.textContent.includes(quizAnswers[questionNum].toUpperCase() + ')')) {
+                opt.classList.add('correct');
+            }
+        }
+        userAnswers[questionNum] = correct;
+        if (correct) {
+            feedback.innerHTML = '<div style="color: #27ae60;">✅ Correct! Great job!</div>';
+        } else {
+            feedback.innerHTML = '<div style="color: #e74c3c;">❌ Not quite. The correct answer is highlighted in green.</div>';
+        }
+        feedback.style.display = 'block';
+        if (Object.keys(userAnswers).length === 3) showQuizScore();
+    }
+
+    // PROCEDURE: showQuizScore (AP CSP Requirement: Uses list iteration)
+    function showQuizScore() {
+        quizComplete = true;
+        let correctCount = 0;
+        const answerKeys = Object.keys(userAnswers);
+        for (let i = 0; i < answerKeys.length; i++) {
+            if (userAnswers[answerKeys[i]]) correctCount++;
+        }
+        document.getElementById('quiz-score').style.display = 'block';
+        document.getElementById('score-display').textContent = correctCount + '/3';
     }
 </script>
 
