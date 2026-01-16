@@ -787,17 +787,83 @@ breadcrumb: false
                 </div>
             </div>
         </div>
+    </div>
 
     <script>
-        // Authentication check
-        (function() {
-            function getCookie(name) {
-                const value = `; ${document.cookie}`;
-                const parts = value.split(`; ${name}=`);
-                if (parts.length === 2) return parts.pop().split(';').shift();
-                return null;
+        // Cookie utilities
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        function waitForCookie(cookieName, timeout = 3000) {
+            return new Promise((resolve) => {
+                const startTime = Date.now();
+                
+                const checkCookie = () => {
+                    const cookie = getCookie(cookieName);
+                    
+                    if (cookie && cookie.trim() !== '') {
+                        console.log(`Cookie "${cookieName}" found!`);
+                        resolve(true);
+                        return;
+                    }
+                    
+                    if (Date.now() - startTime > timeout) {
+                        console.log(`Cookie "${cookieName}" not found after ${timeout}ms`);
+                        resolve(false);
+                        return;
+                    }
+                    
+                    // Check again in 100ms
+                    setTimeout(checkCookie, 100);
+                };
+                
+                checkCookie();
+            });
+        }
+
+        async function checkAuthentication() {
+            console.log('Checking for authentication cookie...');
+            
+            // Wait up to 3 seconds for cookie to appear
+            const cookieFound = await waitForCookie('jwt_python_flask', 3000);
+            
+            if (!cookieFound) {
+                // Disable everything
+                methodSelect.disabled = true;
+                urlInput.disabled = true;
+                requestBodyTextarea.disabled = true;
+                sendBtn.disabled = true;
+                
+                responseContent.innerHTML = `<div style="color: #fbbf24; font-weight: bold; font-size: 1.2rem; text-align: center; padding: 2rem;">
+                    🔒 Authentication Required
+                    
+                    <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 1rem; font-weight: normal;">
+                        You must be logged in to use the API tester.
+                        
+                        Please log in to your account first, then refresh this page.
+                    </div>
+                </div>`;
+                
+                const exampleButtons = document.querySelectorAll('.example-btn');
+                exampleButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                });
+                
+                return false;
             }
             
+            console.log('Authentication successful!');
+            return true;
+        }
+
+        // Authentication banner check (runs immediately)
+        (function() {
             const jwtCookie = getCookie('jwt_python_flask');
             
             if (!jwtCookie || jwtCookie.trim() === '') {
@@ -903,45 +969,20 @@ breadcrumb: false
         const headersSection = document.getElementById('headersSection');
         const headersContent = document.getElementById('headersContent');
 
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-            return null;
-        }
+        // Main authentication check for API tester (waits for cookie)
+        let isAuthenticated = false;
 
-        function checkAuthentication() {
-            let jwtCookie = getCookie('jwt_python_flask');
+        (async function() {
+            isAuthenticated = await checkAuthentication();
             
-            if (!jwtCookie || jwtCookie.trim() === '') {
-                methodSelect.disabled = true;
-                urlInput.disabled = true;
-                requestBodyTextarea.disabled = true;
-                sendBtn.disabled = true;
-                
-                responseContent.innerHTML = `<div style="color: #fbbf24; font-weight: bold; font-size: 1.2rem; text-align: center; padding: 2rem;">
-                    🔒 Authentication Required
-                    
-                    <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 1rem; font-weight: normal;">
-                        You must be logged in to use the API tester.
-                        
-                        Please log in to your account first, then refresh this page.
-                    </div>
-                </div>`;
-                
-                const exampleButtons = document.querySelectorAll('.example-btn');
-                exampleButtons.forEach(btn => {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.5';
-                    btn.style.cursor = 'not-allowed';
-                });
-                
-                return false;
+            if (isAuthenticated) {
+                // Hide the auth banner if cookie was found
+                const banner = document.getElementById('auth-check-banner');
+                if (banner) {
+                    banner.style.display = 'none';
+                }
             }
-            return true;
-        }
-
-        const isAuthenticated = checkAuthentication();
+        })();
 
         methodSelect.addEventListener('change', function() {
             if (!isAuthenticated) return;
@@ -1106,3 +1147,5 @@ breadcrumb: false
             headersSection.style.display = 'none';
         }
     </script>
+</body>
+</html>
