@@ -790,112 +790,129 @@ breadcrumb: false
     </div>
 
     <script>
-        // Cookie utilities
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            
-            // DEBUG: Log cookie search
-            console.log(`[DEBUG] Searching for cookie: "${name}"`);
-            console.log(`[DEBUG] document.cookie = "${document.cookie}"`);
-            console.log(`[DEBUG] Cookie parts:`, parts);
-            
-            if (parts.length === 2) {
-                const cookieValue = parts.pop().split(';').shift();
-                console.log(`[DEBUG] Found cookie "${name}" = "${cookieValue}"`);
-                return cookieValue;
-            }
-            
-            console.log(`[DEBUG] Cookie "${name}" NOT found`);
-            return null;
+        // Get pythonURI based on environment
+        let pythonURI;
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+            pythonURI = "http://localhost:8401";
+        } else {
+            pythonURI = "https://matchmakers.opencodingsociety.com";
         }
 
-        function waitForCookie(cookieName, timeout = 3000) {
-            return new Promise((resolve) => {
-                const startTime = Date.now();
-                let attemptCount = 0;
-                
-                const checkCookie = () => {
-                    attemptCount++;
-                    console.log(`[DEBUG] Cookie check attempt #${attemptCount} (elapsed: ${Date.now() - startTime}ms)`);
-                    
-                    const cookie = getCookie(cookieName);
-                    
-                    if (cookie && cookie.trim() !== '') {
-                        console.log(`[DEBUG] ✅ Cookie "${cookieName}" found after ${attemptCount} attempts!`);
-                        console.log(`[DEBUG] Cookie value:`, cookie);
-                        resolve(true);
-                        return;
-                    }
-                    
-                    if (Date.now() - startTime > timeout) {
-                        console.log(`[DEBUG] ❌ Cookie "${cookieName}" not found after ${timeout}ms (${attemptCount} attempts)`);
-                        console.log(`[DEBUG] Final document.cookie state:`, document.cookie);
-                        resolve(false);
-                        return;
-                    }
-                    
-                    // Check again in 100ms
-                    setTimeout(checkCookie, 100);
-                };
-                
-                checkCookie();
-            });
-        }
+        // Fetch options from config
+        const fetchOptions = {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'default',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Origin': 'client'
+            },
+        };
 
-        async function checkAuthentication() {
+        // Check authentication by calling /api/id
+        async function checkAuthentication(retries = 3, delay = 1000) {
             console.log('[DEBUG] ========================================');
             console.log('[DEBUG] Starting authentication check...');
             console.log('[DEBUG] Current URL:', window.location.href);
             console.log('[DEBUG] Current domain:', window.location.hostname);
-            console.log('[DEBUG] Initial cookies:', document.cookie);
+            console.log('[DEBUG] Python URI:', pythonURI);
+            console.log('[DEBUG] Will attempt', retries, 'times with', delay, 'ms delay');
             console.log('[DEBUG] ========================================');
             
-            // Wait up to 3 seconds for cookie to appear
-            const cookieFound = await waitForCookie('jwt_python_flask', 3000);
-            
-            if (!cookieFound) {
-                console.log('[DEBUG] ❌ Authentication FAILED - disabling API tester');
-                console.log('[DEBUG] All cookies at failure:', document.cookie);
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                console.log(`[DEBUG] Authentication attempt ${attempt}/${retries}`);
                 
-                // Disable everything
-                methodSelect.disabled = true;
-                urlInput.disabled = true;
-                requestBodyTextarea.disabled = true;
-                sendBtn.disabled = true;
-                
-                responseContent.innerHTML = `<div style="color: #fbbf24; font-weight: bold; font-size: 1.2rem; text-align: center; padding: 2rem;">
-                    🔒 Authentication Required
+                try {
+                    const response = await fetch(`${pythonURI}/api/id`, {
+                        ...fetchOptions,
+                        credentials: 'include'
+                    });
                     
-                    <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 1rem; font-weight: normal;">
-                        You must be logged in to use the API tester.
+                    console.log(`[DEBUG] Response status: ${response.status}`);
+                    console.log(`[DEBUG] Response ok: ${response.ok}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('[DEBUG] ✅ Authentication SUCCESSFUL!');
+                        console.log('[DEBUG] User data:', data);
+                        console.log('[DEBUG] ========================================');
+                        return true;
+                    } else {
+                        console.log(`[DEBUG] ❌ Response not OK (status: ${response.status})`);
                         
-                        Please log in to your account first, then refresh this page.
-                    </div>
-                </div>`;
-                
-                const exampleButtons = document.querySelectorAll('.example-btn');
-                exampleButtons.forEach(btn => {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.5';
-                    btn.style.cursor = 'not-allowed';
-                });
-                
-                return false;
+                        // If not the last attempt, wait before retrying
+                        if (attempt < retries) {
+                            console.log(`[DEBUG] Waiting ${delay}ms before retry...`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                        }
+                    }
+                } catch (error) {
+                    console.log(`[DEBUG] ❌ Fetch error:`, error.message);
+                    
+                    // If not the last attempt, wait before retrying
+                    if (attempt < retries) {
+                        console.log(`[DEBUG] Waiting ${delay}ms before retry...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
             }
             
-            console.log('[DEBUG] ✅ Authentication SUCCESSFUL - enabling API tester');
+            console.log('[DEBUG] ❌ Authentication FAILED after all attempts');
+            console.log('[DEBUG] ❌ Authentication FAILED after all attempts');
             console.log('[DEBUG] ========================================');
-            return true;
+            
+            // Disable everything
+            methodSelect.disabled = true;
+            urlInput.disabled = true;
+            requestBodyTextarea.disabled = true;
+            sendBtn.disabled = true;
+                
+            responseContent.innerHTML = `<div style="color: #fbbf24; font-weight: bold; font-size: 1.2rem; text-align: center; padding: 2rem;">
+                🔒 Authentication Required
+                
+                <div style="color: #cbd5e1; font-size: 0.9rem; margin-top: 1rem; font-weight: normal;">
+                    You must be logged in to use the API tester.
+                    
+                    Please log in to your account first, then refresh this page.
+                </div>
+            </div>`;
+            
+            const exampleButtons = document.querySelectorAll('.example-btn');
+            exampleButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            });
+                
+            return false;
+        }
+
+        // Quick initial check (no retry needed for banner)
+        async function quickAuthCheck() {
+            console.log('[DEBUG] Running quick auth check for banner...');
+            
+            try {
+                const response = await fetch(`${pythonURI}/api/id`, {
+                    ...fetchOptions,
+                    credentials: 'include'
+                });
+                
+                const isAuth = response.ok;
+                console.log('[DEBUG] Quick check result:', isAuth ? 'Authenticated' : 'Not authenticated');
+                return isAuth;
+            } catch (error) {
+                console.log('[DEBUG] Quick check failed:', error.message);
+                return false;
+            }
         }
 
         // Authentication banner check (runs immediately)
-        (function() {
+        (async function() {
             console.log('[DEBUG] Running immediate banner check...');
-            const jwtCookie = getCookie('jwt_python_flask');
-            console.log('[DEBUG] Banner check - cookie found:', jwtCookie ? 'YES' : 'NO');
+            const isAuth = await quickAuthCheck();
             
-            if (!jwtCookie || jwtCookie.trim() === '') {
+            if (!isAuth) {
                 const banner = document.getElementById('auth-check-banner');
                 if (banner) {
                     console.log('[DEBUG] Showing auth banner');
@@ -919,7 +936,7 @@ breadcrumb: false
                     console.log('[DEBUG] Login redirect URL:', loginBtn.href);
                 }
             } else {
-                console.log('[DEBUG] Cookie found immediately - no banner needed');
+                console.log('[DEBUG] Already authenticated - no banner needed');
             }
         })();
 
@@ -1078,15 +1095,6 @@ breadcrumb: false
         async function sendRequest() {
             if (!isAuthenticated) {
                 alert('Please log in to use the API tester.');
-                return;
-            }
-            
-            const jwtCookie = getCookie('jwt_python_flask');
-            
-            if (!jwtCookie || jwtCookie.trim() === '') {
-                responseContent.innerHTML = `<div style="color: #fca5a5; font-weight: bold; text-align: center;">
-                    ⚠️ Your session has expired. Please log in again.
-                </div>`;
                 return;
             }
             
