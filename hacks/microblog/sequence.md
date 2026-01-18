@@ -391,6 +391,7 @@ This program meets all AP Computer Science Principles Component A requirements:
         <button class="tab-btn" onclick="switchTab('predict')">🔮 Predict</button>
         <button class="tab-btn" onclick="switchTab('explore')">📊 Explore Data</button>
         <button class="tab-btn" onclick="switchTab('quiz')">🎯 Quiz</button>
+        <button class="tab-btn" onclick="switchTab('personality')">🧠 Personality</button>
     </div>
 
     <!-- Learn Tab -->
@@ -602,6 +603,49 @@ This program meets all AP Computer Science Principles Component A requirements:
             <p style="color: #c0c0c0; margin-top: 1em;">Great job learning about ML and the Titanic dataset!</p>
         </div>
     </div>
+
+    <!-- Personality Quiz Tab -->
+    <div id="personality-tab" class="tab-content">
+        <div class="info-box">
+            <h2>🧠 Discover Your Coder Personality</h2>
+            <p>Take this quiz to find out what type of coder you are! Your result will be saved to your profile for matchmaking.</p>
+        </div>
+
+        <div id="personality-status-container"></div>
+
+        <div id="personality-quiz-section">
+            <div class="progress-bar" style="margin-bottom: 2em;">
+                <div class="progress-fill" id="personality-progress" style="width: 0%">0%</div>
+            </div>
+
+            <div id="personality-question-container"></div>
+
+            <div style="text-align: center; margin-top: 2em;">
+                <button class="predict-btn" id="personality-next-btn" onclick="nextPersonalityQuestion()" disabled>
+                    Next Question →
+                </button>
+            </div>
+        </div>
+
+        <div id="personality-result-section" style="display: none;">
+            <div style="text-align: center;">
+                <div style="font-size: 5em; margin-bottom: 0.3em;" id="personality-result-icon">🎯</div>
+                <div style="font-size: 2.5em; color: #8b9dff; font-weight: bold; margin-bottom: 0.5em;" id="personality-result-name">Your Coder Type</div>
+                <div class="info-box" id="personality-result-description"></div>
+                
+                <div class="stats-grid" id="personality-traits-container"></div>
+
+                <div style="margin-top: 2em;">
+                    <button class="predict-btn" onclick="savePersonalityToProfile()">
+                        💾 Save to Profile
+                    </button>
+                    <button class="predict-btn" onclick="restartPersonalityQuiz()">
+                        🔄 Retake Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -612,7 +656,7 @@ This program meets all AP Computer Science Principles Component A requirements:
 
     // PROCEDURE: switchTab (AP CSP Requirement: User interaction/events)
     function switchTab(tab) {
-        const tabs = ['learn', 'predict', 'explore', 'quiz'];
+        const tabs = ['learn', 'predict', 'explore', 'quiz', 'personality'];
         for (let i = 0; i < tabs.length; i++) {
             const tabEl = document.getElementById(tabs[i] + '-tab');
             if (tabEl) tabEl.classList.remove('active');
@@ -621,7 +665,7 @@ This program meets all AP Computer Science Principles Component A requirements:
         if (activeTab) activeTab.classList.add('active');
         
         const buttons = document.querySelectorAll('.tab-btn');
-        const tabNames = ['learn', 'predict', 'explore', 'quiz'];
+        const tabNames = ['learn', 'predict', 'explore', 'quiz', 'personality'];
         for (let i = 0; i < buttons.length; i++) {
             buttons[i].classList.remove('active');
             if (tabNames[i] === tab) buttons[i].classList.add('active');
@@ -733,6 +777,375 @@ This program meets all AP Computer Science Principles Component A requirements:
         document.getElementById('quiz-score').style.display = 'block';
         document.getElementById('score-display').textContent = correctCount + '/3';
     }
+
+    // ============================================
+    // PERSONALITY QUIZ SECTION
+    // ============================================
+
+    const personalityQuestions = [
+        {
+            question: "When faced with a complex coding problem, what's your first move?",
+            options: [
+                { text: "Break it down into smaller pieces and tackle them one by one", weights: { architect: 3, debugger: 2, innovator: 1 } },
+                { text: "Search for existing solutions and adapt them", weights: { pragmatist: 3, hacker: 2, learner: 1 } },
+                { text: "Experiment with different approaches until something works", weights: { innovator: 3, hacker: 2, artist: 1 } },
+                { text: "Plan the entire solution before writing any code", weights: { architect: 3, perfectionist: 2, debugger: 1 } }
+            ]
+        },
+        {
+            question: "How do you feel about code documentation?",
+            options: [
+                { text: "It's essential! Every function needs detailed comments", weights: { architect: 3, perfectionist: 2, learner: 1 } },
+                { text: "Code should be self-explanatory, minimal docs needed", weights: { artist: 3, pragmatist: 2, hacker: 1 } },
+                { text: "I document the tricky parts, skip the obvious stuff", weights: { pragmatist: 3, debugger: 2, innovator: 1 } },
+                { text: "What's documentation? The code IS the documentation", weights: { hacker: 3, innovator: 2, artist: 1 } }
+            ]
+        },
+        {
+            question: "Your code works perfectly. What do you do next?",
+            options: [
+                { text: "Refactor it to make it cleaner and more efficient", weights: { perfectionist: 3, architect: 2, artist: 1 } },
+                { text: "Ship it! If it works, don't touch it", weights: { pragmatist: 3, hacker: 2, debugger: 1 } },
+                { text: "Add extra features I thought of while coding", weights: { innovator: 3, artist: 2, learner: 1 } },
+                { text: "Write tests to make sure it keeps working", weights: { architect: 3, debugger: 2, perfectionist: 1 } }
+            ]
+        },
+        {
+            question: "What's your relationship with debugging?",
+            options: [
+                { text: "I love it! Finding bugs is like solving puzzles", weights: { debugger: 3, perfectionist: 2, architect: 1 } },
+                { text: "Necessary evil. Console.log() is my best friend", weights: { pragmatist: 3, hacker: 2, learner: 1 } },
+                { text: "Frustrating. I'd rather rewrite than debug", weights: { innovator: 3, artist: 2, hacker: 1 } },
+                { text: "Strategic. I use proper debugging tools and techniques", weights: { architect: 3, debugger: 2, perfectionist: 1 } }
+            ]
+        },
+        {
+            question: "How do you learn new technologies?",
+            options: [
+                { text: "Read the entire documentation first", weights: { learner: 3, architect: 2, perfectionist: 1 } },
+                { text: "Jump straight into coding and learn by doing", weights: { hacker: 3, innovator: 2, pragmatist: 1 } },
+                { text: "Follow tutorials and adapt them to my needs", weights: { learner: 3, pragmatist: 2, debugger: 1 } },
+                { text: "Build something creative to explore capabilities", weights: { artist: 3, innovator: 2, learner: 1 } }
+            ]
+        },
+        {
+            question: "What motivates you most when coding?",
+            options: [
+                { text: "Creating something beautiful and elegant", weights: { artist: 3, perfectionist: 2, architect: 1 } },
+                { text: "Solving real-world problems efficiently", weights: { pragmatist: 3, architect: 2, debugger: 1 } },
+                { text: "Learning and mastering new skills", weights: { learner: 3, debugger: 2, innovator: 1 } },
+                { text: "Building something innovative and unique", weights: { innovator: 3, artist: 2, hacker: 1 } }
+            ]
+        },
+        {
+            question: "Your preferred coding environment is:",
+            options: [
+                { text: "Organized IDE with all the extensions and tools", weights: { architect: 3, perfectionist: 2, learner: 1 } },
+                { text: "Minimal text editor, keyboard shortcuts only", weights: { hacker: 3, pragmatist: 2, artist: 1 } },
+                { text: "Whatever gets the job done fastest", weights: { pragmatist: 3, debugger: 2, hacker: 1 } },
+                { text: "Customized setup with aesthetic themes", weights: { artist: 3, perfectionist: 2, innovator: 1 } }
+            ]
+        },
+        {
+            question: "How do you approach code reviews?",
+            options: [
+                { text: "Thorough and detailed, checking every line", weights: { perfectionist: 3, architect: 2, debugger: 1 } },
+                { text: "Focus on logic and functionality, skip style nitpicks", weights: { pragmatist: 3, debugger: 2, learner: 1 } },
+                { text: "Look for creative solutions and alternative approaches", weights: { innovator: 3, artist: 2, learner: 1 } },
+                { text: "Quick scan for obvious issues, trust the coder", weights: { hacker: 3, pragmatist: 2, innovator: 1 } }
+            ]
+        }
+    ];
+
+    const coderTypes = {
+        architect: {
+            name: "The Architect",
+            icon: "🏗️",
+            description: "You're a master planner who thinks in systems and structures. Your code is well-organized, scalable, and built to last. You see the big picture and design elegant solutions that stand the test of time.",
+            traits: [
+                { icon: "📐", label: "Planning", value: "Exceptional" },
+                { icon: "🎯", label: "Organization", value: "Masterful" },
+                { icon: "🔧", label: "Scalability", value: "Top Priority" },
+                { icon: "📚", label: "Documentation", value: "Comprehensive" }
+            ]
+        },
+        debugger: {
+            name: "The Debugger",
+            icon: "🔍",
+            description: "You're a detective at heart, thriving on finding and fixing issues. Your analytical mind excels at tracing problems to their source. You turn chaos into clarity with patience and precision.",
+            traits: [
+                { icon: "🧩", label: "Problem Solving", value: "Elite" },
+                { icon: "🎯", label: "Attention to Detail", value: "Sharp" },
+                { icon: "⚡", label: "Debugging Speed", value: "Lightning Fast" },
+                { icon: "🛠️", label: "Tool Mastery", value: "Advanced" }
+            ]
+        },
+        innovator: {
+            name: "The Innovator",
+            icon: "💡",
+            description: "You're driven by creativity and pushing boundaries. Conventional solutions bore you - you'd rather explore new possibilities and create something that's never been done before. You're the future of tech.",
+            traits: [
+                { icon: "🚀", label: "Innovation", value: "Cutting Edge" },
+                { icon: "🎨", label: "Creativity", value: "Boundless" },
+                { icon: "🔬", label: "Experimentation", value: "Constant" },
+                { icon: "⚡", label: "Risk Taking", value: "Bold" }
+            ]
+        },
+        pragmatist: {
+            name: "The Pragmatist",
+            icon: "⚙️",
+            description: "You're results-oriented and efficiency-focused. You know when to use the right tool for the job and when 'good enough' is perfect. Your code ships on time and solves real problems.",
+            traits: [
+                { icon: "🎯", label: "Efficiency", value: "Optimized" },
+                { icon: "⏱️", label: "Time Management", value: "Excellent" },
+                { icon: "📦", label: "Delivery", value: "Reliable" },
+                { icon: "🔨", label: "Practicality", value: "Grounded" }
+            ]
+        },
+        perfectionist: {
+            name: "The Perfectionist",
+            icon: "✨",
+            description: "You craft code like an artisan, where every detail matters. Your standards are impossibly high, but the results speak for themselves. Quality isn't a goal - it's your baseline.",
+            traits: [
+                { icon: "💎", label: "Code Quality", value: "Pristine" },
+                { icon: "🎨", label: "Standards", value: "Uncompromising" },
+                { icon: "🔍", label: "Attention", value: "Microscopic" },
+                { icon: "⚡", label: "Refactoring", value: "Continuous" }
+            ]
+        },
+        artist: {
+            name: "The Artist",
+            icon: "🎨",
+            description: "You see code as a canvas for creative expression. Your solutions are elegant, your interfaces beautiful, and your code reads like poetry. You prove that engineering and artistry can coexist.",
+            traits: [
+                { icon: "🌈", label: "Aesthetics", value: "Beautiful" },
+                { icon: "💫", label: "User Experience", value: "Delightful" },
+                { icon: "🎭", label: "Expression", value: "Unique" },
+                { icon: "✨", label: "Polish", value: "Refined" }
+            ]
+        },
+        hacker: {
+            name: "The Hacker",
+            icon: "⚡",
+            description: "You thrive in the fast-paced world of rapid prototyping and creative problem-solving. Rules are guidelines, and you find unconventional solutions that just work. You make magic happen.",
+            traits: [
+                { icon: "🚀", label: "Speed", value: "Blazing" },
+                { icon: "🎯", label: "Resourcefulness", value: "Infinite" },
+                { icon: "🔥", label: "Adaptability", value: "Supreme" },
+                { icon: "💥", label: "Impact", value: "Immediate" }
+            ]
+        },
+        learner: {
+            name: "The Eternal Learner",
+            icon: "📚",
+            description: "You're fueled by curiosity and the joy of mastering new skills. Every project is a chance to grow, every bug a lesson. Your knowledge compounds daily, making you unstoppable.",
+            traits: [
+                { icon: "🧠", label: "Knowledge", value: "Growing" },
+                { icon: "🎓", label: "Curiosity", value: "Insatiable" },
+                { icon: "📖", label: "Learning Speed", value: "Rapid" },
+                { icon: "🌱", label: "Growth Mindset", value: "Strong" }
+            ]
+        }
+    };
+
+    let currentPersonalityQuestion = 0;
+    let personalityAnswers = [];
+    let personalityScores = {
+        architect: 0,
+        debugger: 0,
+        innovator: 0,
+        pragmatist: 0,
+        perfectionist: 0,
+        artist: 0,
+        hacker: 0,
+        learner: 0
+    };
+
+    function showPersonalityStatus(message, type = 'info') {
+        const container = document.getElementById('personality-status-container');
+        let bgColor = '#2a2a40';
+        let textColor = '#8b9dff';
+        let borderColor = '#667eea';
+        
+        if (type === 'error') {
+            bgColor = 'rgba(231, 76, 60, 0.2)';
+            textColor = '#e74c3c';
+            borderColor = '#e74c3c';
+        } else if (type === 'success') {
+            bgColor = 'rgba(39, 174, 96, 0.2)';
+            textColor = '#27ae60';
+            borderColor = '#27ae60';
+        }
+        
+        container.innerHTML = `<div style="background: ${bgColor}; color: ${textColor}; padding: 1em; border-radius: 10px; margin-bottom: 1.5em; border: 2px solid ${borderColor}; text-align: center;">${message}</div>`;
+        setTimeout(() => container.innerHTML = '', 5000);
+    }
+
+    function displayPersonalityQuestion() {
+        const question = personalityQuestions[currentPersonalityQuestion];
+        const container = document.getElementById('personality-question-container');
+        
+        container.innerHTML = `
+            <div class="quiz-question">
+                <div style="color: #667eea; font-size: 0.9em; font-weight: bold; margin-bottom: 0.5em;">Question ${currentPersonalityQuestion + 1} of ${personalityQuestions.length}</div>
+                <h3 style="color: #e0e0e0; font-size: 1.3em; margin-bottom: 1.5em; line-height: 1.6;">${question.question}</h3>
+                <div style="display: flex; flex-direction: column; gap: 1em;">
+                    ${question.options.map((option, index) => `
+                        <div class="quiz-option" onclick="selectPersonalityAnswer(${index})" style="cursor: pointer; transition: all 0.3s;">
+                            ${option.text}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        updatePersonalityProgress();
+    }
+
+    function selectPersonalityAnswer(optionIndex) {
+        const options = document.querySelectorAll('#personality-question-container .quiz-option');
+        options.forEach((opt, idx) => {
+            if (idx === optionIndex) {
+                opt.style.background = '#667eea';
+                opt.style.color = 'white';
+                opt.style.borderColor = '#8b9dff';
+                opt.style.transform = 'scale(1.02)';
+            } else {
+                opt.style.background = '#1f1f35';
+                opt.style.color = '#c0c0c0';
+                opt.style.borderColor = '#667eea';
+                opt.style.transform = 'scale(1)';
+            }
+        });
+
+        personalityAnswers[currentPersonalityQuestion] = optionIndex;
+        document.getElementById('personality-next-btn').disabled = false;
+
+        const weights = personalityQuestions[currentPersonalityQuestion].options[optionIndex].weights;
+        Object.keys(weights).forEach(type => {
+            personalityScores[type] = (personalityScores[type] || 0) + weights[type];
+        });
+    }
+
+    function updatePersonalityProgress() {
+        const progress = ((currentPersonalityQuestion + 1) / personalityQuestions.length) * 100;
+        document.getElementById('personality-progress').style.width = progress + '%';
+        document.getElementById('personality-progress').textContent = Math.round(progress) + '%';
+    }
+
+    function nextPersonalityQuestion() {
+        currentPersonalityQuestion++;
+        
+        if (currentPersonalityQuestion < personalityQuestions.length) {
+            displayPersonalityQuestion();
+            document.getElementById('personality-next-btn').disabled = true;
+        } else {
+            showPersonalityResults();
+        }
+    }
+
+    function showPersonalityResults() {
+        const topType = Object.keys(personalityScores).reduce((a, b) => personalityScores[a] > personalityScores[b] ? a : b);
+        const result = coderTypes[topType];
+
+        document.getElementById('personality-quiz-section').style.display = 'none';
+        document.getElementById('personality-result-section').style.display = 'block';
+
+        document.getElementById('personality-result-icon').textContent = result.icon;
+        document.getElementById('personality-result-name').textContent = result.name;
+        document.getElementById('personality-result-description').innerHTML = `<p>${result.description}</p>`;
+
+        const traitsContainer = document.getElementById('personality-traits-container');
+        traitsContainer.innerHTML = result.traits.map(trait => `
+            <div class="stat-card">
+                <div style="font-size: 2em; margin-bottom: 0.3em;">${trait.icon}</div>
+                <div class="stat-label">${trait.label}</div>
+                <div style="color: #8b9dff; font-size: 1.2em; font-weight: bold; margin-top: 0.3em;">${trait.value}</div>
+            </div>
+        `).join('');
+
+        window.coderTypeResult = {
+            type: topType,
+            name: result.name,
+            scores: personalityScores
+        };
+    }
+
+    async function savePersonalityToProfile() {
+        if (!window.coderTypeResult) {
+            showPersonalityStatus('No results to save!', 'error');
+            return;
+        }
+
+        // Get JWT token from cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        const token = getCookie('jwt');
+        
+        if (!token) {
+            showPersonalityStatus('⚠️ Please log in to save your personality type', 'error');
+            return;
+        }
+
+        try {
+            showPersonalityStatus('💾 Saving to your profile...', 'info');
+
+            const response = await fetch('/api/match/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    index: 'coder_type',
+                    data: window.coderTypeResult
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showPersonalityStatus('✅ Successfully saved to your profile! Your coder type is now part of your matchmaking profile.', 'success');
+            } else {
+                showPersonalityStatus(`❌ Error: ${data.message}`, 'error');
+            }
+        } catch (error) {
+            showPersonalityStatus(`❌ Failed to save: ${error.message}`, 'error');
+        }
+    }
+
+    function restartPersonalityQuiz() {
+        currentPersonalityQuestion = 0;
+        personalityAnswers = [];
+        personalityScores = {
+            architect: 0,
+            debugger: 0,
+            innovator: 0,
+            pragmatist: 0,
+            perfectionist: 0,
+            artist: 0,
+            hacker: 0,
+            learner: 0
+        };
+        
+        document.getElementById('personality-quiz-section').style.display = 'block';
+        document.getElementById('personality-result-section').style.display = 'none';
+        document.getElementById('personality-next-btn').disabled = true;
+        
+        displayPersonalityQuestion();
+    }
+
+    // Initialize personality quiz when the page loads
+    window.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('personality-question-container')) {
+            displayPersonalityQuestion();
+        }
+    });
 </script>
 
 ---
